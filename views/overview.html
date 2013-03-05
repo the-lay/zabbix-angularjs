@@ -1,23 +1,21 @@
-<div class="container-fluid" style="margin-top:10px;">
-  <div class="">
-    <table class="table table-hover table-bordered">
-      <thead>
-        <tr>
-          <th>Project name</th>
-          <th>Servers status</th>
-          <th>Level of last issue</th>
-          <th>Jenkins status</th>
+<div class="container-fluid">
+  <table class="table table-hover table-bordered">
+    <thead>
+      <tr>
+        <th>Project name</th>
+        <th>Servers status</th>
+        <th>Level of last issue</th>
+        <th>Jenkins status</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="group in server_groups">
+          <td><a href="#/project/{{group.groupid}}">{{group.name}}</a></td>
+          <td ng-show="group.errors" class="error">{{group.errors}} errors!</td>
+          <td ng-show="!group.errors" class="success">OK!</td>
+          <td>?????</td>
+          <td>?????</td>
         </tr>
-      </thead>
-      <tbody>
-          <tr ng-repeat="group in server_groups">
-            <td><a href="#/project/{{group.groupid}}">{{group.name}}</a></td>
-            <td ng-show="group.errors" class="error">{{group.errors}} errors!</td>
-            <td ng-show="!group.errors" class="success">OK!</td>
-            <td>?????</td>
-            <td>?????</td>
-          </tr>
-      </tbody>
-    </table>
-  </div>
+    </tbody>
+  </table>
 </div>

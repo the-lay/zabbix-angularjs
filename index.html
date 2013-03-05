@@ -29,7 +29,7 @@
                     <select style="display:none">
                       <!--hack for old browsers 
                       modern browsers will see html5 autocomplete options, old will not have autocomplete available-->
-                      <option ng-repeat="server in servers" id="{{server.groupid}}">{{server.name}}</option>
+                      <option ng-repeat="server in serversOnline">{{server.name}}</option>
                     </select>
                   </datalist>
                 </form>
@@ -41,7 +41,7 @@
       </div>
     </nav>
 
-    <div class="container-fluid" style="margin-top:45px">
+    <div class="container-fluid" style="margin-top:55px">
       <div id="loading" class="loading-indicator">Loading...</div>
 
 

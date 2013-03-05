@@ -1,5 +1,4 @@
-<div class="container-fluid" style="margin-top:10px;">
-  <div class="span12" ng-cloak>
+<div class="container-fluid">
     <figure ng-cloak>
       <img width=800 height=100 ng-cloak ng-src="http://zabbixcm02.internal.corp/zabbix/chart2.php?graphid={{hostData[0].graphs[currentPage-1].graphid}}&width=800&period={{currentZoom}}">
       <figcaption>
@@ -11,5 +10,4 @@
       <input type="text" ng-model="zoom">
       <button class="btn" type="button" ng-click="setZoom(zoom)">Set Zoom</button>
     </div>
-  </div>
 </div>

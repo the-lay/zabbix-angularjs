@@ -1,0 +1,22 @@
+<div>
+  <form class="form-horizontal" name="loginForm" ng-submit="login()" action="">
+    <div class="control-group">
+      <label class="control-label" for="inputName">Username</label>
+      <div class="controls">
+        <input type="text" ng-model="inputName" id="inputName" placeholder="Username" required>
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="inputPassword">Password</label>
+      <div class="controls">
+        <input type="password" ng-model="inputPassword" id="inputPassword" placeholder="Password" required>
+      </div>
+    </div>
+    <div class="control-group">
+      <div class="controls">
+        <button type="submit" class="btn">Sign in</button>
+        <span ng-cloak ng-show="error" class="help-block">{{error.data}}</span>
+      </div>
+    </div>
+  </form>
+</div>
