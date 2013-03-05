@@ -1,0 +1,15 @@
+<div class="container-fluid" style="margin-top:10px;">
+  <div class="span12" ng-cloak>
+    <figure ng-cloak>
+      <img width=800 height=100 ng-cloak ng-src="http://zabbixcm02.internal.corp/zabbix/chart2.php?graphid={{hostData[0].graphs[currentPage-1].graphid}}&width=800&period={{currentZoom}}">
+      <figcaption>
+        Graph #{{currentPage}}
+      </figcaption>
+    </figure>
+    <div>
+      <pagination style="align: auto" num-pages="noOfPages" current-page="currentPage"></pagination>
+      <input type="text" ng-model="zoom">
+      <button class="btn" type="button" ng-click="setZoom(zoom)">Set Zoom</button>
+    </div>
+  </div>
+</div>

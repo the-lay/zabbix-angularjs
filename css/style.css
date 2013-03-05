@@ -1,0 +1,21 @@
+.success {
+	background-color: #dff0d8;
+}
+.error {
+	background-color: #f2dede;
+}
+.warning {
+	background-color: #fcf8e3;
+}
+.info {
+	background-color: #d9edf7;
+}
+.loading-indicator { 
+	position: absolute; 
+	left: 0; 
+	top: 35px; 
+	display: none; 
+	background: gold; 
+	padding: 0.3em; 
+	font-weight: bold; 
+}

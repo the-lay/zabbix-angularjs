@@ -1,0 +1,65 @@
+<!doctype html>
+<html ng-app="zabbix">
+  <head>
+    <title ng-bind="page_title" ng-cloak></title>
+    <base href="/zabbix/frontend/">
+    <!--CSS-->
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+  </head>
+  <body>
+    <nav>
+      <div id="head" class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+          <div class="container-fluid" ng-controller="menuController">
+            <a class="brand" href="#/">E-Zabbix</a>
+            
+            <div class="nav-collapse collapse">
+              <ul class="nav">
+                <li ng-class="{active: activePath=='/'}"><a href="#/">Overview</a></li>
+                <li ng-class="{active: activePath=='/servers'}"><a href="#/servers">Servers</a></li>
+                <li ng-class="{active: activePath=='/tv'}"><a href="#/tv">TV mode</a></li>
+              </ul>
+
+              <div class="navbar-search input-append pull-right" style="margin-right:10px;">
+                <form style="margin-bottom:0" ng-submit="findServer()">
+                  <input class="input-medium" id="serverSearch" ng-model="searchQuery" type="text" list="servers" placeholder="Find server (or group)">
+                  <button class="btn" type="button" ng-click="findServer()"><i class="icon-arrow-right"> </i></button>
+                  <datalist id="servers">
+                    <select style="display:none">
+                      <!--hack for old browsers 
+                      modern browsers will see html5 autocomplete options, old will not have autocomplete available-->
+                      <option ng-repeat="server in servers" id="{{server.groupid}}">{{server.name}}</option>
+                    </select>
+                  </datalist>
+                </form>
+              </div>
+
+            </div>
+          </div> <!-- end of menuController -->
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid" style="margin-top:45px">
+      <div id="loading" class="loading-indicator">Loading...</div>
+
+
+ <!--      <div ng-show="alerts" ng-cloak ng-controller="alertController">
+        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">{{alert.msg}}</alert>
+      </div> -->
+
+      <div id="content" class="container-fluid" ng-view ng-cloak></div>
+
+      <hr>
+      <footer class="footer">
+
+        &copy; 2013
+      </footer>
+    </div>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.js"></script>
+    <script src="js/ui-bootstrap-tpls-0.1.0.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="js/controllers.js"></script>
+  </body>
+</html>
