@@ -164,22 +164,20 @@ function overviewController($rootScope, $scope, $http) {
       }
     }).success(function (trigger_data) {
       //TODO
-      for(var a=0; a<data.length; a++) {
-        data[a].errors = 0;
+      for(var a=0; a<data.result.length; a++) {
+        data.result[a].errors = 0;
       }
 
-      for (var i=0; i<trigger_data.length; i++) {
-        // console.log(trigger_data[i]);
-        for (var j=0; j<trigger_data[i].groups.length; j++) {
-          // console.log(trigger_data[i].groups[j].groupid);
-          for (var k=0; k<data.length; k++) {
-            if (data[k].groupid == trigger_data[i].groups[j].groupid) {
-              data[k].errors += 1;
+      for (var i=0; i<trigger_data.result.length; i++) {
+        for (var j=0; j<trigger_data.result[i].groups.length; j++) {
+          for (var k=0; k<data.result.length; k++) {
+            if (data.result[k].groupid == trigger_data.result[i].groups[j].groupid) {
+              data.result[k].errors += 1;
             }
           }
         }
       }
-      console.log(data);
+      //console.log(data);
 
       $scope.server_groups = data.result;
 
@@ -205,7 +203,7 @@ function serversController($rootScope, $scope, $http, $routeParams) {
   $('#filterInput').focus();
 }
 
-function serversDetailsController($scope, $http, $routeParams) {
+function serversDetailsController($rootScope, $scope, $http, $routeParams) {
 
   $http.post(api_url,
   {
@@ -220,10 +218,11 @@ function serversDetailsController($scope, $http, $routeParams) {
     }
   }).success(function (data) {
     $scope.hostData = data.result;
-    $scope.noOfPages = data[0].graphs.length;
+    $scope.noOfPages = data.result[0].graphs.length;
     $scope.currentPage = 1;
     $scope.currentZoom = 3600;
     $scope.zoom = 3600;
+    console.log(data);
   });
   //$scope.imageUrl = 'http://zabbixcm02.internal.corp/zabbix/chart2.php?graphid='+$scope.hostData[0].graphs[$scope.currentPage-1].graphid+'&width=800&height=100&period='+$scope.currentZoom;
   $scope.setZoom = function (zoom) {
