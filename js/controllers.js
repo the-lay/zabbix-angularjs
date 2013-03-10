@@ -58,20 +58,22 @@ app.run(function($rootScope, $route, $http, $location) {
   });
 
   //One time fetching of servers available, for autocomplete in search
-  $http.post(api_url,
-  {
-    jsonrpc: "2.0",
-    id: $rootScope.auth_id,
-    auth: $rootScope.auth,
-    method: 'host.get',
-    params: {
-      output: ['name'],
-      sortfield: 'name'
-    }
+  if ($rootScope.auth_id) {
+      $http.post(api_url,
+          {
+              jsonrpc: "2.0",
+              id: $rootScope.auth_id,
+              auth: $rootScope.auth,
+              method: 'host.get',
+              params: {
+                  output: ['name'],
+                  sortfield: 'name'
+              }
+          }
+      ).success(function (data) {
+              $rootScope.serversOnline = data.result;
+          });
   }
-  ).success(function (data) {
-    $rootScope.serversOnline = data.result;
-  });
 });
 
 angular.module('SharedServices', [])
