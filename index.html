@@ -8,20 +8,20 @@
     <link href="css/style.css" rel="stylesheet">
   </head>
   <body>
-    <nav>
-      <div class="navbar navbar-fixed-top">
+    <nav ng-cloak>
+      <div id="head" class="navbar navbar-fixed-top">
         <div class="navbar-inner">
           <div class="container-fluid" ng-controller="menuController">
             <a class="brand" href="#/">E-Zabbix</a>
             
-            <div class="nav-collapse collapse">
+            <div ng-show="loggedIn" class="nav-collapse collapse">
               <ul class="nav">
                 <li ng-class="{active: activePath=='/'}"><a href="#/">Overview</a></li>
                 <li ng-class="{active: activePath=='/servers'}"><a href="#/servers">Servers</a></li>
                 <li ng-class="{active: activePath=='/tv'}"><a href="#/tv">TV mode</a></li>
               </ul>
 
-              <div class="navbar-search input-append pull-right" style="margin-right:10px;">
+              <div ng-show="loggedIn" class="navbar-search input-append pull-right" style="margin-right:10px;">
                 <form style="margin-bottom:0" ng-submit="findServer()">
                   <input class="input-medium" id="serverSearch" ng-model="searchQuery" type="text" list="servers" placeholder="Find server (or group)">
                   <button class="btn" type="button" ng-click="findServer()"><i class="icon-arrow-right"> </i></button>
@@ -49,7 +49,31 @@
         <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">{{alert.msg}}</alert>
       </div> -->
 
-      <div id="content" class="container-fluid" ng-view ng-cloak></div>
+      <div ng-cloak ng-hide="loggedIn" class="login-container" ng-controller="loginController">
+        <p class="lead" style="text-align: center">Please login</p>
+        <form class="form-horizontal" name="loginForm" ng-submit="login()" action="">
+          <div class="control-group">
+            <label class="control-label" for="inputName">Username</label>
+            <div class="controls">
+              <input type="text" ng-model="inputName" id="inputName" placeholder="Username" required>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="inputPassword">Password</label>
+            <div class="controls">
+              <input type="password" ng-model="inputPassword" id="inputPassword" placeholder="Password" required>
+            </div>
+          </div>
+          <div class="control-group">
+            <div class="controls">
+              <button type="submit" class="btn">Sign in</button>
+              <span ng-cloak ng-show="error" class="help-block">{{error.data}}</span>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div ng-show="loggedIn" id="content" class="container-fluid" ng-view ng-cloak></div>
 
       <hr>
       <footer class="footer">
@@ -60,6 +84,7 @@
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.js"></script>
     <script src="js/ui-bootstrap-tpls-0.1.0.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
     <script src="js/controllers.js"></script>
   </body>
 </html>

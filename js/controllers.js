@@ -29,9 +29,8 @@ var app = angular.module('zabbix', ['ui.bootstrap', 'SharedServices'])
     when('/search/:searchString', {controller: searchController,
       templateUrl: 'views/search.html', title_prefix: 'Search'}).
 
-  //Login
-    when('/login', {controller: loginController,
-      templateUrl: 'views/login.html', title_prefix: 'Login'}).
+  //Not logged in
+    when('/not_logged').
 
   //Everything else is 404
     otherwise({redirectTo: '/'});
@@ -49,6 +48,12 @@ app.run(function($rootScope, $route, $http, $location) {
   //Title and active menu changing
   $rootScope.activePath = null;
   $rootScope.$on('$routeChangeSuccess', function() {
+
+    if (!$rootScope.loggedIn) {
+      //return to REFERER $rootScope.returnUrl = $location.path();
+      $location.path('/not_logged');
+    }
+
     if ($route.current.$route.title_prefix) {
       $rootScope.page_title = $route.current.$route.title_prefix + " - Zabbix";
     } else {
@@ -57,23 +62,7 @@ app.run(function($rootScope, $route, $http, $location) {
     $rootScope.activePath = $location.path();
   });
 
-  //One time fetching of servers available, for autocomplete in search
-  if ($rootScope.auth_id) {
-      $http.post(api_url,
-          {
-              jsonrpc: "2.0",
-              id: $rootScope.auth_id,
-              auth: $rootScope.auth,
-              method: 'host.get',
-              params: {
-                  output: ['name'],
-                  sortfield: 'name'
-              }
-          }
-      ).success(function (data) {
-              $rootScope.serversOnline = data.result;
-          });
-  }
+  //TODO check cookie, log in if current
 });
 
 angular.module('SharedServices', [])
@@ -119,7 +108,22 @@ function loginController($scope, $http, $rootScope, $location) {
       } else {
         $scope.error = null;
         $rootScope.auth = data.result;
-        $location.path('/');
+        $rootScope.loggedIn = true;
+        $http.post(api_url,
+          {
+              jsonrpc: "2.0",
+              id: $rootScope.auth_id,
+              auth: $rootScope.auth,
+              method: 'host.get',
+              params: {
+                  output: ['name'],
+                  sortfield: 'name'
+              }
+          }
+          ).success(function (data) {
+              $rootScope.serversOnline = data.result;
+              $location.path('/');
+          });
       }
     });
   };
@@ -134,57 +138,58 @@ function menuController($scope, $location, $rootScope) {
 }
 
 function overviewController($rootScope, $scope, $http) {
-  $http.post(api_url,
-    {
-      jsonrpc: "2.0",
-      id: $rootScope.auth_id,
-      auth: $rootScope.auth,
-      method: 'hostgroup.get',
-      params: {
-        output: ['groupid', 'name'],
-        sortfield: 'name',
-        real_hosts: true
-      }
-    }
-  ).success(function (data, $timeout) {
-
+  if ($rootScope.loggedIn) {
     $http.post(api_url,
-    {
-      jsonrpc: "2.0",
-      id: $rootScope.auth_id,
-      auth: $rootScope.auth,
-      method: 'trigger.get',
-      params: {
-        selectGroups: 'refer',
-        only_true: true,
-        filter: {
-          "value": 1
-        },
-        skipDependent: true,
-        monitored: true,
-        min_severity: 3
+      {
+        jsonrpc: "2.0",
+        id: $rootScope.auth_id,
+        auth: $rootScope.auth,
+        method: 'hostgroup.get',
+        params: {
+          output: ['groupid', 'name'],
+          sortfield: 'name',
+          real_hosts: true
+        }
       }
-    }).success(function (trigger_data) {
-      //TODO
-      for(var a=0; a<data.result.length; a++) {
-        data.result[a].errors = 0;
-      }
+    ).success(function (data, $timeout) {
 
-      for (var i=0; i<trigger_data.result.length; i++) {
-        for (var j=0; j<trigger_data.result[i].groups.length; j++) {
-          for (var k=0; k<data.result.length; k++) {
-            if (data.result[k].groupid == trigger_data.result[i].groups[j].groupid) {
-              data.result[k].errors += 1;
+      $http.post(api_url,
+      {
+        jsonrpc: "2.0",
+        id: $rootScope.auth_id,
+        auth: $rootScope.auth,
+        method: 'trigger.get',
+        params: {
+          selectGroups: 'refer',
+          only_true: true,
+          filter: {
+            "value": 1
+          },
+          skipDependent: true,
+          monitored: true,
+          min_severity: 3
+        }
+      }).success(function (trigger_data) {
+        //TODO
+        for(var a=0; a<data.result.length; a++) {
+          data.result[a].errors = 0;
+        }
+
+        for (var i=0; i<trigger_data.result.length; i++) {
+          for (var j=0; j<trigger_data.result[i].groups.length; j++) {
+            for (var k=0; k<data.result.length; k++) {
+              if (data.result[k].groupid == trigger_data.result[i].groups[j].groupid) {
+                data.result[k].errors += 1;
+              }
             }
           }
         }
-      }
-      //console.log(data);
 
-      $scope.server_groups = data.result;
+        $scope.server_groups = data.result;
 
+      });
     });
-  });
+  }
 }
 
 function serversController($rootScope, $scope, $http, $routeParams) {
