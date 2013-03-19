@@ -12,37 +12,37 @@
 </div>
  -->
 
-<div class="container">
+<div class="container-fluid">
   <div class="span12" id="masterTimeline" style="height:80px">
         <input type="text" ng-model="zoom">
       <button class="btn" type="button" ng-click="setZoom(zoom)">Set Zoom</button>
     </div>
-  <div class="row">
-    <div class="span8" id="cpuGraph">
+  <div class="row-fluid">
+    <div class="span6" id="cpuGraph">
       <figure ng-cloak>
-        <img width=800 height=100 ng-cloak ng-src="http://zabbixcm02.internal.corp/zabbix/chart2.php?graphid={{hostData[0].graphs[currentPage-1].graphid}}&period={{currentZoom}}">
+        <img ng-cloak ng-src="http://zabbixcm02.internal.corp/zabbix/chart2.php?graphid={{hostData[0].graphs[currentPage-1].graphid}}&period={{currentZoom}}">
       </figure>
     </div>
-    <div class="span4" id="loadGraph">
+    <div class="span6" id="loadGraph">
       <figure ng-cloak>
-        <img width=100% height=100 ng-cloak ng-src="http://zabbixcm02.internal.corp/zabbix/chart2.php?graphid={{hostData[0].graphs[currentPage-1].graphid}}&period={{currentZoom}}">
+        <img ng-cloak ng-src="http://zabbixcm02.internal.corp/zabbix/chart2.php?graphid={{hostData[0].graphs[currentPage-1].graphid}}&period={{currentZoom}}">
       </figure>
     </div>
   </div>
-  <div class="row">
+  <div class="row-fluid">
     <div class="span8" id="physDisk">
       <figure ng-cloak>
-        <img width=800 height=100 ng-cloak ng-src="http://zabbixcm02.internal.corp/zabbix/chart2.php?graphid={{hostData[0].graphs[currentPage-1].graphid}}&period={{currentZoom}}">
+        <img ng-cloak ng-src="http://zabbixcm02.internal.corp/zabbix/chart2.php?graphid={{hostData[0].graphs[currentPage-1].graphid}}&period={{currentZoom}}">
       </figure>
-      <div class="row">
+      <div class="row-fluid">
         <div class="span6" id="diskIOGraph">
           <figure ng-cloak>
-            <img width=800 height=100 ng-cloak ng-src="http://zabbixcm02.internal.corp/zabbix/chart2.php?graphid={{hostData[0].graphs[currentPage-1].graphid}}&period={{currentZoom}}">
+            <img ng-cloak ng-src="http://zabbixcm02.internal.corp/zabbix/chart2.php?graphid={{hostData[0].graphs[currentPage-1].graphid}}&period={{currentZoom}}">
           </figure>
         </div>
         <div class="span6" id="networkIOGraph">
           <figure ng-cloak>
-            <img width=800 height=100 ng-cloak ng-src="http://zabbixcm02.internal.corp/zabbix/chart2.php?graphid={{hostData[0].graphs[currentPage-1].graphid}}&period={{currentZoom}}">
+            <img ng-cloak ng-src="http://zabbixcm02.internal.corp/zabbix/chart2.php?graphid={{hostData[0].graphs[currentPage-1].graphid}}&period={{currentZoom}}">
           </figure>          
         </div>
       </div>
