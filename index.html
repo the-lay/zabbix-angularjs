@@ -17,7 +17,7 @@
             <div ng-show="loggedIn" class="nav-collapse collapse">
               <ul class="nav">
                 <li ng-class="{active: activePath=='/'}"><a href="#/">Overview</a></li>
-                <li ng-class="{active: activePath=='/servers'}"><a href="#/servers">Servers</a></li>
+                <li ng-class="{active: activePath=='/servers' || activePath=='/project'}"><a href="#/servers">Servers</a></li>
                 <li ng-class="{active: activePath=='/tv'}"><a href="#/tv">TV mode</a></li>
               </ul>
 
@@ -77,14 +77,17 @@
 
       <hr>
       <footer class="footer">
-
-        &copy; 2013
+        &copy; 2013<br/>
+        <a href="#/logout">Logout</a><br/>
+        <a href="http://www.angularjs.org/">Angular JS</a> | <a href="http://www.zabbix.com/">Zabbix Monitoring</a> | <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap</a>
       </footer>
     </div>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.js"></script>
-    <script src="js/ui-bootstrap-tpls-0.1.0.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
     <script src="js/controllers.js"></script>
+    <!--<script src="js/ui-bootstrap-tpls-0.1.0.min.js"></script>-->
+    <!---<script src="js/highcharts.js"></script>-->
+    <script src="http://gregpike.net/demos/angular-local-storage/localStorageModule.js"></script>
   </body>
 </html>
