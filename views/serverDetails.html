@@ -1,54 +1,75 @@
-<!-- <div class="container-fluid">
-    <figure ng-cloak>
-      <img width=800 height=100 ng-cloak ng-src="http://zabbixcm02.internal.corp/zabbix/chart2.php?graphid={{hostData[0].graphs[currentPage-1].graphid}}&width=800&period={{currentZoom}}">
-      <figcaption>
-        Graph #{{currentPage}}
-      </figcaption>
-    </figure>
-    <div>
-      <pagination style="align: auto" num-pages="noOfPages" current-page="currentPage"></pagination>
-
-    </div>
-</div>
- -->
+<script src="js/highcharts.js"></script>
 
 <div class="container-fluid">
-  <div class="span12" id="masterTimeline" style="height:80px">
-        <input type="text" ng-model="zoom">
-      <button class="btn" type="button" ng-click="setZoom(zoom)">Set Zoom</button>
+  <div class="row-fluid">
+    <div class="span11" id="masterTimeline"></div>
+    <div class="span1">
+      <small>
+        <a ng-click="setZoom(48)">48 hrs</a><br/>
+        <a ng-click="setZoom(168)">7 days</a><br/>
+        <a ng-click="setZoom(672)">30 days</a><br/>
+      </small>
     </div>
+  </div>
+  <hr>
   <div class="row-fluid">
     <div class="span6" id="cpuGraph">
-      <figure ng-cloak>
-        <img ng-cloak ng-src="http://zabbixcm02.internal.corp/zabbix/chart2.php?graphid={{hostData[0].graphs[currentPage-1].graphid}}&period={{currentZoom}}">
-      </figure>
     </div>
     <div class="span6" id="loadGraph">
-      <figure ng-cloak>
-        <img ng-cloak ng-src="http://zabbixcm02.internal.corp/zabbix/chart2.php?graphid={{hostData[0].graphs[currentPage-1].graphid}}&period={{currentZoom}}">
-      </figure>
     </div>
   </div>
   <div class="row-fluid">
-    <div class="span8" id="physDisk">
-      <figure ng-cloak>
-        <img ng-cloak ng-src="http://zabbixcm02.internal.corp/zabbix/chart2.php?graphid={{hostData[0].graphs[currentPage-1].graphid}}&period={{currentZoom}}">
-      </figure>
+    <div class="span8" id="memoryGraph">
+
       <div class="row-fluid">
-        <div class="span6" id="diskIOGraph">
-          <figure ng-cloak>
-            <img ng-cloak ng-src="http://zabbixcm02.internal.corp/zabbix/chart2.php?graphid={{hostData[0].graphs[currentPage-1].graphid}}&period={{currentZoom}}">
-          </figure>
-        </div>
-        <div class="span6" id="networkIOGraph">
-          <figure ng-cloak>
-            <img ng-cloak ng-src="http://zabbixcm02.internal.corp/zabbix/chart2.php?graphid={{hostData[0].graphs[currentPage-1].graphid}}&period={{currentZoom}}">
-          </figure>          
-        </div>
+        <div class="span6" id="diskIOGraph"></div>
+        <div class="span6" id="networkIOGraph"></div>
       </div>
     </div>
     <div class="span4" id="generalInfo">
-      <p>Lorem Ipsum – tas ir teksta salikums, kuru izmanto poligrāfijā un maketēšanas darbos. Lorem Ipsum ir kļuvis par vispārpieņemtu teksta aizvietotāju kopš 16. gadsimta sākuma. Tajā laikā kāds nezināms iespiedējs izveidoja teksta fragmentu, lai nodrukātu grāmatu ar burtu paraugiem. Tas ir ne tikai pārdzīvojis piecus gadsimtus, bet bez ievērojamām izmaiņām saglabājies arī mūsdienās, pārejot uz datorizētu teksta apstrādi. Tā popularizēšanai 60-tajos gados kalpoja Letraset burtu paraugu publicēšana ar Lorem Ipsum teksta fragmentiem un, nesenā pagātnē, tādas maketēšanas programmas kā Aldus PageMaker, kuras šablonu paraugos ir izmantots Lorem Ipsum teksts.</p>
+      <table class="table table-condensed">
+        <caption>Current statistics of SERVER_NAME</caption>
+        <thead>
+          <tr>
+            <th>key</th>
+            <th>value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>2</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>4</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>4</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>4</td>
+          </tr> 
+          <tr>
+            <td>3</td>
+            <td>4</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>4</td>
+          </tr> 
+          <tr>
+            <td>3</td>
+            <td>4</td>
+          </tr> 
+          <tr>
+            <td>3</td>
+            <td>4</td>
+          </tr> 
+        </tbody>
+      </table>
     </div>
   </div>
 </div>

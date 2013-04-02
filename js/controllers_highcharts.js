@@ -444,9 +444,7 @@ function serversDetailsController($rootScope, $scope, $http, $routeParams) {
         method: 'history.get',
         auth: $rootScope.auth,
         params: {
-          search: {
-            ''
-          }
+          hostids: $routeParams.serverId
         }
       }).success(function (data) {
 

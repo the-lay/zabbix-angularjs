@@ -2,17 +2,23 @@
   <caption>
     <h3>Servers of {{hostgroupData.name}} </h3> 
   </caption>
+
+  <div class="input-prepend" class="span10">
+    <span class="add-on">Filter:</span>
+    <input ng-model="filterString" id="filterInput" class="input-block-level" type="text">
+  </div>
+
   <table class="table table-hover table-bordered">
     <thead>
       <tr>
         <th>Host name</th>
         <th>Available</th>
-        <th></th>
-        <th>Jenkins status</th>
+        <th>something</th>
+        <th>something</th>
       </tr>
     </thead>
     <tbody>
-        <tr ng-repeat="host in hostgroupData.hosts">
+        <tr ng-repeat="host in hostgroupData.hosts | filter:filterString">
           <td><a href="#/servers/{{host.hostid}}">{{host.host}}</a></td>
           <td ng-show="host.available==0" class="error">Down</td>
           <td ng-show="host.available==2" class="error">Error</td>

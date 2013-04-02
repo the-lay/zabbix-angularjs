@@ -1,15 +1,22 @@
+<div ng-cloak>
 <h3>Search results for: {{searchPhrase}}</h3>
 
-<h4>hosts found</h4>
-<ul>
-  <li ng-repeat="host in hostsData">
-    <a href="#/servers/{{host.hostid}}">{{host.name}}</a>
-  </li>
-</ul>
+<div ng-show="hostsData">
+  <h4>hosts found</h4>
+  <ul>
+    <li ng-repeat="host in hostsData">
+      <a href="#/servers/{{host.hostid}}">{{host.name}}</a>
+    </li>
+  </ul>
+</div>
 
-<h4>hostgroups found</h4>
-<ul>
-  <li ng-repeat="group in groupsData">
-    <a href="#/project/{{group.hostid}}">{{group.name}}</a>
-  </li>
-</ul>
+<div ng-show="groupsData">
+  <h4>hostgroups found</h4>
+  <ul>
+    <li ng-repeat="group in groupsData">
+      <a href="#/project/{{group.hostid}}">{{group.name}}</a>
+    </li>
+  </ul>
+</div>
+
+</div>

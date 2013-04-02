@@ -4,17 +4,14 @@
       <tr>
         <th>Project name</th>
         <th>Servers status</th>
-        <th>Level of last issue</th>
-        <th>Jenkins status</th>
+        <th>Latest issue</th>
       </tr>
     </thead>
     <tbody>
         <tr ng-repeat="group in server_groups">
           <td><a href="#/project/{{group.groupid}}">{{group.name}}</a></td>
-          <td ng-show="group.errors" class="error">{{group.errors}} errors!</td>
-          <td ng-show="!group.errors" class="success">OK!</td>
-          <td>?????</td>
-          <td>?????</td>
+          <td colspan="{{((group.lastchange) && ('1') || ('2'))}}" class="{{'error' + group.errors_level}}">{{((group.errors) && (group.errors + ' errors!') || (''))}}</td>
+          <td ng-show="group.lastchange">{{group.lastchange_words}}</td>
         </tr>
     </tbody>
   </table>
