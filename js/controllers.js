@@ -48,7 +48,7 @@ var app = angular.module('zabbix', ['LocalStorageModule', 'SharedServices'])
     title_prefix: 'Project'
   }).
 
-  //TV Mode
+  //TV Dashboard
   when('/tv', {
     controller: tvController,
     templateUrl: 'views/tv.html',
@@ -78,8 +78,7 @@ var app = angular.module('zabbix', ['LocalStorageModule', 'SharedServices'])
   });
 
   //Enabling deep linking
-  $locationProvider.
-  html5Mode(false);
+  $locationProvider.html5Mode(false);
 });
 
 app.run(function ($rootScope, $route, $http, $location, localStorageService) {
@@ -158,7 +157,7 @@ function loginController($scope, $http, $rootScope, $location, localStorageServi
 
   //login function
   $scope.login = function() {
-    //ID doesn't have to be unique, but it's mandatory, so it was decided to use current time
+    //ID doesn't have to be unique, but it's mandatory for using API, so it was decided to use current time
     //as an identification for requests
     $rootScope.auth_id = Date.now();
     localStorageService.add('auth_id', $rootScope.auth_id); //saving this ID for session restoration
@@ -257,6 +256,10 @@ function overviewController($rootScope, $scope, $http) {
   //should not be accessible for guests anyway
   //extra security just in case
   if ($rootScope.loggedIn) {
+
+    $scope.showErrors = function (id) {
+      $('#errorsRow'+id).toggle();
+    }
 
     //gets active hostgroups
     $http.post(api_url, {
@@ -817,11 +820,8 @@ function tvController($scope, $http, $rootScope) {
     $scope.groupsShown = selectedGroups;
   });
 
-  //TODO postavitj 3 otdelnih http posta!!
-
-//   (function getHostsInfo() {
-//     setTimeout(getHostsInfo, 15000);
-// })();
+  //TODO postavitj na kazhduju grupu otdelnij http request
+  //TODO postavitj na notification otdelnij request
 
   //user picks what groups he wants to see
   $scope.selectGroups = function (id) {

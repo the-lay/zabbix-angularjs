@@ -56,3 +56,6 @@ a.serverLink20, a.serverLink00, a.serverLink21, a.serverLink01{
 a.serverLink10{
   color: #7A6A71;
 }
+[ng\:cloak], [ng-cloak], .ng-cloak {
+  display: none !important;
+}
