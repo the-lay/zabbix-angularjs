@@ -10,11 +10,13 @@
     <tbody ng-repeat="group in server_groups">
         <tr>
           <td><a href="#/project/{{group.groupid}}">{{group.name}}</a></td>
-          <td colspan="{{((group.lastchange) && ('1') || ('2'))}}" class="{{'error' + group.errors_level}}"><a ng-click="showErrors($index)">{{((group.errors) && (group.errors + ' errors!') || (''))}}</a></td>
+          <td colspan="{{((group.lastchange) && ('1') || ('2'))}}" class="{{'error' + group.errors_level}}"><a onClick="$('#errorsRow'+{{$index}}).toggle();">{{((group.errors) && (group.errors + ' errors!') || (''))}}</a></td>
           <td ng-show="group.lastchange">{{group.lastchange_words}}</td>
         </tr>
         <tr style="display:none; margin: 0; padding: 0;" id="errorsRow{{$index}}">
           <td colspan="3">
+            details of errors go here<br/>
+            details of errors go here
           </td>
         </tr>
     </tbody>

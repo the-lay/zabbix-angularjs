@@ -35,26 +35,35 @@
   margin: 0 auto;
   width: 500px;
 }
-.server20, .server00, .server21, .server01 {
-  display: inline-block;
-  *display: inline;
-  zoom: 200%;
-  background-color: red;
-  padding: 2px;
-  margin: 2px;
-}
-a.serverLink20, a.serverLink00, a.serverLink21, a.serverLink01{
-  color: white;
-}
-.server10 {
+.server {
   display: inline-block;
   *display: inline;
   background-color: #f5f5f5;
   padding: 2px;
   margin: 2px;
 }
-a.serverLink10{
+a.serverLink{
   color: #7A6A71;
+}
+.server.error1 {
+  background-color: lightblue; /*warning*/
+  zoom: 125%;
+}
+.server.error2 {
+  background-color: gold; /*warning*/
+  zoom: 150%;
+}
+.server.error3 {
+  background-color: red; /*warning*/
+  zoom: 175%;
+}
+.server.error4 {
+  background-color: red; /*warning*/
+  zoom: 200%;
+}
+.server.error5 {
+  background-color: red; /*warning*/
+  zoom: 250%;
 }
 [ng\:cloak], [ng-cloak], .ng-cloak {
   display: none !important;

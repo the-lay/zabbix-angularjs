@@ -1,9 +1,11 @@
+//massive TODO - rewrite all loops and check if I use .length
+
 //Zabbix API URL
 var api_url = 'http://zabbixcm02.internal.corp/zabbix/api_jsonrpc.php';
 
 //useful functions used
-function timeConverter(UNIX_timestamp){
- var a = new Date(UNIX_timestamp*1000);
+function dateConverter(UNIX_timestamp){
+ var a = new Date(UNIX_timestamp*1000); //JS uses nanoseconds
  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
      var year = a.getFullYear();
      var month = months[a.getMonth()];
@@ -14,6 +16,21 @@ function timeConverter(UNIX_timestamp){
      var time = date+' '+month+' '+year+', '+hour+':'+min+':'+sec ;
      return time;
  }
+
+function timeConverter() {
+  var currentTime = new Date()
+  var minutes = currentTime.getMinutes()
+  var seconds = currentTime.getSeconds()
+
+  if (minutes < 10) {
+    minutes = "0" + minutes
+  }
+  if (seconds < 10) {
+    seconds = "0" + seconds
+  }
+  return currentTime.getHours() + ":" + minutes + ":" + seconds;
+}
+
 
 var app = angular.module('zabbix', ['LocalStorageModule', 'SharedServices'])
   .config(function($routeProvider, $locationProvider) {
@@ -99,8 +116,10 @@ app.run(function ($rootScope, $route, $http, $location, localStorageService) {
       auth: $rootScope.auth,
       method: 'host.get',
       params: {
+        monitored_hosts: true,
         output: ['name'],
         sortfield: 'name'
+
       }
     }).success(function(data) {
       $rootScope.serversOnline = data.result;
@@ -261,6 +280,63 @@ function overviewController($rootScope, $scope, $http) {
       $('#errorsRow'+id).toggle();
     }
 
+    // var hostGroups = {},
+    //   activeTriggers = {},
+    //   overviewGroups ={};
+    //   $http.post(api_url, {
+    //     jsonrpc: '2.0',
+    //     id: $rootScope.auth_id,
+    //     auth: $rootScope.auth,
+    //     method: 'hostgroup.get',
+    //     params: {
+    //       output: ['groupid', 'name'],
+    //       sortfield: 'name',
+    //       real_hosts: true
+    //     }
+    //   }).success( function (data) {
+    //     hostGroups = data.result;
+    //     for (var i=0; i<hostGroups.length; i++) {
+    //       hostGroups[i].errors = 0;
+    //       hostGroups[i].errors_level = 0;
+    //       hostGroups[i].lastchange = 0;
+    //       hostGroups[i].lastchange_words = "";
+    //     }
+    //   });
+    //   $http.post(api_url, {
+    //     jsonrpc: '2.0',
+    //     id: $rootScope.auth_id,
+    //     auth: $rootScope.auth,
+    //     method: 'trigger.get',
+    //     params: {
+    //       selectHosts: 'refer',
+    //       selectGroups: 'refer',
+    //       filter: {
+    //         value: 1
+    //       },
+    //       skipDependent: true,
+    //       monitored: true,
+    //       only_true: true,
+    //       output: ['triggerid', 'priority', 'lastchange']
+    //     }
+    //   }).success ( function (data) {
+    //     activeTriggers = data.result;
+    //   });
+
+      //     for (var i=0; i<hostGroups.length; i++) {
+      //       for (var j=0; j<activeTriggers.length; i++) {
+      //         if (activeTriggers[j].groups[0].groupid == hostGroups[i].groupid) {
+      //           hostGroups[i].errors += 1;
+      //         }
+      //         if (activeTriggers[j].groups[0].lastchange > hostGroups[i].lastchange) {
+      //           hostGroups[i].lastchange = activeTriggers[j].groups[0].lastchange;
+      //           hostGroups[i].lastchange_words = timeConverter(activeTriggers[j].groups[0].lastchange);
+      //         }
+      //       }
+      //     }
+      //   $scope.serverGroups = hostGroups;
+
+
+//TODO rewrite
     //gets active hostgroups
     $http.post(api_url, {
       jsonrpc: "2.0",
@@ -313,7 +389,7 @@ function overviewController($rootScope, $scope, $http) {
         }
 
         for (var ii=0; ii<data.result.length; ii++) {
-          data.result[ii].lastchange_words = timeConverter(data.result[ii].lastchange);
+          data.result[ii].lastchange_words = dateConverter(data.result[ii].lastchange);
         }
         $scope.server_groups = data.result;
 
@@ -334,7 +410,7 @@ function serversController($rootScope, $scope, $http, $routeParams) {
       params: {
         //selectTriggers: ['only_true'],
         monitored_hosts: true,
-        output: ['name', 'available', 'hostid'] //todo
+        output: ['name', 'available', 'hostid', 'host'] //todo
       }
     }).success(function(data) {
       $scope.hostsData = data.result;
@@ -436,6 +512,8 @@ function serversDetailsController($rootScope, $scope, $http, $routeParams) {
             setZoom(from, nowTime);
           }
         }
+        //todo setzoom na 30 dnej ne odinakovo vigljadit master timeline srazu posle zagruzki stranici
+        // i posle nazhatija
         var setZoom = function(zoomStart, zoomEnd) {
           masterChart.xAxis[0].removePlotBand('mask-before');
           masterChart.xAxis[0].removePlotBand('mask-after');
@@ -594,7 +672,7 @@ function serversDetailsController($rootScope, $scope, $http, $routeParams) {
                 },
                 xAxis: {
                   minRange: 3600000*2,
-                  type: 'datetime',
+                  type: 'datetime'
                 },
                 yAxis: {
                     title: { text: null },
@@ -728,11 +806,11 @@ function serversDetailsController($rootScope, $scope, $http, $routeParams) {
                 },
                 xAxis: {
                   minRange: 3600000*2,
-                    type: 'datetime',
+                    type: 'datetime'
                 },
                 yAxis: {
                     title: { text: null },
-                    min: 0,
+                    min: 0
                 },
                 tooltip: {
                     formatter: function() {
@@ -774,7 +852,7 @@ function projectController($rootScope, $scope, $http, $routeParams, $location) {
         groupids: $routeParams.projectId,
         output: ['groupid', 'name'],
         sortfield: 'name',
-        selectHosts: ['hostid', 'available', 'host', 'status'],
+        selectHosts: ['hostid', 'available', 'host', 'status', 'name'],
         real_hosts: true,
         monitored_hosts: true
       }
@@ -788,7 +866,7 @@ function projectController($rootScope, $scope, $http, $routeParams, $location) {
 }
 
 
-function tvController($scope, $http, $rootScope) {
+function tvController($scope, $http, $rootScope, $location) {
   //get hostgroups
   //then for each hostgroup lead seperate thread with interval to refresh and get new data
 
@@ -811,17 +889,67 @@ function tvController($scope, $http, $rootScope) {
         name: 'project'
       }
     }
-  }).success(function (data) {
-    $scope.projects = data.result;
-    projects = data.result;
-    for (var i=0; i<projects.length; i++) {
-      selectedGroups[i] = true;
-    }
-    $scope.groupsShown = selectedGroups;
+  }).success(function (hostsRes) {
+      $scope.projects = hostsRes.result;
+      projects = hostsRes.result;
+      for (var i=0; i<projects.length; i++) {
+        selectedGroups[i] = true;
+      }
+      $scope.groupsShown = selectedGroups;
+      $scope.lastUpdated = timeConverter(new Date().getTime());
   });
 
-  //TODO postavitj na kazhduju grupu otdelnij http request
-  //TODO postavitj na notification otdelnij request
+//progress bar and requests for new active triggers each 15 seconds
+  (function foo() {
+
+    //so we don't have to continue refreshing active triggers after leaving TV dashboard
+    if ($location.path() != '/tv') {
+      return;
+    }
+
+    $http.post(api_url, {
+      jsonrpc: '2.0',
+      id: $rootScope.auth_id,
+      auth: $rootScope.auth,
+      method: 'trigger.get',
+      params: {
+        selectHosts: 'refer',
+        filter: {
+          value: 1
+        },
+        skipDependent: true,
+        monitored: true,
+        only_true: true,
+        output: ['description', 'lastchange', 'priority', 'triggerid']
+      }
+    }).success(function (data) {
+      setTimeout((function() {
+      var problemServers={};
+      for (var i = 0; i<data.result.length; i++) {
+        if (!problemServers[data.result[i].hosts[0].hostid] || problemServers[data.result[i].hosts[0].hostid] < data.result[i].priority) {
+          problemServers[data.result[i].hosts[0].hostid] = data.result[i].priority;
+        } 
+        
+        //TODO
+        //check if has lesser priority - if so, then remove it and add new with bigger
+        //$('#'+data.result[i].hosts[0].hostid).addClass('error'+data.result[i].priority);
+        //TODO notifications div
+      }
+      $('.server').removeClass('error0 error1 error2 error3 error4 error5');
+
+      for (var prop in problemServers) {
+        if( problemServers.hasOwnProperty(prop) ) {
+          $('#'+prop).addClass('error'+problemServers[prop]);
+          //console.log('added class error'+problemServers[prop]+' to #'+prop);
+        } 
+      }
+      $scope.lastUpdated = timeConverter(new Date().getTime());
+      }), 1500); //1500 delay to be sure hostgroups were properly rendered
+              //todo - rewrite, bad practice
+    });
+
+    setTimeout(foo, 15000);
+  })();
 
   //user picks what groups he wants to see
   $scope.selectGroups = function (id) {
@@ -830,10 +958,9 @@ function tvController($scope, $http, $rootScope) {
     } else {
       selectedGroups[id] = true;
     }
-    $('#groupSelector' + id).toggleClass('active');
+    $('#selectedIcon' + id).toggle();
     $scope.groupsShown = selectedGroups;
   };
-
 
 }
   

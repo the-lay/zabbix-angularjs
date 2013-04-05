@@ -1,30 +1,32 @@
-<div class="container-fluid" >
+<div class="container-fluid" style="padding-left, padding-right: 0;">
   <div class="row-fluid">
     <div class="span2">
-      <h3 style="margin-bottom:0">Notifications</h3><hr style="margin-top:0">
-      not working yet
+      <h3 style="margin-bottom:0">Groups</h3><hr style="margin-top:0">
+      <ul class="nav nav-pills nav-stacked" ng-cloak>
+        <li ng-repeat="group in projects" id="groupSelector{{$index}}">
+          <a ng-click="selectGroups($index)">{{group.name}} <i id="selectedIcon{{$index}}" class="icon-ok pull-right" style="display:show;"></i></a>
+        </li>
+      </ul>
+      <h3 style="margin-bottom:0">Notifications</h3>
+      <div class="span12" ng-show="lastUpdated">
+        Last updated: {{lastUpdated}}
+      </div><br/>
       <ul class="nav nav-tabs nav-stacked" ng-cloak>
         <li class="error4"><a>latest notification 1</a></li>
         <li class="error3"><a>latest notification 2</a></li>
         <li class="error0"><a>latest notification 3</a></li>
         <li class="error0"><a>latest notification 4</a></li>
       </ul>
-      <h3 style="margin-bottom:0">Groups</h3><hr style="margin-top:0">
-      <ul class="nav nav-pills nav-stacked" ng-cloak>
-        <li ng-repeat="group in projects" id="groupSelector{{$index}}" class="active">
-          <a ng-click="selectGroups($index)">{{group.name}} <i class="icon-bullhorn icon-inverted pull-right" ng-show="group.hasError"></i></a>
-        </li>
-      </ul>
     </div>
     <div class="span10">
       <div class="container-fluid">
         <div class="row-fluid" ng-repeat="group in projects" id="groupData{{$index}}" ng-show="groupsShown[$index]">
           <h4 style="margin-bottom:0">{{group.name}}</h4><hr style="margin-top:0">
-          <div ng-repeat="host in group.hosts" class="server{{host.available + host.status}}" ng-show="host.status == 0">
-            <a class="serverLink{{host.available + host.status}}" href="#/servers/{{host.hostid}}">{{host.name}}</a>
+          <div id="{{host.hostid}}" ng-repeat="host in group.hosts" class="server" ng-show="host.status == 0"> <!--status==0 means that this host is monitored-->
+            <a class="serverLink" href="#/servers/{{host.hostid}}">{{host.name}}</a>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>  
+</div> 
