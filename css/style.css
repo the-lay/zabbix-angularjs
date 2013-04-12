@@ -2,19 +2,19 @@
   background-color: #dff0d8; /*success*/
 }
 .error1 {
-  background-color: #d9edf7; /*info*/
+  background-color: #BBCCFF; /*info*/
 }
 .error2 {
-  background-color: #fcf8e3; /*warning*/
+  background-color: #FFF6A5; /*warning*/
 }
 .error3 {
-  background-color: #fcf8e3; /*average*/
+  background-color: #FFB689; /*average*/
 }
 .error4 {
-  background-color: #f2dede; /*high*/
+  background-color: #FF9999; /*high*/
 }
 .error5 { 
-  background-color: #f2dede; /*disaster*/
+  background-color: #FF3838; /*disaster*/
 }
 .error {
   background-color: #f2dede;
@@ -25,7 +25,7 @@
 .loading-indicator {
   position: absolute; 
   left: 0; 
-  top: 35px; 
+  top: 50px; 
   display: none; 
   background: gold; 
   padding: 0.3em; 
@@ -39,6 +39,8 @@
   display: inline-block;
   *display: inline;
   background-color: #f5f5f5;
+  /*zoom: 50%;*/
+  /*-moz-transform: scale(0.5);*/
   padding: 2px;
   margin: 2px;
 }
@@ -46,25 +48,32 @@ a.serverLink{
   color: #7A6A71;
 }
 .server.error1 {
-  background-color: lightblue; /*warning*/
-  zoom: 125%;
+  background-color: #BBCCFF; /*info*/
+  /*zoom: 100%;*/
 }
 .server.error2 {
-  background-color: gold; /*warning*/
-  zoom: 150%;
+  background-color: #FFF6A5; /*warning*/
+  /*zoom: 125%;*/
+ /* -moz-transform: scale(1.25);*/
 }
 .server.error3 {
-  background-color: red; /*warning*/
-  zoom: 175%;
+  background-color: #FFB689; /*average*/
+  /*zoom: 150%;*/
+  /*-moz-transform: scale(1.5);*/
 }
 .server.error4 {
-  background-color: red; /*warning*/
-  zoom: 200%;
+  background-color: #FF9999; /*high*/
+  /*zoom: 175%;*/
+  /*-moz-transform: scale(1.75);*/
 }
 .server.error5 {
-  background-color: red; /*warning*/
-  zoom: 250%;
+  background-color: #FF3838; /*disaster*/
+  /*zoom: 200%;*/
+  /*-moz-transform: scale(2);*/
 }
 [ng\:cloak], [ng-cloak], .ng-cloak {
   display: none !important;
+}
+a.underlined {
+  text-decoration:underline;
 }

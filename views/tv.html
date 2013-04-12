@@ -1,32 +1,29 @@
-<div class="container-fluid" style="padding-left, padding-right: 0;">
-  <div class="row-fluid">
+<div class="container-fluid" style="{{fullscreen}}">
+  <div class="row-fluid" style="{{fullscreen}}">
     <div class="span2">
       <h3 style="margin-bottom:0">Groups</h3><hr style="margin-top:0">
       <ul class="nav nav-pills nav-stacked" ng-cloak>
-        <li ng-repeat="group in projects" id="groupSelector{{$index}}">
-          <a ng-click="selectGroups($index)">{{group.name}} <i id="selectedIcon{{$index}}" class="icon-ok pull-right" style="display:show;"></i></a>
+        <li ng-repeat="group in projects" id="groupSelector{{$index}}" style="height:31px; margin-bottom:7px;">
+          <a ng-click="selectGroups($index)"><i id="selectedIcon{{$index}}" class="icon-ok icon-white" style="display:show;"></i>{{group.name}}</a>
         </li>
       </ul>
       <h3 style="margin-bottom:0">Notifications</h3>
-      <div class="span12" ng-show="lastUpdated">
-        Last updated: {{lastUpdated}}
-      </div><br/>
-      <ul class="nav nav-tabs nav-stacked" ng-cloak>
-        <li class="error4"><a>latest notification 1</a></li>
-        <li class="error3"><a>latest notification 2</a></li>
-        <li class="error0"><a>latest notification 3</a></li>
-        <li class="error0"><a>latest notification 4</a></li>
-      </ul>
-    </div>
+      <div ng-show="lastUpdated" style="margin-bottom:5px;">
+        Last updated: <strong>{{lastUpdated}}</strong><br/>
+      </div>
+      <p id="notification-{{notification.hostid}}"style="margin-top:0; padding-top:0" ng-repeat="notification in triggerNotifications | orderBy: notification.priority" class="error{{notification.priority}}" ng-show="true"><a>{{notification.description}}</a></p>
+      <!--NG SHOW TODO; show notification only from selecetd groups-->
+    </div>  
     <div class="span10">
       <div class="container-fluid">
         <div class="row-fluid" ng-repeat="group in projects" id="groupData{{$index}}" ng-show="groupsShown[$index]">
           <h4 style="margin-bottom:0">{{group.name}}</h4><hr style="margin-top:0">
           <div id="{{host.hostid}}" ng-repeat="host in group.hosts" class="server" ng-show="host.status == 0"> <!--status==0 means that this host is monitored-->
-            <a class="serverLink" href="#/servers/{{host.hostid}}">{{host.name}}</a>
+            <!--ng-show TODO; show servers with problems only-->
+            <a class="serverLink" href="http://zabbixcm02.internal.corp/zabbix/charts.php?hostid={{host.hostid}}&graphid=0">{{host.name}}</a>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div> 
+</div>

@@ -2,23 +2,35 @@
 <html ng-app="zabbix">
   <head>
     <title ng-bind="page_title" ng-cloak></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <base href="/zabbix/frontend/">
     <!--CSS-->
-    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
+    <!-- <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet"> -->
+<!--     <link href="css/bootstrap-responsive.min.css" rel="stylesheet"> -->
+    <!-- <link href="css/bootstrap-cosmo.min.css" rel="stylesheet"> --> <link href="//netdna.bootstrapcdn.com/bootswatch/2.3.1/cosmo/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
+    <!-- <link href="css/bootstrap-responsive.min.css" rel="stylesheet"> --> <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css" rel="stylesheet">
   </head>
   <body>
     <nav ng-cloak>
       <div id="head" class="navbar navbar-fixed-top">
         <div class="navbar-inner">
           <div class="container-fluid" ng-controller="menuController">
-            <a class="brand" href="#/">E-Zabbix</a>
+            <a class="btn btn-navbar collapsed" data-toggle="collapse" data-target=".nav-collapse">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </a>
+            <a class="brand" href="http://zabbixcm02.internal.corp/zabbix">Zabbix</a>
             
             <div ng-show="loggedIn" class="nav-collapse collapse">
               <ul class="nav">
-                <li ng-class="{active: activePath=='/'}"><a href="#/">Overview</a></li>
-                <li ng-class="{active: activePath=='/servers' || activePath=='/project'}"><a href="#/servers">Servers</a></li>
-                <li ng-class="{active: activePath=='/tv'}"><a href="#/tv">TV Dashboard</a></li>
+                <!-- ng-class="{active: activePath=='/'}"-->
+                <!--  ng-class="{active: activePath=='/servers' || activePath=='/project'}" -->
+                <!--  ng-class="{active: activePath=='/tv'}" -->
+                <li><a href="#/overview">Overview</a></li>
+                <li><a href="#/servers">Servers</a></li>
+                <li><a href="#/tv">Dashboard</a></li>
               </ul>
 
               <div ng-show="loggedIn" class="navbar-search input-append pull-right" style="margin-right:10px;">
@@ -40,14 +52,9 @@
         </div>
       </div>
     </nav>
-
-    <div class="container-fluid" style="margin-top:60px">
+    <div class="row hidden-phone hidden-tablet" style="margin-top:60px"></div>
+    <div class="container-fluid" style="{{fullscreen}}">
       <div id="loading" class="loading-indicator">Loading...</div>
-
-
- <!--      <div ng-show="alerts" ng-cloak ng-controller="alertController">
-        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">{{alert.msg}}</alert>
-      </div> -->
 
       <div ng-cloak ng-hide="loggedIn" class="login-container" ng-controller="loginController">
         <p class="lead" style="text-align: center">Please login</p>
@@ -73,7 +80,7 @@
         </form>
       </div>
 
-      <div ng-show="loggedIn" id="content" class="container-fluid" ng-view ng-cloak></div>
+      <div ng-show="loggedIn" id="content" class="container-fluid" ng-view ng-cloak style="{{fullscreen}}"></div>
 
       <hr>
       <footer class="footer">
@@ -86,7 +93,6 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
     <script src="js/controllers.js"></script>
-    <!--<script src="js/ui-bootstrap-tpls-0.1.0.min.js"></script>-->
     <script src="js/highcharts.js"></script>
     <script src="http://gregpike.net/demos/angular-local-storage/localStorageModule.js"></script>
   </body>

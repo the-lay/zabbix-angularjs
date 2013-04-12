@@ -4,95 +4,110 @@
 var api_url = 'http://zabbixcm02.internal.corp/zabbix/api_jsonrpc.php';
 
 //useful functions used
-function dateConverter(UNIX_timestamp){
- var a = new Date(UNIX_timestamp*1000); //JS uses nanoseconds
- var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-     var year = a.getFullYear();
-     var month = months[a.getMonth()];
-     var date = a.getDate();
-     var hour = a.getHours();
-     var min = a.getMinutes();
-     var sec = a.getSeconds();
-     var time = date+' '+month+' '+year+', '+hour+':'+min+':'+sec ;
-     return time;
- }
+function dateConverter(UNIX_timestamp) {
+  var a = new Date(UNIX_timestamp * 1000); //JS uses nanoseconds
+  var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var hrs = a.getHours();
+  var min = a.getMinutes();
+  var sec = a.getSeconds();
+
+  if (hrs === 0) {
+    hrs = "0" + hrs;
+  }
+  if (min < 10) {
+    min = "0" + min;
+  }
+  if (sec < 10) {
+    sec = "0" + sec;
+  }
+  return a.getDate() + ' ' + months[a.getMonth()] + ' ' + a.getFullYear()
+    + ', ' + hrs + ':' + min + ':' + sec;
+}
 
 function timeConverter() {
-  var currentTime = new Date()
-  var minutes = currentTime.getMinutes()
-  var seconds = currentTime.getSeconds()
+  var currentTime = new Date();
+  var hours = currentTime.getHours();
+  var minutes = currentTime.getMinutes();
+  var seconds = currentTime.getSeconds();
 
+  if (hours === 0) {
+    hours = "0" + hours;
+  }
   if (minutes < 10) {
-    minutes = "0" + minutes
+    minutes = "0" + minutes;
   }
   if (seconds < 10) {
-    seconds = "0" + seconds
+    seconds = "0" + seconds;
   }
-  return currentTime.getHours() + ":" + minutes + ":" + seconds;
+  return hours + ":" + minutes + ":" + seconds;
 }
 
 
-var app = angular.module('zabbix', ['LocalStorageModule', 'SharedServices'])
-  .config(function($routeProvider, $locationProvider) {
+var app = angular.module('zabbix', ['LocalStorageModule', 'SharedServices']).config(function ($routeProvider, $locationProvider) {
 
   //Routing
   $routeProvider.
-  //Home aka. Overview
-  when('/', {
-    controller: overviewController,
-    templateUrl: 'views/overview.html',
-    title_prefix: 'Home'
-  }).
+    //Home aka. Overview
+    when('/', {
+      controller: overviewController,
+      templateUrl: 'views/overview.html',
+      title_prefix: 'Home'
+    }).
+    when('/overview', {
+      controller: overviewController,
+      templateUrl: 'views/overview.html',
+      title_prefix: 'Home'
+    }).
 
-  //List of all servers
-  when('/servers', {
-    controller: serversController,
-    templateUrl: 'views/servers.html',
-    title_prefix: 'Servers'
-  }).
+    //List of all servers
+    when('/servers', {
+      controller: serversController,
+      templateUrl: 'views/servers.html',
+      title_prefix: 'Servers'
+    }).
 
-  //Data about one server
-  when('/servers/:serverId', {
-    controller: serversDetailsController,
-    templateUrl: 'views/serverDetails.html',
-    title_prefix: 'Server'
-  }).
+    //Data about one server
+    when('/servers/:serverId', {
+      controller: serversDetailsController,
+      templateUrl: 'views/serverDetails.html',
+      title_prefix: 'Server'
+    }).
 
-  //Data about one project
-  when('/project/:projectId', {
-    controller: projectController,
-    templateUrl: 'views/project.html',
-    title_prefix: 'Project'
-  }).
+    //Data about one project
+    when('/project/:projectId', {
+      controller: projectController,
+      templateUrl: 'views/project.html',
+      title_prefix: 'Project'
+    }).
 
-  //TV Dashboard
-  when('/tv', {
-    controller: tvController,
-    templateUrl: 'views/tv.html',
-    title_prefix: 'TV Dashboard'
-  }).
+    //TV Dashboard
+    when('/tv', {
+      controller: tvController,
+      templateUrl: 'views/tv.html',
+      title_prefix: 'Dashboard'
+    }).
 
-  //Search
-  when('/search/:searchString', {
-    controller: searchController,
-    templateUrl: 'views/search.html',
-    title_prefix: 'Search'
-  }).
+    //Search
+    when('/search/:searchString', {
+      controller: searchController,
+      templateUrl: 'views/search.html',
+      title_prefix: 'Search'
+    }).
 
-  //Not logged in
-  when('/login').
+    //Not logged in
+    when('/login').
 
-  //Logout
-  when('/logout', {
-    controller: logoutController,
-    title_prefix: 'Logout',
-    templateUrl: 'views/logout.html'
-  }).
+    //Logout
+    when('/logout', {
+      controller: logoutController,
+      title_prefix: 'Logout',
+      templateUrl: 'views/logout.html'
+    }).
 
-  //Everything else is 404
-  otherwise({
-    redirectTo: '/'
-  });
+    //Everything else is 404
+    otherwise({
+      redirectTo: '/'
+    });
 
   //Enabling deep linking
   $locationProvider.html5Mode(false);
@@ -121,7 +136,7 @@ app.run(function ($rootScope, $route, $http, $location, localStorageService) {
         sortfield: 'name'
 
       }
-    }).success(function(data) {
+    }).success(function (data) {
       $rootScope.serversOnline = data.result;
     });
   }
@@ -129,13 +144,12 @@ app.run(function ($rootScope, $route, $http, $location, localStorageService) {
   $rootScope.page_title = 'Home - Zabbix';
 
   //title and active menu changing
-  $rootScope.activePath = null;
-  $rootScope.$on('$routeChangeSuccess', function() {
+  $rootScope.$on('$routeChangeSuccess', function () {
 
     //no guests allowed
     if (!$rootScope.loggedIn) {
       //TODO return to REFERER $rootScope.returnUrl = $location.path();
-      $location.path('/login');
+      $location.path('/login/'+$location.path());
     }
 
     if ($route.current && $route.current.$route && $route.current.$route.title_prefix) {
@@ -143,15 +157,18 @@ app.run(function ($rootScope, $route, $http, $location, localStorageService) {
     } else {
       $rootScope.page_title = "Zabbix";
     }
-    $rootScope.activePath = $location.path();
+
+    if ($location.path() != '/tv') {
+      $rootScope.fullscreen = '';
+      return;
+    }
   });
 });
 
 //HTTP interceptor, when there is AJAX request in progress, it shows "Loading"
-angular.module('SharedServices', [])
-  .config(function($httpProvider) {
+angular.module('SharedServices', []).config(function ($httpProvider) {
   $httpProvider.responseInterceptors.push('myHttpInterceptor');
-  var spinnerFunction = function(data, headersGetter) {
+  var spinnerFunction = function (data, headersGetter) {
     $('#loading').show();
     return data;
   };
@@ -203,7 +220,6 @@ function loginController($scope, $http, $rootScope, $location, localStorageServi
         //successful login
         localStorageService.add('auth', data.result); //saving auth key for session restoration
 
-
         $scope.error = null;
         $rootScope.auth = data.result;
         $rootScope.loggedIn = true;
@@ -220,7 +236,7 @@ function loginController($scope, $http, $rootScope, $location, localStorageServi
           }
         }).success(function(data) {
           $rootScope.serversOnline = data.result;
-          //when is done redirects you to main page
+          //when done redirects you to main page
           $location.path('/');
         });
 
@@ -270,133 +286,161 @@ function menuController($scope, $location, $rootScope) {
 
 
 
-function overviewController($rootScope, $scope, $http) {
+function overviewController($rootScope, $scope, $http, $q) {
 
   //should not be accessible for guests anyway
   //extra security just in case
   if ($rootScope.loggedIn) {
 
-    $scope.showErrors = function (id) {
-      $('#errorsRow'+id).toggle();
-    }
+    //severity of triggers
+    $scope.triggerSeverity = ['Fine', 'Information', 'Warning', 'Average', 'High', 'Disaster'];
 
-    // var hostGroups = {},
-    //   activeTriggers = {},
-    //   overviewGroups ={};
-    //   $http.post(api_url, {
-    //     jsonrpc: '2.0',
-    //     id: $rootScope.auth_id,
-    //     auth: $rootScope.auth,
-    //     method: 'hostgroup.get',
-    //     params: {
-    //       output: ['groupid', 'name'],
-    //       sortfield: 'name',
-    //       real_hosts: true
-    //     }
-    //   }).success( function (data) {
-    //     hostGroups = data.result;
-    //     for (var i=0; i<hostGroups.length; i++) {
-    //       hostGroups[i].errors = 0;
-    //       hostGroups[i].errors_level = 0;
-    //       hostGroups[i].lastchange = 0;
-    //       hostGroups[i].lastchange_words = "";
-    //     }
-    //   });
-    //   $http.post(api_url, {
-    //     jsonrpc: '2.0',
-    //     id: $rootScope.auth_id,
-    //     auth: $rootScope.auth,
-    //     method: 'trigger.get',
-    //     params: {
-    //       selectHosts: 'refer',
-    //       selectGroups: 'refer',
-    //       filter: {
-    //         value: 1
-    //       },
-    //       skipDependent: true,
-    //       monitored: true,
-    //       only_true: true,
-    //       output: ['triggerid', 'priority', 'lastchange']
-    //     }
-    //   }).success ( function (data) {
-    //     activeTriggers = data.result;
-    //   });
-
-      //     for (var i=0; i<hostGroups.length; i++) {
-      //       for (var j=0; j<activeTriggers.length; i++) {
-      //         if (activeTriggers[j].groups[0].groupid == hostGroups[i].groupid) {
-      //           hostGroups[i].errors += 1;
-      //         }
-      //         if (activeTriggers[j].groups[0].lastchange > hostGroups[i].lastchange) {
-      //           hostGroups[i].lastchange = activeTriggers[j].groups[0].lastchange;
-      //           hostGroups[i].lastchange_words = timeConverter(activeTriggers[j].groups[0].lastchange);
-      //         }
-      //       }
-      //     }
-      //   $scope.serverGroups = hostGroups;
-
-
-//TODO rewrite
-    //gets active hostgroups
-    $http.post(api_url, {
-      jsonrpc: "2.0",
-      id: $rootScope.auth_id,
-      auth: $rootScope.auth,
-      method: 'hostgroup.get',
-      params: {
-        output: ['groupid', 'name'],
-        sortfield: 'name',
-        real_hosts: true
-      }
-    }).success(function(data, $timeout) {
-      //gets active triggers for active hostgroups
-      $http.post(api_url, {
+    //groups
+    var groupsRequest = $http.post(api_url, {
+        jsonrpc: "2.0",
+        id: $rootScope.auth_id,
+        auth: $rootScope.auth,
+        method: 'hostgroup.get',
+        params: {
+          output: ['groupid', 'name'],
+          sortfield: 'name',
+          real_hosts: true
+        }
+      }); //will work with request through $q
+    var triggersRequest = $http.post(api_url, {
         jsonrpc: "2.0",
         id: $rootScope.auth_id,
         auth: $rootScope.auth,
         method: 'trigger.get',
         params: {
           selectGroups: 'refer',
+          expandDescription: true,
+          expandData: true,
           only_true: true,
+          sortfield: 'lastchange',
           filter: {
             "value": 1
           },
           skipDependent: true,
           monitored: true,
-          output: ['triggerid', 'priority', 'lastchange']
+          output: ['triggerid', 'priority', 'lastchange', 'description']
         }
-      }).success(function(trigger_data) {
-        //TODO
-        for (var a = 0; a < data.result.length; a++) {
-          data.result[a].errors = 0;
-          data.result[a].errors_level = 0;
-          data.result[a].lastchange = 0;
-          data.result[a].lastchange_words = "";
+      }).success(function (data) {
+        for(var i=0; i<data.result.length; i++) {
+          data.result[i].lastchange_words = dateConverter(data.result[i].lastchange);
         }
+      });
 
-        //TODO PRIORITY
-        //terribly awful solution
-        for (var i = 0; i < trigger_data.result.length; i++) {
-          for (var j = 0; j < trigger_data.result[i].groups.length; j++) {
-            for (var k = 0; k < data.result.length; k++) {
-              if (data.result[k].groupid == trigger_data.result[i].groups[j].groupid) {
-                data.result[k].errors += 1;
-                if (trigger_data.result[i].priority > data.result[k].errors_level) { data.result[k].errors_level = trigger_data.result[i].priority }
-                if (trigger_data.result[i].lastchange > data.result[k].lastchange) { data.result[k].lastchange = trigger_data.result[i].lastchange }
+      // setInterval((function() {
+      //   var triggersRequest = $http.post(api_url, {
+      //       jsonrpc: "2.0",
+      //       id: $rootScope.auth_id,
+      //       auth: $rootScope.auth,
+      //       method: 'trigger.get',
+      //       params: {
+      //         selectGroups: 'refer',
+      //         expandDescription: true,
+      //         expandData: true,
+      //         only_true: true,
+      //         sortfield: 'lastchange',
+      //         filter: {
+      //           "value": 1
+      //         },
+      //         skipDependent: true,
+      //         monitored: true,
+      //         output: ['triggerid', 'priority', 'lastchange', 'description']
+      //       }
+      //     }).success(function (data) {
+      //       for(var i=0; i<data.result.length; i++) {
+      //         data.result[i].lastchange_words = dateConverter(data.result[i].lastchange);
+      //       }
+      //     }); //will work with request through $q   
+      // }), 15000);
+    // (function fooo() {
+    //   // triggersRequest = $http.post(api_url, {
+    //   //     jsonrpc: "2.0",
+    //   //     id: $rootScope.auth_id,
+    //   //     auth: $rootScope.auth,
+    //   //     method: 'trigger.get',
+    //   //     params: {
+    //   //       selectGroups: 'refer',
+    //   //       expandDescription: true,
+    //   //       expandData: true,
+    //   //       only_true: true,
+    //   //       sortfield: 'lastchange',
+    //   //       filter: {
+    //   //         "value": 1
+    //   //       },
+    //   //       skipDependent: true,
+    //   //       monitored: true,
+    //   //       output: ['triggerid', 'priority', 'lastchange', 'description']
+    //   //     }
+    //   //   }).success(function (data) {
+    //   //     for(var i=0; i<data.result.length; i++) {
+    //   //       data.result[i].lastchange_words = dateConverter(data.result[i].lastchange);
+    //   //     }
+    //   //   }); //will work with request through $q
+        
+    //     alert('adgfadf');
+    //     setInterval(fooo, 15000);
+    // });
+
+
+    //$q is internal kriskowal's Q library implementation
+    //it provides API to work with promises
+    //code below is working as:
+    //if groupsRequest and triggersRequest is done, then execute function
+    $q.all([groupsRequest, triggersRequest]).then(function (data) {
+      //making new vars for readability
+      var groupsData = data[0].data.result;
+      var triggerData = data[1].data.result;
+      var triggerDetails = {};
+
+      function initializeData(groupsData) { //adding needed fields to groupsData object
+        var deferred = $q.defer();
+        for (var i=0; i<groupsData.length; i++) {
+          groupsData[i].lastchange = 0;
+          groupsData[i].lastchange_words = "";
+          groupsData[i].errors = 0;
+          groupsData[i].errors_level = 0;
+          triggerDetails[groupsData[i].groupid] = [];
+        }
+        deferred.resolve(); //promise used to ensure that data first will be initialized
+        return deferred.promise;
+      }
+
+      var promise = initializeData(groupsData);
+      promise.then(function() {
+        for (var i=0; i<groupsData.length; i++) {
+          for (var j=0; j<triggerData.length; j++) {
+
+            if (triggerData[j].groups[0].groupid === groupsData[i].groupid) {
+            //if this trigger is related to this hostgroup
+              groupsData[i].errors += 1; //increase errors count
+              triggerDetails[groupsData[i].groupid].push(triggerData[j]);
+              //triggerDetails is an object for storing related triggers
+
+              if (triggerData[j].lastchange > groupsData[i].lastchange) {
+                //time of the last issue
+                groupsData[i].lastchange = triggerData[j].lastchange;
+                groupsData[i].lastchange_words = dateConverter(triggerData[j].lastchange);
+                //we also convert timestamp to readable format
+              }
+              if (triggerData[j].priority > groupsData[i].errors_level) {
+                //storing the level of the highest error in this hostgroup
+                groupsData[i].errors_level = triggerData[j].priority;
               }
             }
           }
         }
-
-        for (var ii=0; ii<data.result.length; ii++) {
-          data.result[ii].lastchange_words = dateConverter(data.result[ii].lastchange);
-        }
-        $scope.server_groups = data.result;
-
+        //return back to $scope
+        $scope.serverGroups = groupsData;
+        $scope.triggerDetails = triggerDetails;
       });
     });
   }
 }
+
 
 function serversController($rootScope, $scope, $http, $routeParams) {
 
@@ -866,13 +910,17 @@ function projectController($rootScope, $scope, $http, $routeParams, $location) {
 }
 
 
-function tvController($scope, $http, $rootScope, $location) {
+function tvController($scope, $http, $rootScope, $location, localStorageService) {
   //get hostgroups
   //then for each hostgroup lead seperate thread with interval to refresh and get new data
 
   //getting hostgroup names
   var projects;
-  var selectedGroups={};
+  var selectedGroups={},
+    notificationGroups={},
+    availableHosts={};
+
+  $rootScope.fullscreen = 'padding-left:2px; padding-right:0;';
 
   $http.post(api_url, {
     jsonrpc: '2.0',
@@ -884,18 +932,24 @@ function tvController($scope, $http, $rootScope, $location) {
       monitored_hosts: true,
       output: ['groupid', 'name'],
       selectHosts: ['hostid', 'available', 'name', 'host', 'status'],
-      sortfield: 'name',
-      search: {
-        name: 'project'
-      }
+      sortfield: 'name'
+      // search: {
+      //   name: 'project'
+      // }
     }
   }).success(function (hostsRes) {
       $scope.projects = hostsRes.result;
       projects = hostsRes.result;
       for (var i=0; i<projects.length; i++) {
-        selectedGroups[i] = true;
+        availableHosts[i] = projects[i].hosts;
+        if (!localStorageService.get('dashboardSelection')) {
+          //if no selection is saved, we need to remake it.
+          selectedGroups[i] = true;
+          localStorageService.add('dashboardSelection', selectedGroups);
+        }
+        notificationGroups[projects[i].groupid] = true;
       }
-      $scope.groupsShown = selectedGroups;
+      $scope.groupsShown = localStorageService.get('dashboardSelection');
       $scope.lastUpdated = timeConverter(new Date().getTime());
   });
 
@@ -904,6 +958,7 @@ function tvController($scope, $http, $rootScope, $location) {
 
     //so we don't have to continue refreshing active triggers after leaving TV dashboard
     if ($location.path() != '/tv') {
+      $rootScope.fullscreen = '';
       return;
     }
 
@@ -913,6 +968,10 @@ function tvController($scope, $http, $rootScope, $location) {
       auth: $rootScope.auth,
       method: 'trigger.get',
       params: {
+        expandDescription: true,
+        expandData: true,
+        sortfield: 'lastchange',
+        selectGroups: 'refer',
         selectHosts: 'refer',
         filter: {
           value: 1
@@ -923,32 +982,58 @@ function tvController($scope, $http, $rootScope, $location) {
         output: ['description', 'lastchange', 'priority', 'triggerid']
       }
     }).success(function (data) {
-      setTimeout((function() {
-      var problemServers={};
-      for (var i = 0; i<data.result.length; i++) {
-        if (!problemServers[data.result[i].hosts[0].hostid] || problemServers[data.result[i].hosts[0].hostid] < data.result[i].priority) {
-          problemServers[data.result[i].hosts[0].hostid] = data.result[i].priority;
-        } 
-        
-        //TODO
-        //check if has lesser priority - if so, then remove it and add new with bigger
-        //$('#'+data.result[i].hosts[0].hostid).addClass('error'+data.result[i].priority);
-        //TODO notifications div
-      }
-      $('.server').removeClass('error0 error1 error2 error3 error4 error5');
 
-      for (var prop in problemServers) {
-        if( problemServers.hasOwnProperty(prop) ) {
-          $('#'+prop).addClass('error'+problemServers[prop]);
-          //console.log('added class error'+problemServers[prop]+' to #'+prop);
-        } 
-      }
-      $scope.lastUpdated = timeConverter(new Date().getTime());
+      //TODO starting from here needs massive refactoring
+      //MASSIVE.
+
+      $scope.triggerNotifications = data.result;
+      var problemServers={};
+      setTimeout((function() {
+        for (var i = 0; i<data.result.length; i++) {
+          if (!problemServers[data.result[i].hosts[0].hostid] || problemServers[data.result[i].hosts[0].hostid] < data.result[i].priority) {
+            problemServers[data.result[i].hosts[0].hostid] = {priority: data.result[i].priority, description: data.result[i].description};
+          }
+
+          //selectedGroups notifications
+          
+          //TODO
+          //check if has lesser priority - if so, then remove it and add new with bigger
+          //$('#'+data.result[i].hosts[0].hostid).addClass('error'+data.result[i].priority);
+          //TODO notifications div
+        }
+        $('.server').removeClass('error0 error1 error2 error3 error4 error5');
+        $scope.problemServers = availableHosts;
+        $scope.$apply();
+        $('p[id|="notification"]').hover(
+          function () {
+            $('#'+$(this).attr('id').substring(13)).
+            css('-webkit-transform', 'scale(2)').css('-moz-transform', 'scale(2)')
+            .css('-o-transform', 'scale(2)');
+          },
+          function () {
+            $('#'+$(this).attr('id').substring(13))
+            .css('-webkit-transform', 'scale(1)').css('-moz-transform', 'scale(1)')
+            .css('-o-transform', 'scale(1)');
+          }
+        );
+        for (var prop in problemServers) {
+          if(problemServers.hasOwnProperty(prop)) {
+            $('#'+prop).addClass('error'+problemServers[prop].priority);
+            $('#'+prop).attr('data-title', problemServers[prop].description);
+            $('#'+prop).tooltip();
+            //remove tooltips that are old (for example if trigger is not )
+            //$('#'+prop).tooltip({title: problemServers[prop].description});
+            // console.log($('#'+prop).tooltip().contents());
+
+            //console.log('added class error'+problemServers[prop]+' to #'+prop);
+          } 
+        }
+        $scope.lastUpdated = timeConverter(new Date().getTime());
       }), 1500); //1500 delay to be sure hostgroups were properly rendered
               //todo - rewrite, bad practice
     });
 
-    setTimeout(foo, 15000);
+    setTimeout(foo, 30000); //30 seconds
   })();
 
   //user picks what groups he wants to see
@@ -957,9 +1042,11 @@ function tvController($scope, $http, $rootScope, $location) {
       delete selectedGroups[id];
     } else {
       selectedGroups[id] = true;
+      //selectedGroups.groups.push(id);
     }
     $('#selectedIcon' + id).toggle();
     $scope.groupsShown = selectedGroups;
+    return false;
   };
 
 }
@@ -968,24 +1055,24 @@ function searchController($rootScope, $scope, $http, $routeParams, $location) {
   $scope.searchPhrase = $routeParams.searchString;
 
   //if users enters url without search string
+  //redirect him to the first page
   if (!$routeParams.searchString) {
     $location.path('/');
   }
 
-  //bluring away from serverSearch text input
-  $("#serverSearch").blur();
+  $("#serverSearch").blur(); //usability
 
   if ($rootScope.loggedIn) {
 
     //if users enters correct name of server, redirects to the page of server
-    if ($rootScope.serversOnline) {
-      var serverLength = $rootScope.serversOnline.length;
-      for (var i=0; i<serverLength; i++) {
-        if ($rootScope.serversOnline[i].name == $routeParams.searchString) {
-          $location.path('/servers/' + $rootScope.serversOnline[i].hostid);
-        }
+    // if ($rootScope.serversOnline) {
+    var serverLength = $rootScope.serversOnline.length;
+    for (var i=0; i<serverLength; i++) {
+      if ($rootScope.serversOnline[i].name == $routeParams.searchString) {
+        $location.path('/servers/' + $rootScope.serversOnline[i].hostid);
       }
-   }
+    }
+    // }
 
     //getting hosts
     $http.post(api_url, {
@@ -1024,18 +1111,3 @@ function searchController($rootScope, $scope, $http, $routeParams, $location) {
     });
   }
 }
-
-// Deprecated for now //
-//
-// function alertController($scope) {
-//   // $scope.alerts = [
-//   //   { type: 'error', msg: 'Oh snap! Change a few things up and try submitting again.' },
-//   //   { type: 'success', msg: 'Well done! You successfully read this important alert message.' }
-//   // ];
-//   // $scope.closeAlert = function(index) {
-//   //   $scope.alerts.splice(index, 1);
-//   // };
-//   // $scope.addAlert = function() {
-//   //   $scope.alerts.push({msg: "Another alert!", type: 'warning'});
-//   // };
-// };

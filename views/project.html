@@ -13,18 +13,14 @@
       <tr>
         <th>Host name</th>
         <th>Available</th>
-        <th>something</th>
-        <th>something</th>
       </tr>
     </thead>
     <tbody>
         <tr ng-repeat="host in hostgroupData.hosts | filter:filterString">
-          <td><a href="#/servers/{{host.hostid}}">{{host.name}}</a></td>
+          <td><a href="http://zabbixcm02.internal.corp/zabbix/charts.php?hostid={{host.hostid}}&graphid=0">{{host.name}}</a></td>
           <td ng-show="host.available==0" class="error">Down</td>
           <td ng-show="host.available==2" class="error">Error</td>
           <td ng-show="host.available==1" class="success">Up</td>
-          <td>?????</td>
-          <td>?????</td>
         </tr>
     </tbody>
   </table>
