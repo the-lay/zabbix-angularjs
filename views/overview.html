@@ -2,12 +2,12 @@
   <table class="table table-bordered">
     <thead>
       <tr>
-        <th>Project name</th>
+        <th>Group name</th>
         <th>Servers status</th>
         <th>Latest issue</th>
       </tr>
     </thead>
-    <tbody ng-repeat="group in serverGroups">
+    <tbody ng-repeat="group in serverGroups | orderBy:'-errors_level'">
         <tr>
           <td><a href="#/project/{{group.groupid}}">{{group.name}}</a></td>
           <td colspan="{{((group.lastchange) && ('1') || ('2'))}}" class="{{'error' + group.errors_level}}"><a class="underlined" onClick="$('#errorsRow'+{{$index}}).toggle();">{{((group.errors) && (group.errors + ' errors!') || (''))}}</a></td>
@@ -19,7 +19,7 @@
               <thead>
                 <tr>
                   <th>Severity</th>
-                  <th>Server</th>
+                  <th>Server</th> 
                   <th>Description</th>
                   <th>Time</th>
                 </tr>

@@ -18,9 +18,9 @@
     <tbody>
         <tr ng-repeat="host in hostgroupData.hosts | filter:filterString">
           <td><a href="http://zabbixcm02.internal.corp/zabbix/charts.php?hostid={{host.hostid}}&graphid=0">{{host.name}}</a></td>
-          <td ng-show="host.available==0" class="error">Down</td>
-          <td ng-show="host.available==2" class="error">Error</td>
-          <td ng-show="host.available==1" class="success">Up</td>
+          <td ng-show="host.available==0" class="error3">Down</td>
+          <td ng-show="host.available==2" class="error3">Error</td>
+          <td ng-show="host.available==1" class="error0">Up</td>
         </tr>
     </tbody>
   </table>

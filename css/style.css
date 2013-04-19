@@ -1,26 +1,27 @@
-.error0 {
+.server {
+  display: inline-block;
+  *display: inline;
+  background-color: #f5f5f5;
+  padding: 2px;
+  margin: 2px;
+}
+.error0{
   background-color: #dff0d8; /*success*/
 }
-.error1 {
+.error1{
   background-color: #BBCCFF; /*info*/
 }
 .error2 {
   background-color: #FFF6A5; /*warning*/
 }
-.error3 {
+.error3{
   background-color: #FFB689; /*average*/
 }
-.error4 {
+.error4{
   background-color: #FF9999; /*high*/
 }
-.error5 { 
+.error5{ 
   background-color: #FF3838; /*disaster*/
-}
-.error {
-  background-color: #f2dede;
-}
-.success {
-  background-color: #dff0d8;
 }
 .loading-indicator {
   position: absolute; 
@@ -35,45 +36,20 @@
   margin: 0 auto;
   width: 500px;
 }
-.server {
-  display: inline-block;
-  *display: inline;
-  background-color: #f5f5f5;
-  /*zoom: 50%;*/
-  /*-moz-transform: scale(0.5);*/
-  padding: 2px;
-  margin: 2px;
-}
 a.serverLink{
   color: #7A6A71;
 }
-.server.error1 {
-  background-color: #BBCCFF; /*info*/
-  /*zoom: 100%;*/
-}
-.server.error2 {
-  background-color: #FFF6A5; /*warning*/
-  /*zoom: 125%;*/
- /* -moz-transform: scale(1.25);*/
-}
-.server.error3 {
-  background-color: #FFB689; /*average*/
-  /*zoom: 150%;*/
-  /*-moz-transform: scale(1.5);*/
-}
-.server.error4 {
-  background-color: #FF9999; /*high*/
-  /*zoom: 175%;*/
-  /*-moz-transform: scale(1.75);*/
-}
-.server.error5 {
-  background-color: #FF3838; /*disaster*/
-  /*zoom: 200%;*/
-  /*-moz-transform: scale(2);*/
-}
-[ng\:cloak], [ng-cloak], .ng-cloak {
+[ng\:cloak], [ng-cloak], .ng-cloak { /*IE8 dammit*/
   display: none !important;
 }
 a.underlined {
   text-decoration:underline;
+}
+h4.groupNames {
+  margin: 5px 0 2px 0;
+}
+.zoomUp {
+  -webkit-transform: scale(2);
+  -moz-transform: scale(2);
+  -o-transform: scale(2);
 }

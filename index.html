@@ -8,8 +8,9 @@
     <!-- <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet"> -->
 <!--     <link href="css/bootstrap-responsive.min.css" rel="stylesheet"> -->
     <!-- <link href="css/bootstrap-cosmo.min.css" rel="stylesheet"> --> <link href="//netdna.bootstrapcdn.com/bootswatch/2.3.1/cosmo/bootstrap.min.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
+    
     <!-- <link href="css/bootstrap-responsive.min.css" rel="stylesheet"> --> <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
   </head>
   <body>
     <nav ng-cloak>
@@ -25,12 +26,9 @@
             
             <div ng-show="loggedIn" class="nav-collapse collapse">
               <ul class="nav">
-                <!-- ng-class="{active: activePath=='/'}"-->
-                <!--  ng-class="{active: activePath=='/servers' || activePath=='/project'}" -->
-                <!--  ng-class="{active: activePath=='/tv'}" -->
                 <li><a href="#/overview">Overview</a></li>
                 <li><a href="#/servers">Servers</a></li>
-                <li><a href="#/tv">Dashboard</a></li>
+                <li><a href="#/dashboard">Dashboard</a></li>
               </ul>
 
               <div ng-show="loggedIn" class="navbar-search input-append pull-right" style="margin-right:10px;">
@@ -89,11 +87,11 @@
 <!--         <a href="http://www.angularjs.org/">Angular JS</a> | <a href="http://www.zabbix.com/">Zabbix Monitoring</a> | <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap</a> -->
       </footer>
     </div>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.js"></script>
     <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
     <script src="js/controllers.js"></script>
     <script src="js/highcharts.js"></script>
-    <script src="http://gregpike.net/demos/angular-local-storage/localStorageModule.js"></script>
+    <script src="js/localStorageModule.js"></script>
   </body>
 </html>

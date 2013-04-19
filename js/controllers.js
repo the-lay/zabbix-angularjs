@@ -1,10 +1,28 @@
-//massive TODO - rewrite all loops and check if I use .length
+//massive TODO:
+//rewrite for loops to i-- loop
 
-//Zabbix API URL
+//TODO: documentation for every controller with this template:
+  //Controller used for XXX
+  //$http for requests;
+  //$rootScope for global vars;
+  //$scope for manipulation
+  //$location for checking if user left dashboard
+  //localStorageService for saving selected groups
+
+
+//zabbix API URL
 var api_url = 'http://zabbixcm02.internal.corp/zabbix/api_jsonrpc.php';
 
-//useful functions used
+//dashboard update intervals
+var triggerUpdateInterval = 30000, //30 seconds
+  hostgroupUpdateInterval = 600000; //10 minutes
+
+//common functions used throughwide file
+
 function dateConverter(UNIX_timestamp) {
+  // gets unix timestamp
+  // returns string 'd M Y, H:i:s'
+
   var a = new Date(UNIX_timestamp * 1000); //JS uses nanoseconds
   var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   var hrs = a.getHours();
@@ -24,6 +42,7 @@ function dateConverter(UNIX_timestamp) {
     + ', ' + hrs + ':' + min + ':' + sec;
 }
 
+
 function timeConverter() {
   var currentTime = new Date();
   var hours = currentTime.getHours();
@@ -42,77 +61,93 @@ function timeConverter() {
   return hours + ":" + minutes + ":" + seconds;
 }
 
+//angularJS Configuration
+var app = angular.module('zabbix', ['LocalStorageModule', 'SharedServices'])
+  .config(function ($routeProvider, $locationProvider) {
 
-var app = angular.module('zabbix', ['LocalStorageModule', 'SharedServices']).config(function ($routeProvider, $locationProvider) {
+    //Routing
+    $routeProvider.
+      //Home aka. Overview
+      when('/', {
+        controller: overviewController,
+        templateUrl: 'views/overview.html',
+        title_prefix: 'Home'
+      }).
+      when('/overview', {
+        controller: overviewController,
+        templateUrl: 'views/overview.html',
+        title_prefix: 'Home'
+      }).
 
-  //Routing
-  $routeProvider.
-    //Home aka. Overview
-    when('/', {
-      controller: overviewController,
-      templateUrl: 'views/overview.html',
-      title_prefix: 'Home'
-    }).
-    when('/overview', {
-      controller: overviewController,
-      templateUrl: 'views/overview.html',
-      title_prefix: 'Home'
-    }).
+      //List of all servers
+      when('/servers', {
+        controller: serversController,
+        templateUrl: 'views/servers.html',
+        title_prefix: 'Servers'
+      }).
 
-    //List of all servers
-    when('/servers', {
-      controller: serversController,
-      templateUrl: 'views/servers.html',
-      title_prefix: 'Servers'
-    }).
+      //Data about one server
+      when('/servers/:serverId', {
+        controller: serversDetailsController,
+        templateUrl: 'views/serverDetails.html',
+        title_prefix: 'Server'
+      }).
 
-    //Data about one server
-    when('/servers/:serverId', {
-      controller: serversDetailsController,
-      templateUrl: 'views/serverDetails.html',
-      title_prefix: 'Server'
-    }).
+      //Data about one project
+      when('/project/:projectId', {
+        controller: projectController,
+        templateUrl: 'views/project.html',
+        title_prefix: 'Project'
+      }).
 
-    //Data about one project
-    when('/project/:projectId', {
-      controller: projectController,
-      templateUrl: 'views/project.html',
-      title_prefix: 'Project'
-    }).
+      //Dashboard
+      when('/dashboard', {
+        controller: dashboardController,
+        templateUrl: 'views/dashboard.html',
+        title_prefix: 'Dashboard'
+      }).
 
-    //TV Dashboard
-    when('/tv', {
-      controller: tvController,
-      templateUrl: 'views/tv.html',
-      title_prefix: 'Dashboard'
-    }).
+      //Search
+      when('/search/:searchString', {
+        controller: searchController,
+        templateUrl: 'views/search.html',
+        title_prefix: 'Search'
+      }).
 
-    //Search
-    when('/search/:searchString', {
-      controller: searchController,
-      templateUrl: 'views/search.html',
-      title_prefix: 'Search'
-    }).
+      //Not logged in
+      when('/login').
 
-    //Not logged in
-    when('/login').
+      //Logout
+      when('/logout', {
+        controller: logoutController,
+        title_prefix: 'Logout',
+        templateUrl: 'views/logout.html'
+      }).
 
-    //Logout
-    when('/logout', {
-      controller: logoutController,
-      title_prefix: 'Logout',
-      templateUrl: 'views/logout.html'
-    }).
+      //Everything else is 404
+      otherwise({
+        redirectTo: '/'
+      });
 
-    //Everything else is 404
-    otherwise({
-      redirectTo: '/'
-    });
+    //Enabling deep linking
+    $locationProvider.html5Mode(false);
 
-  //Enabling deep linking
-  $locationProvider.html5Mode(false);
+  }).directive('onFinishRender', function ($timeout) {
+    //directive that allows to emit event when ng-repeat has finished rendering
+    //and later we "catch" that event and execute what is needed
+    return {
+        restrict: 'A',
+        link: function (scope, element, attr) {
+            if (scope.$last === true) {
+                $timeout(function () {
+                    scope.$emit(attr.onFinishRender);
+                });
+            }
+        }
+    }
 });
 
+//is run on first page load in session
 app.run(function ($rootScope, $route, $http, $location, localStorageService) {
 
   //checking if user was logged in before
@@ -134,31 +169,33 @@ app.run(function ($rootScope, $route, $http, $location, localStorageService) {
         monitored_hosts: true,
         output: ['name'],
         sortfield: 'name'
-
       }
     }).success(function (data) {
       $rootScope.serversOnline = data.result;
     });
   }
-
+  //preventing page title flickering by assigning title before
   $rootScope.page_title = 'Home - Zabbix';
 
-  //title and active menu changing
+  //title and active menu changing event listener
   $rootScope.$on('$routeChangeSuccess', function () {
 
     //no guests allowed
     if (!$rootScope.loggedIn) {
       //TODO return to REFERER $rootScope.returnUrl = $location.path();
-      $location.path('/login/'+$location.path());
+      $location.path('/login/'); //TODO: implement returning back after logging in
     }
 
+    //dynamic page title
     if ($route.current && $route.current.$route && $route.current.$route.title_prefix) {
       $rootScope.page_title = $route.current.$route.title_prefix + " - Zabbix";
     } else {
       $rootScope.page_title = "Zabbix";
     }
 
-    if ($location.path() != '/tv') {
+    //dashboard has different style, we need to assure that after leaving it
+    //user will not have that style used anymore
+    if ($location.path() != '/dashboard') {
       $rootScope.fullscreen = '';
       return;
     }
@@ -166,6 +203,7 @@ app.run(function ($rootScope, $route, $http, $location, localStorageService) {
 });
 
 //HTTP interceptor, when there is AJAX request in progress, it shows "Loading"
+//done for usability, user sees progress
 angular.module('SharedServices', []).config(function ($httpProvider) {
   $httpProvider.responseInterceptors.push('myHttpInterceptor');
   var spinnerFunction = function (data, headersGetter) {
@@ -331,65 +369,11 @@ function overviewController($rootScope, $scope, $http, $q) {
         }
       });
 
-      // setInterval((function() {
-      //   var triggersRequest = $http.post(api_url, {
-      //       jsonrpc: "2.0",
-      //       id: $rootScope.auth_id,
-      //       auth: $rootScope.auth,
-      //       method: 'trigger.get',
-      //       params: {
-      //         selectGroups: 'refer',
-      //         expandDescription: true,
-      //         expandData: true,
-      //         only_true: true,
-      //         sortfield: 'lastchange',
-      //         filter: {
-      //           "value": 1
-      //         },
-      //         skipDependent: true,
-      //         monitored: true,
-      //         output: ['triggerid', 'priority', 'lastchange', 'description']
-      //       }
-      //     }).success(function (data) {
-      //       for(var i=0; i<data.result.length; i++) {
-      //         data.result[i].lastchange_words = dateConverter(data.result[i].lastchange);
-      //       }
-      //     }); //will work with request through $q   
-      // }), 15000);
-    // (function fooo() {
-    //   // triggersRequest = $http.post(api_url, {
-    //   //     jsonrpc: "2.0",
-    //   //     id: $rootScope.auth_id,
-    //   //     auth: $rootScope.auth,
-    //   //     method: 'trigger.get',
-    //   //     params: {
-    //   //       selectGroups: 'refer',
-    //   //       expandDescription: true,
-    //   //       expandData: true,
-    //   //       only_true: true,
-    //   //       sortfield: 'lastchange',
-    //   //       filter: {
-    //   //         "value": 1
-    //   //       },
-    //   //       skipDependent: true,
-    //   //       monitored: true,
-    //   //       output: ['triggerid', 'priority', 'lastchange', 'description']
-    //   //     }
-    //   //   }).success(function (data) {
-    //   //     for(var i=0; i<data.result.length; i++) {
-    //   //       data.result[i].lastchange_words = dateConverter(data.result[i].lastchange);
-    //   //     }
-    //   //   }); //will work with request through $q
-        
-    //     alert('adgfadf');
-    //     setInterval(fooo, 15000);
-    // });
+      //TODO: add auto update feature to overview
 
 
     //$q is internal kriskowal's Q library implementation
     //it provides API to work with promises
-    //code below is working as:
-    //if groupsRequest and triggersRequest is done, then execute function
     $q.all([groupsRequest, triggersRequest]).then(function (data) {
       //making new vars for readability
       var groupsData = data[0].data.result;
@@ -466,416 +450,416 @@ function serversController($rootScope, $scope, $http, $routeParams) {
 }
 
 function serversDetailsController($rootScope, $scope, $http, $routeParams) {
-  //TODO PRIORITY
+  //TODO NON PRIORITY
 
-  if ($rootScope.loggedIn) {
-    //redo UI, add all graphs on one page, make views for all servers unified
+//   if ($rootScope.loggedIn) {
+  //     //redo UI, add all graphs on one page, make views for all servers unified
 
-//**************standard testing area*************//
-    // $http.post(api_url, {
-    //   jsonrpc: '2.0',
-    //   id: $rootScope.auth_id,
-    //   auth: $rootScope.auth,
-    //   method: 'graph.get',
-    //   params: {
-    //     hostids: $routeParams.serverId,
-    //     output: ['graphid', 'name']
-    //   }
-    // }).success(function (data) {
-    //   for (var i=0; i<data.result.length; i++) {
-    //     if (data.result[i].name == 'CPU load') {
-    //       $scope.loadId = data.result[i].graphid;
-    //     }
-    //     else if (data.result[i].name == 'CPU utilization') {
-    //       $scope.utilId = data.result[i].graphid;
-    //     }
-    //     else if (data.result[i].name == 'Available memory') {
-    //       $scope.memId = data.result[i].graphid;
-    //     }
-    //   }
-    //   //console.log(data);
-    // });
+  // //**************standard testing area*************//
+  //     // $http.post(api_url, {
+  //     //   jsonrpc: '2.0',
+  //     //   id: $rootScope.auth_id,
+  //     //   auth: $rootScope.auth,
+  //     //   method: 'graph.get',
+  //     //   params: {
+  //     //     hostids: $routeParams.serverId,
+  //     //     output: ['graphid', 'name']
+  //     //   }
+  //     // }).success(function (data) {
+  //     //   for (var i=0; i<data.result.length; i++) {
+  //     //     if (data.result[i].name == 'CPU load') {
+  //     //       $scope.loadId = data.result[i].graphid;
+  //     //     }
+  //     //     else if (data.result[i].name == 'CPU utilization') {
+  //     //       $scope.utilId = data.result[i].graphid;
+  //     //     }
+  //     //     else if (data.result[i].name == 'Available memory') {
+  //     //       $scope.memId = data.result[i].graphid;
+  //     //     }
+  //     //   }
+  //     //   //console.log(data);
+  //     // });
 
-//**************standard testing area*************//
+  // //**************standard testing area*************//
 
-//**************highcharts testing area*************//
+  // //**************highcharts testing area*************//
 
-//testing data
+  // //testing data
 
-  var dataForCharts = [
-          {
-              name: 'Dummy data 1',
-              // Define the data points. All series have a dummy year
-              // of 1970/71 in order to be compared on the same x axis. Note
-              // that in JavaScript, months start at 0 for January, 1 for February etc.
-              data: [
-                  [Date.UTC(2013,  1, 10), 1.0],
-                  [Date.UTC(2013,  1, 18), 1.0],
-                  [Date.UTC(2013,  1, 24), 1.0],
-                  [Date.UTC(2013,  2,  4), 0.98],
-                  [Date.UTC(2013,  2, 11), 0.67],
-                  [Date.UTC(2013,  2, 15), 2.73],
-                  [Date.UTC(2013,  2, 25), 2.61]
-              ]
-          }, {
-              name: 'Dummy data 2',
-              data: [
-                  [Date.UTC(2013,  1,  1), 1.38],
-                  [Date.UTC(2013,  1,  8), 1.48],
-                  [Date.UTC(2013,  1, 21), 1.5 ],
-                  [Date.UTC(2013,  2, 12), 1.89],
-                  [Date.UTC(2013,  2, 25), 2.0 ]
-              ]
-          }, {
-              name: 'Dummy data 3',
-              data: [
-                  [Date.UTC(2013,  1,  1), 0.62],
-                  [Date.UTC(2013,  1,  7), 0.65],
-                  [Date.UTC(2013,  1, 23), 0.77],
-                  [Date.UTC(2013,  2,  8), 0.77],
-                  [Date.UTC(2013,  2, 14), 0.79],
-                  [Date.UTC(2013,  2, 24), 0.86]
-              ]
-          }]
+  //   var dataForCharts = [
+  //           {
+  //               name: 'Dummy data 1',
+  //               // Define the data points. All series have a dummy year
+  //               // of 1970/71 in order to be compared on the same x axis. Note
+  //               // that in JavaScript, months start at 0 for January, 1 for February etc.
+  //               data: [
+  //                   [Date.UTC(2013,  1, 10), 1.0],
+  //                   [Date.UTC(2013,  1, 18), 1.0],
+  //                   [Date.UTC(2013,  1, 24), 1.0],
+  //                   [Date.UTC(2013,  2,  4), 0.98],
+  //                   [Date.UTC(2013,  2, 11), 0.67],
+  //                   [Date.UTC(2013,  2, 15), 2.73],
+  //                   [Date.UTC(2013,  2, 25), 2.61]
+  //               ]
+  //           }, {
+  //               name: 'Dummy data 2',
+  //               data: [
+  //                   [Date.UTC(2013,  1,  1), 1.38],
+  //                   [Date.UTC(2013,  1,  8), 1.48],
+  //                   [Date.UTC(2013,  1, 21), 1.5 ],
+  //                   [Date.UTC(2013,  2, 12), 1.89],
+  //                   [Date.UTC(2013,  2, 25), 2.0 ]
+  //               ]
+  //           }, {
+  //               name: 'Dummy data 3',
+  //               data: [
+  //                   [Date.UTC(2013,  1,  1), 0.62],
+  //                   [Date.UTC(2013,  1,  7), 0.65],
+  //                   [Date.UTC(2013,  1, 23), 0.77],
+  //                   [Date.UTC(2013,  2,  8), 0.77],
+  //                   [Date.UTC(2013,  2, 14), 0.79],
+  //                   [Date.UTC(2013,  2, 24), 0.86]
+  //               ]
+  //           }]
 
-// functions used for zooming
-    var currentZoom = null;
-        var nowTime = new Date().getTime(); //now
-        var fromTime = nowTime - (3600000 * 30 * 24);
+  // // functions used for zooming
+  //     var currentZoom = null;
+  //         var nowTime = new Date().getTime(); //now
+  //         var fromTime = nowTime - (3600000 * 30 * 24);
 
-        $scope.setZoom = function(zoom) {
-          if (zoom == null) {
-            //todo dates
-            masterChart.xAxis[0].setExtremes(fromTime, nowTime, true, true);
-            setZoom(fromTime, nowTime);
-            return;
-          } else {
-            currentZoom = zoom;
-            var from = nowTime - (zoom * 3600000);
-            masterChart.xAxis[0].setExtremes(from, nowTime, true, true);
-            setZoom(from, nowTime);
-          }
-        }
-        //todo setzoom na 30 dnej ne odinakovo vigljadit master timeline srazu posle zagruzki stranici
-        // i posle nazhatija
-        var setZoom = function(zoomStart, zoomEnd) {
-          masterChart.xAxis[0].removePlotBand('mask-before');
-          masterChart.xAxis[0].removePlotBand('mask-after');
+  //         $scope.setZoom = function(zoom) {
+  //           if (zoom == null) {
+  //             //todo dates
+  //             masterChart.xAxis[0].setExtremes(fromTime, nowTime, true, true);
+  //             setZoom(fromTime, nowTime);
+  //             return;
+  //           } else {
+  //             currentZoom = zoom;
+  //             var from = nowTime - (zoom * 3600000);
+  //             masterChart.xAxis[0].setExtremes(from, nowTime, true, true);
+  //             setZoom(from, nowTime);
+  //           }
+  //         }
+  //         //todo setzoom na 30 dnej ne odinakovo vigljadit master timeline srazu posle zagruzki stranici
+  //         // i posle nazhatija
+  //         var setZoom = function(zoomStart, zoomEnd) {
+  //           masterChart.xAxis[0].removePlotBand('mask-before');
+  //           masterChart.xAxis[0].removePlotBand('mask-after');
 
-          masterChart.xAxis[0].addPlotBand({
-            id: 'mask-before',
-            from: fromTime, //TODO start point
-            to: zoomStart,
-            color: 'rgba(0,0,0,0.2)'
-          });
+  //           masterChart.xAxis[0].addPlotBand({
+  //             id: 'mask-before',
+  //             from: fromTime, //TODO start point
+  //             to: zoomStart,
+  //             color: 'rgba(0,0,0,0.2)'
+  //           });
 
-          masterChart.xAxis[0].addPlotBand({
-            id: 'mask-after',
-            from: zoomEnd,
-            to: nowTime, //TODO end point of graphs
-            color: 'rgba(0,0,0,0.2)'
-          });
+  //           masterChart.xAxis[0].addPlotBand({
+  //             id: 'mask-after',
+  //             from: zoomEnd,
+  //             to: nowTime, //TODO end point of graphs
+  //             color: 'rgba(0,0,0,0.2)'
+  //           });
 
-          updateGraphs(zoomStart, zoomEnd);
-        };
-        var updateGraphs = function(min, max) {
-          cpuChart.xAxis[0].setExtremes(min, max);
-          loadChart.xAxis[0].setExtremes(min, max);
-          memoryGraph.xAxis[0].setExtremes(min, max);
-          //diskIOGraph.xAxis[0].setExtremes(min, max);
-          //networkIOGraph.xAxis[0].setExtremes(min, max);     
-        };
+  //           updateGraphs(zoomStart, zoomEnd);
+  //         };
+  //         var updateGraphs = function(min, max) {
+  //           cpuChart.xAxis[0].setExtremes(min, max);
+  //           loadChart.xAxis[0].setExtremes(min, max);
+  //           memoryGraph.xAxis[0].setExtremes(min, max);
+  //           //diskIOGraph.xAxis[0].setExtremes(min, max);
+  //           //networkIOGraph.xAxis[0].setExtremes(min, max);     
+  //         };
 
-    //master timeline
-        var masterChart = new Highcharts.Chart({
-          chart: {
-            renderTo: 'masterTimeline',
-            height: 90,
-            zoomType: 'x',
-            events: {
-              selection: function (event) {
-                setZoom(event.xAxis[0].min, event.xAxis[0].max);
-                return false;
-              }
-            }
-          },
-          title: {
-            text: null
-          },
-          xAxis: {
-            type: 'datetime',
-            minRange: 3600000, //1 hour
-            title: {
-              text: null
-            },
-            plotBands: [{
-              id: 'mask-before',
-              from: fromTime,
-              to: nowTime,
-              color: 'rgba(0,0,0,0.2)'
-            }]
-          },
-          yAxis: {
-            gridLineWidth: 0,
-            labels: {
-              enabled: false
-            },
-            min: 0.6,
-            title: {
-              text: null
-            },
-            showFirstLabel: false
-          },
-          tooltip: {
-            formatter: function() {
-              return false;
-            }
-          },
-          legend: {
-            enabled: false
-          },
-          credits: {
-            enabled: false
-          },
-          plotOptions: {
-            series: {
-              animation: false,
-              fillColor: {
-                linearGradient: [0, 0, 0, 70],
-                stops: [
-                  [0, '#4572A7'],
-                  [1, 'rgba(0,0,0,0)']
-                ]
-              },
-              lineWidth: 1,
-              marker: {
-                enabled: false
-              },
-              shadow: false,
-              states: {
-                hover: {
-                  lineWidth: 1
-                }
-              },
-              enableMouseTracking: false
-            }
-          },
+  //     //master timeline
+  //         var masterChart = new Highcharts.Chart({
+  //           chart: {
+  //             renderTo: 'masterTimeline',
+  //             height: 90,
+  //             zoomType: 'x',
+  //             events: {
+  //               selection: function (event) {
+  //                 setZoom(event.xAxis[0].min, event.xAxis[0].max);
+  //                 return false;
+  //               }
+  //             }
+  //           },
+  //           title: {
+  //             text: null
+  //           },
+  //           xAxis: {
+  //             type: 'datetime',
+  //             minRange: 3600000, //1 hour
+  //             title: {
+  //               text: null
+  //             },
+  //             plotBands: [{
+  //               id: 'mask-before',
+  //               from: fromTime,
+  //               to: nowTime,
+  //               color: 'rgba(0,0,0,0.2)'
+  //             }]
+  //           },
+  //           yAxis: {
+  //             gridLineWidth: 0,
+  //             labels: {
+  //               enabled: false
+  //             },
+  //             min: 0.6,
+  //             title: {
+  //               text: null
+  //             },
+  //             showFirstLabel: false
+  //           },
+  //           tooltip: {
+  //             formatter: function() {
+  //               return false;
+  //             }
+  //           },
+  //           legend: {
+  //             enabled: false
+  //           },
+  //           credits: {
+  //             enabled: false
+  //           },
+  //           plotOptions: {
+  //             series: {
+  //               animation: false,
+  //               fillColor: {
+  //                 linearGradient: [0, 0, 0, 70],
+  //                 stops: [
+  //                   [0, '#4572A7'],
+  //                   [1, 'rgba(0,0,0,0)']
+  //                 ]
+  //               },
+  //               lineWidth: 1,
+  //               marker: {
+  //                 enabled: false
+  //               },
+  //               shadow: false,
+  //               states: {
+  //                 hover: {
+  //                   lineWidth: 1
+  //                 }
+  //               },
+  //               enableMouseTracking: false
+  //             }
+  //           },
 
-          series: [{
-            type: 'area',
-            //pointStart: fromTime,
-            data: [
-              [fromTime, 1],
-              [nowTime, 1]
-            ]
-          }],
-          exporting: {
-            enabled: false
-          }
-        });
+  //           series: [{
+  //             type: 'area',
+  //             //pointStart: fromTime,
+  //             data: [
+  //               [fromTime, 1],
+  //               [nowTime, 1]
+  //             ]
+  //           }],
+  //           exporting: {
+  //             enabled: false
+  //           }
+  //         });
 
-    //cpu load graph
-        var loadChart = new Highcharts.Chart({
-          chart: {
-                    renderTo: 'loadGraph',
-                    height: 250,
-                    type: 'spline',
-                    animation: false,
-            zoomType: 'x',
-            events: {
-              selection: function (event) {
-                if (event.resetSelection) {
-                  $scope.setZoom(currentZoom);
-                } else {
-                  setZoom(event.xAxis[0].min, event.xAxis[0].max);
-                }
-              }
-            },
-            resetZoomButton: {
-              position: {
-                x: 0,
-                y: -30
-              },
-              theme: {
-                fill: 'white',
-                stroke: 'silver',
-                r: 0,
-                states: {
-                    hover: {
-                        fill: '#41739D',
-                        style: {
-                            color: 'white'
-                        }
-                    }
-                }
-              }
-            }
-                },
-                title: {
-                  text: 'CPU Load'
-                },
-                xAxis: {
-                  minRange: 3600000*2,
-                  type: 'datetime'
-                },
-                yAxis: {
-                    title: { text: null },
-                    min: 0
-                },
-                tooltip: {
-                    formatter: function() {
-                      return '<b>'+ this.series.name +'</b><br/>'+
-                      Highcharts.dateFormat('%e. %b', this.x) +': '+ this.y +' m';
-                    }
-                },
-                plotOptions: {
-                  series: {
-                    animation: false,
-                    marker: {
-                      enabled: false
-                    },
-                    pointStart: fromTime
-                  }
-                },
-                series: dataForCharts
-        });
+  //     //cpu load graph
+  //         var loadChart = new Highcharts.Chart({
+  //           chart: {
+  //             renderTo: 'loadGraph',
+  //             height: 250,
+  //             type: 'spline',
+  //             animation: false,
+  //             zoomType: 'x',
+  //             events: {
+  //               selection: function (event) {
+  //                 if (event.resetSelection) {
+  //                   $scope.setZoom(currentZoom);
+  //                 } else {
+  //                   setZoom(event.xAxis[0].min, event.xAxis[0].max);
+  //                 }
+  //               }
+  //             },
+  //             resetZoomButton: {
+  //               position: {
+  //                 x: 0,
+  //                 y: -30
+  //               },
+  //               theme: {
+  //                 fill: 'white',
+  //                 stroke: 'silver',
+  //                 r: 0,
+  //                 states: {
+  //                     hover: {
+  //                         fill: '#41739D',
+  //                         style: {
+  //                             color: 'white'
+  //                         }
+  //                     }
+  //                 }
+  //               }
+  //             }
+  //           },
+  //           title: {
+  //             text: 'CPU Load'
+  //           },
+  //           xAxis: {
+  //             minRange: 3600000*2,
+  //             type: 'datetime'
+  //           },
+  //           yAxis: {
+  //               title: { text: null },
+  //               min: 0
+  //           },
+  //           tooltip: {
+  //               formatter: function() {
+  //                 return '<b>'+ this.series.name +'</b><br/>'+
+  //                 Highcharts.dateFormat('%e. %b', this.x) +': '+ this.y +' m';
+  //               }
+  //           },
+  //           plotOptions: {
+  //             series: {
+  //               animation: false,
+  //               marker: {
+  //                 enabled: false
+  //               },
+  //               pointStart: fromTime
+  //             }
+  //           },
+  //           series: dataForCharts
+  //         });
 
-    //cpu util graph
-        var cpuChart = new Highcharts.Chart({
-          chart: {
-            renderTo: 'cpuGraph',
-            height: 250,
-            type: 'spline',
-            animation: false,
-            zoomType: 'x',
-            events: {
-              selection: function (event) {
-                if (event.resetSelection) {
-                  $scope.setZoom(currentZoom);
-                  return;
-                } else {
-                  setZoom(event.xAxis[0].min, event.xAxis[0].max);
-                }
-              }
-            },
-            resetZoomButton: {
-              position: {
-                x: 0,
-                y: -30
-              },
-              theme: {
-                fill: 'white',
-                stroke: 'silver',
-                r: 0,
-                states: {
-                    hover: {
-                        fill: '#41739D',
-                        style: {
-                            color: 'white'
-                        }
-                    }
-                }
-              }
-            }
-          },
-          title: {
-              text: 'CPU Utilization'
-          },
-          xAxis: {
-            minRange: 3600000*2,
-            type: 'datetime'
-          },
-          yAxis: {
-              title: { text: null },
-              min: 0
-          },
-          tooltip: {
-              formatter: function() {
-                return '<b>'+ this.series.name +'</b><br/>'+
-                Highcharts.dateFormat('%e. %b', this.x) +': '+ this.y +' m';
-              }
-          },
-          plotOptions: {
-            series: {
-              animation: false,
-              marker: {
-                enabled: false
-              },
-              pointStart: fromTime
-            }
-          },
-          series: dataForCharts
-        });
+  //     //cpu util graph
+  //         var cpuChart = new Highcharts.Chart({
+  //           chart: {
+  //             renderTo: 'cpuGraph',
+  //             height: 250,
+  //             type: 'spline',
+  //             animation: false,
+  //             zoomType: 'x',
+  //             events: {
+  //               selection: function (event) {
+  //                 if (event.resetSelection) {
+  //                   $scope.setZoom(currentZoom);
+  //                   return;
+  //                 } else {
+  //                   setZoom(event.xAxis[0].min, event.xAxis[0].max);
+  //                 }
+  //               }
+  //             },
+  //             resetZoomButton: {
+  //               position: {
+  //                 x: 0,
+  //                 y: -30
+  //               },
+  //               theme: {
+  //                 fill: 'white',
+  //                 stroke: 'silver',
+  //                 r: 0,
+  //                 states: {
+  //                     hover: {
+  //                         fill: '#41739D',
+  //                         style: {
+  //                             color: 'white'
+  //                         }
+  //                     }
+  //                 }
+  //               }
+  //             }
+  //           },
+  //           title: {
+  //               text: 'CPU Utilization'
+  //           },
+  //           xAxis: {
+  //             minRange: 3600000*2,
+  //             type: 'datetime'
+  //           },
+  //           yAxis: {
+  //               title: { text: null },
+  //               min: 0
+  //           },
+  //           tooltip: {
+  //               formatter: function() {
+  //                 return '<b>'+ this.series.name +'</b><br/>'+
+  //                 Highcharts.dateFormat('%e. %b', this.x) +': '+ this.y +' m';
+  //               }
+  //           },
+  //           plotOptions: {
+  //             series: {
+  //               animation: false,
+  //               marker: {
+  //                 enabled: false
+  //               },
+  //               pointStart: fromTime
+  //             }
+  //           },
+  //           series: dataForCharts
+  //         });
 
-    //ram graph
-        var memoryGraph = new Highcharts.Chart({
-          chart: {
-                    renderTo: 'memoryGraph',
-                    height: 300,
-                    type: 'spline',
-                    animation: false,
-            zoomType: 'x',
-            events: {
-              selection: function (event) {
+  //     //ram graph
+  //         var memoryGraph = new Highcharts.Chart({
+  //           chart: {
+  //                     renderTo: 'memoryGraph',
+  //                     height: 300,
+  //                     type: 'spline',
+  //                     animation: false,
+  //             zoomType: 'x',
+  //             events: {
+  //               selection: function (event) {
 
-                if (event.resetSelection) {
-                  $scope.setZoom(currentZoom);
-                } else {
-                  setZoom(event.xAxis[0].min, event.xAxis[0].max);
-                }
-              }
-            },
-            resetZoomButton: {
-              position: {
-                x: 0,
-                y: -30
-              },
-              theme: {
-                fill: 'white',
-                stroke: 'silver',
-                r: 0,
-                states: {
-                    hover: {
-                        fill: '#41739D',
-                        style: {
-                            color: 'white'
-                        }
-                    }
-                }
-              }
-            }
-                },
-                title: {
-                    text: 'Physical Memory'
-                },
-                xAxis: {
-                  minRange: 3600000*2,
-                    type: 'datetime'
-                },
-                yAxis: {
-                    title: { text: null },
-                    min: 0
-                },
-                tooltip: {
-                    formatter: function() {
-                      return false;
-                    }
-                },
-                plotOptions: {
-                  series: {
-                    animation: false,
-                    marker: {
-                      enabled: false
-                    },
-                    pointStart: fromTime
-                  }
-                },
-                series: dataForCharts
-        });
+  //                 if (event.resetSelection) {
+  //                   $scope.setZoom(currentZoom);
+  //                 } else {
+  //                   setZoom(event.xAxis[0].min, event.xAxis[0].max);
+  //                 }
+  //               }
+  //             },
+  //             resetZoomButton: {
+  //               position: {
+  //                 x: 0,
+  //                 y: -30
+  //               },
+  //               theme: {
+  //                 fill: 'white',
+  //                 stroke: 'silver',
+  //                 r: 0,
+  //                 states: {
+  //                     hover: {
+  //                         fill: '#41739D',
+  //                         style: {
+  //                             color: 'white'
+  //                         }
+  //                     }
+  //                 }
+  //               }
+  //             }
+  //                 },
+  //                 title: {
+  //                     text: 'Physical Memory'
+  //                 },
+  //                 xAxis: {
+  //                   minRange: 3600000*2,
+  //                     type: 'datetime'
+  //                 },
+  //                 yAxis: {
+  //                     title: { text: null },
+  //                     min: 0
+  //                 },
+  //                 tooltip: {
+  //                     formatter: function() {
+  //                       return false;
+  //                     }
+  //                 },
+  //                 plotOptions: {
+  //                   series: {
+  //                     animation: false,
+  //                     marker: {
+  //                       enabled: false
+  //                     },
+  //                     pointStart: fromTime
+  //                   }
+  //                 },
+  //                 series: dataForCharts
+  //         });
 
-    //**************highcharts testing area*************//
-  
-  }
+  //     //**************highcharts testing area*************//
+    
+  //   }
 }
 
 function projectController($rootScope, $scope, $http, $routeParams, $location) {
@@ -910,68 +894,83 @@ function projectController($rootScope, $scope, $http, $routeParams, $location) {
 }
 
 
-function tvController($scope, $http, $rootScope, $location, localStorageService) {
-  //get hostgroups
-  //then for each hostgroup lead seperate thread with interval to refresh and get new data
+function dashboardController($scope, $http, $rootScope, $location, localStorageService, $q) {
+  //Controller used for dashboard
+  //$http for requests;
+  //$rootScope for global vars;
+  //$scope for manipulation
+  //$location for checking if user left dashboard
+  //localStorageService for saving selected groups
+  //$q for working with promises
 
-  //getting hostgroup names
-  var projects;
-  var selectedGroups={},
-    notificationGroups={},
-    availableHosts={};
 
-  $rootScope.fullscreen = 'padding-left:2px; padding-right:0;';
+  //variables
+  $rootScope.fullscreen = 'padding-left:2px; padding-right:0;'; //making dashboard wider
+  $scope.selectedGroups = {};
+  var firstTime = true,
+    groupSelectorShown = true;
 
-  $http.post(api_url, {
-    jsonrpc: '2.0',
-    id: $rootScope.auth_id,
-    auth: $rootScope.auth,
-    method: 'hostgroup.get',
-    params: {
-      real_hosts: true,
-      monitored_hosts: true,
-      output: ['groupid', 'name'],
-      selectHosts: ['hostid', 'available', 'name', 'host', 'status'],
-      sortfield: 'name'
-      // search: {
-      //   name: 'project'
-      // }
-    }
-  }).success(function (hostsRes) {
-      $scope.projects = hostsRes.result;
-      projects = hostsRes.result;
-      for (var i=0; i<projects.length; i++) {
-        availableHosts[i] = projects[i].hosts;
-        if (!localStorageService.get('dashboardSelection')) {
-          //if no selection is saved, we need to remake it.
-          selectedGroups[i] = true;
-          localStorageService.add('dashboardSelection', selectedGroups);
-        }
-        notificationGroups[projects[i].groupid] = true;
-      }
-      $scope.groupsShown = localStorageService.get('dashboardSelection');
-      $scope.lastUpdated = timeConverter(new Date().getTime());
-  });
+  //getting active hostgroups and their hosts
+  (function bar() {
 
-//progress bar and requests for new active triggers each 15 seconds
-  (function foo() {
-
-    //so we don't have to continue refreshing active triggers after leaving TV dashboard
-    if ($location.path() != '/tv') {
+    //stop this function execution after leaving dashboard
+    if ($location.path() != '/dashboard') {
+      console.log('stopping bar()');
       $rootScope.fullscreen = '';
       return;
     }
 
-    $http.post(api_url, {
+    var hostgroupsRequest = $http.post(api_url, {
+      jsonrpc: '2.0',
+      id: $rootScope.auth_id,
+      auth: $rootScope.auth,
+      method: 'hostgroup.get',
+      params: {
+        real_hosts: true,
+        monitored_hosts: true,
+        output: ['groupid', 'name'],
+        selectHosts: ['hostid', 'available', 'name', 'host', 'status'],
+        sortfield: 'name'
+      }
+      }).success(function (data) {
+        $scope.hostgroupsData = data.result;
+        if (localStorageService.get('selectedGroups') === null) {
+          //user doesn't have memory of this place
+          for (var i = data.result.length - 1; i >= 0; i--) {
+            $scope.selectedGroups[data.result[i].groupid] = true; //selecting everything
+            localStorageService.add('selectedGroups', JSON.stringify($scope.selectedGroups));
+            //saving everything TODO: promise? kazhdij raz ne nuzhno .add, nuzhno tolko odin raz v konce
+          }
+        } else {
+          //otherwise parse stringified object from localstorage
+          $scope.selectedGroups = JSON.parse(localStorageService.get('selectedGroups'));
+        }
+      });
+
+    setTimeout(bar, hostgroupUpdateInterval); //10 minutes
+    //it is not intended for hostgroups to be added/removed frequently hence the interval
+  })();
+
+  //getting current active triggers
+  (function foo() {
+
+    //stop this function execution after leaving dashboard
+    if ($location.path() != '/dashboard') {
+      console.log('stopping foo()'); //debugging
+      $rootScope.fullscreen = '';
+      return;
+    }
+
+    var triggersRequest = $http.post(api_url, {
       jsonrpc: '2.0',
       id: $rootScope.auth_id,
       auth: $rootScope.auth,
       method: 'trigger.get',
       params: {
-        expandDescription: true,
-        expandData: true,
-        sortfield: 'lastchange',
-        selectGroups: 'refer',
+        expandDescription: true, //transform macros to readable text
+        expandData: true, //transform macros to readable text
+        sortfield: 'priority',
+        selectGroups: 'refer', //needed to show/hide triggers only that are in selected groups
         selectHosts: 'refer',
         filter: {
           value: 1
@@ -981,73 +980,99 @@ function tvController($scope, $http, $rootScope, $location, localStorageService)
         only_true: true,
         output: ['description', 'lastchange', 'priority', 'triggerid']
       }
-    }).success(function (data) {
+      }).success(function (data) {
+        $scope.triggersData = data.result;
 
-      //TODO starting from here needs massive refactoring
-      //MASSIVE.
-
-      $scope.triggerNotifications = data.result;
-      var problemServers={};
-      setTimeout((function() {
-        for (var i = 0; i<data.result.length; i++) {
-          if (!problemServers[data.result[i].hosts[0].hostid] || problemServers[data.result[i].hosts[0].hostid] < data.result[i].priority) {
-            problemServers[data.result[i].hosts[0].hostid] = {priority: data.result[i].priority, description: data.result[i].description};
-          }
-
-          //selectedGroups notifications
-          
-          //TODO
-          //check if has lesser priority - if so, then remove it and add new with bigger
-          //$('#'+data.result[i].hosts[0].hostid).addClass('error'+data.result[i].priority);
-          //TODO notifications div
-        }
-        $('.server').removeClass('error0 error1 error2 error3 error4 error5');
-        $scope.problemServers = availableHosts;
-        $scope.$apply();
-        $('p[id|="notification"]').hover(
-          function () {
-            $('#'+$(this).attr('id').substring(13)).
-            css('-webkit-transform', 'scale(2)').css('-moz-transform', 'scale(2)')
-            .css('-o-transform', 'scale(2)');
-          },
-          function () {
-            $('#'+$(this).attr('id').substring(13))
-            .css('-webkit-transform', 'scale(1)').css('-moz-transform', 'scale(1)')
-            .css('-o-transform', 'scale(1)');
-          }
-        );
-        for (var prop in problemServers) {
-          if(problemServers.hasOwnProperty(prop)) {
-            $('#'+prop).addClass('error'+problemServers[prop].priority);
-            $('#'+prop).attr('data-title', problemServers[prop].description);
-            $('#'+prop).tooltip();
-            //remove tooltips that are old (for example if trigger is not )
-            //$('#'+prop).tooltip({title: problemServers[prop].description});
-            // console.log($('#'+prop).tooltip().contents());
-
-            //console.log('added class error'+problemServers[prop]+' to #'+prop);
-          } 
-        }
+        //showing last updated time for usability
         $scope.lastUpdated = timeConverter(new Date().getTime());
-      }), 1500); //1500 delay to be sure hostgroups were properly rendered
-              //todo - rewrite, bad practice
-    });
 
-    setTimeout(foo, 30000); //30 seconds
+        //if it's first time then we should wait for servers grid finished rendenring
+        //unfortunately listener then works when we refresh hostgroup list
+        //that's why we need to recheck if it's firstTime again inside it
+        if (firstTime) {
+          $scope.$on('serversRenderingFinished', function() {
+            if (!firstTime) {
+              return;
+            } else {
+              if (removePrevTooltips(data.result, 'firstTime')) {
+                tooltipsHover(data.result, 'firstTime');
+              }
+              firstTime = false; //boolean flag
+            }
+          });
+        } else {
+            if (removePrevTooltips(data.result, 'NOT firstTime')) {
+              tooltipsHover(data.result, 'NOT firstTime');
+            }
+        }
+
+        //when triggers divs are successfully rendered attaching hover event
+        $scope.$on('triggersRenderingFinished', function() {
+          //on hover on notifications highlight the appropriate .server div
+          $('div[id^="notification-"]').hover(
+            function () {
+              $('#'+$(this).attr('id').substring(13)).
+              addClass('zoomUp'); //-webkit/-o/-moz -transform: scale(2) = 200% zoom
+            },
+            function () {
+              $('#'+$(this).attr('id').substring(13)).
+              removeClass('zoomUp'); //removing zoom, back to 100%
+            }
+          );
+        });
+
+      });
+
+    setTimeout(foo, triggerUpdateInterval);
   })();
 
-  //user picks what groups he wants to see
-  $scope.selectGroups = function (id) {
-    if (selectedGroups[id]) {
-      delete selectedGroups[id];
-    } else {
-      selectedGroups[id] = true;
-      //selectedGroups.groups.push(id);
+  //remove old tooltips
+  function removePrevTooltips(triggersData, whereFrom) {
+    console.log(whereFrom + ' destorying tooltips and classes ' + new Date().getTime());  //debugging
+    $('.server').tooltip('destroy');
+    $('.server').removeClass('error1 error2 error3 error4 error5');
+    return true;
+  }
+
+  //add new tooltips
+  function tooltipsHover(triggersData, whereFrom) {
+    console.log(whereFrom + ' adding tooltips and classes ' + new Date().getTime());  //debugging
+    console.log(triggersData);
+    for (var i = triggersData.length - 1; i >= 0; i--) {
+
+      if ($('#'+triggersData[i].hosts[0].hostid).hasClass('error')) {
+        console.log($('#'+triggersData[i].hosts[0].hostid).attr('class'));
+      } else {
+        $('#'+triggersData[i].hosts[0].hostid).tooltip({title: triggersData[i].description});
+        $('#'+triggersData[i].hosts[0].hostid).addClass('error'+triggersData[i].priority);
+      }
+
     }
-    $('#selectedIcon' + id).toggle();
-    $scope.groupsShown = selectedGroups;
-    return false;
-  };
+  }
+
+  //function for selecting groups visible on dashboard via group selector
+  $scope.selectGroup = function (groupId) {
+    if ($scope.selectedGroups[groupId] === true) { //group was selected
+      $scope.selectedGroups[groupId] = false; //not anymore
+      localStorageService.add('selectedGroups', JSON.stringify($scope.selectedGroups));
+      //writing down this change in localStorage/cookies
+    } else {
+      $scope.selectedGroups[groupId] = true;
+      localStorageService.add('selectedGroups', JSON.stringify($scope.selectedGroups));
+    }
+  }
+
+  //show/hide group selector
+  $scope.toggleGroupSelector = function() {
+    $('#groups').animate({height:'toggle'}, 'slow'); //beautifully hiding it
+    if (groupSelectorShown) {
+      groupSelectorShown = false;
+      $scope.groupSelectorShown = 'Show';
+    } else {
+      groupSelectorShown = true;
+      $scope.groupSelectorShown = 'Hide';
+    }
+  }
 
 }
   
@@ -1065,14 +1090,12 @@ function searchController($rootScope, $scope, $http, $routeParams, $location) {
   if ($rootScope.loggedIn) {
 
     //if users enters correct name of server, redirects to the page of server
-    // if ($rootScope.serversOnline) {
     var serverLength = $rootScope.serversOnline.length;
     for (var i=0; i<serverLength; i++) {
       if ($rootScope.serversOnline[i].name == $routeParams.searchString) {
         $location.path('/servers/' + $rootScope.serversOnline[i].hostid);
       }
     }
-    // }
 
     //getting hosts
     $http.post(api_url, {
@@ -1088,9 +1111,9 @@ function searchController($rootScope, $scope, $http, $routeParams, $location) {
         },
         sortfield: 'name'
       }
-    }).success(function(data) {
-      $scope.hostsData = data.result;
-    });
+      }).success(function(data) {
+        $scope.hostsData = data.result;
+      });
 
     //getting hostgroups
     $http.post(api_url, {
@@ -1106,8 +1129,10 @@ function searchController($rootScope, $scope, $http, $routeParams, $location) {
           name: $routeParams.searchString
         }
       }
-    }).success(function(data) {
-      $scope.groupsData = data.result;
-    });
+      }).success(function(data) {
+        $scope.groupsData = data.result;
+      });
+
   }
+
 }
