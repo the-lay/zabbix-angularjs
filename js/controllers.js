@@ -20,8 +20,7 @@ var triggerUpdateInterval = 30000, //30 seconds
 //common functions used throughwide file
 
 function dateConverter(UNIX_timestamp) {
-  // gets unix timestamp
-  // returns string 'd M Y, H:i:s'
+  // converts given timestamp as string in dateformat 'd M Y, H:i:s'
 
   var a = new Date(UNIX_timestamp * 1000); //JS uses nanoseconds
   var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -42,8 +41,9 @@ function dateConverter(UNIX_timestamp) {
     + ', ' + hrs + ':' + min + ':' + sec;
 }
 
-
 function timeConverter() {
+  // returns current time as string in dateformat 'H:i:s'
+  
   var currentTime = new Date();
   var hours = currentTime.getHours();
   var minutes = currentTime.getMinutes();

@@ -10,7 +10,7 @@
     <tbody ng-repeat="group in serverGroups | orderBy:'-errors_level'">
         <tr>
           <td><a href="#/project/{{group.groupid}}">{{group.name}}</a></td>
-          <td colspan="{{((group.lastchange) && ('1') || ('2'))}}" class="{{'error' + group.errors_level}}"><a class="underlined" onClick="$('#errorsRow'+{{$index}}).toggle();">{{((group.errors) && (group.errors + ' errors!') || (''))}}</a></td>
+          <td colspan="{{((group.lastchange) && ('1') || ('2'))}}" class="{{'error' + group.errors_level}}"><a class="underlined" onClick="$('#errorsRow'+{{$index}}).toggle();">{{((group.errors) && (group.errors + ' error/s!') || (''))}}</a></td>
           <td ng-show="group.lastchange">{{group.lastchange_words}}</td>
         </tr>
         <tr style="display:none; margin: 0; padding: 0;" id="errorsRow{{$index}}">
