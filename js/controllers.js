@@ -177,6 +177,14 @@ app.run(function ($rootScope, $route, $http, $location, localStorageService) {
   //preventing page title flickering by assigning title before
   $rootScope.page_title = 'Home - Zabbix';
 
+  //mobile view
+  //navbar collapsing back if clicked on any nav link
+  $('.nav-collapse a').click(function(e) {
+    if ($('#collapsingBtn').is(":visible")) {
+      $('.nav-collapse').collapse('toggle');
+    }
+  })
+
   //title and active menu changing event listener
   $rootScope.$on('$routeChangeSuccess', function () {
 
@@ -185,6 +193,7 @@ app.run(function ($rootScope, $route, $http, $location, localStorageService) {
       //TODO return to REFERER $rootScope.returnUrl = $location.path();
       $location.path('/login/'); //TODO: implement returning back after logging in
     }
+
 
     //dynamic page title
     if ($route.current && $route.current.$route && $route.current.$route.title_prefix) {
