@@ -1,15 +1,3 @@
-//massive TODO:
-//rewrite for loops to i-- loop
-
-//TODO: documentation for every controller with this template:
-  //Controller used for XXX
-  //$http for requests;
-  //$rootScope for global vars;
-  //$scope for manipulation
-  //$location for checking if user left dashboard
-  //localStorageService for saving selected groups
-
-
 //zabbix API URL
 var api_url = 'http://zabbixcm02.internal.corp/zabbix/api_jsonrpc.php';
 
@@ -18,7 +6,6 @@ var triggerUpdateInterval = 30000, //30 seconds
   hostgroupUpdateInterval = 600000; //10 minutes
 
 //common functions used throughwide file
-
 function dateConverter(UNIX_timestamp) {
   // converts given timestamp as string in dateformat 'd M Y, H:i:s'
 
@@ -40,7 +27,6 @@ function dateConverter(UNIX_timestamp) {
   return a.getDate() + ' ' + months[a.getMonth()] + ' ' + a.getFullYear()
     + ', ' + hrs + ':' + min + ':' + sec;
 }
-
 function timeConverter() {
   // returns current time as string in dateformat 'H:i:s'
   
@@ -145,9 +131,7 @@ var app = angular.module('zabbix', ['LocalStorageModule', 'SharedServices'])
             }
         }
     }
-});
-
-//is run on first page load in session
+  });
 app.run(function ($rootScope, $route, $http, $location, localStorageService) {
 
   //checking if user was logged in before
@@ -177,14 +161,6 @@ app.run(function ($rootScope, $route, $http, $location, localStorageService) {
   //preventing page title flickering by assigning title before
   $rootScope.page_title = 'Home - Zabbix';
 
-  //mobile view
-  //navbar collapsing back if clicked on any nav link
-  $('.nav-collapse a').click(function(e) {
-    if ($('#collapsingBtn').is(":visible")) {
-      $('.nav-collapse').collapse('toggle');
-    }
-  })
-
   //title and active menu changing event listener
   $rootScope.$on('$routeChangeSuccess', function () {
 
@@ -209,7 +185,7 @@ app.run(function ($rootScope, $route, $http, $location, localStorageService) {
       return;
     }
   });
-});
+  });
 
 //HTTP interceptor, when there is AJAX request in progress, it shows "Loading"
 //done for usability, user sees progress
@@ -220,7 +196,7 @@ angular.module('SharedServices', []).config(function ($httpProvider) {
     return data;
   };
   $httpProvider.defaults.transformRequest.push(spinnerFunction);
-}).factory('myHttpInterceptor', function($q, $window) {
+  }).factory('myHttpInterceptor', function($q, $window) {
   return function(promise) {
     return promise.then(function(response) {
       $('#loading').hide();
@@ -231,8 +207,14 @@ angular.module('SharedServices', []).config(function ($httpProvider) {
       return $q.reject(response);
     });
   };
-});
+  });
 
+//Controller used for logging in the system (login.html)
+//$http for requests;
+//$rootScope for global vars;
+//$scope for manipulation
+//$location for redirecting
+//localStorageService for saving session params
 function loginController($scope, $http, $rootScope, $location, localStorageService) {
 
   //focusing on inputName input box for easier navigation
@@ -267,7 +249,6 @@ function loginController($scope, $http, $rootScope, $location, localStorageServi
         //successful login
         localStorageService.add('auth', data.result); //saving auth key for session restoration
 
-        $scope.error = null;
         $rootScope.auth = data.result;
         $rootScope.loggedIn = true;
 
@@ -292,6 +273,11 @@ function loginController($scope, $http, $rootScope, $location, localStorageServi
   };
 }
 
+//Controller used for logging out of the system (logout.html)
+//$http for requests;
+//$rootScope for global vars;
+//$location for redirecting
+//localStorageService for erasing sessions
 function logoutController(localStorageService, $rootScope, $http, $location) {
 
   //should not be accessible for guests anyway
@@ -321,7 +307,19 @@ function logoutController(localStorageService, $rootScope, $http, $location) {
   }
 }
 
+//Controller for top menu (index.html -> #head -> .container-fluid)
+//$rootScope for global vars;
+//$scope for manipulation
+//$location for redirecting
 function menuController($scope, $location, $rootScope) {
+
+  //mobile view
+  //navbar collapsing back if clicked on any nav link
+  $('.nav-collapse a').click(function(e) {
+    if ($('#collapsingBtn').is(":visible")) {
+      $('.nav-collapse').collapse('toggle');
+    }
+  });
 
   //function that is called on search form submition
   $scope.findServer = function() {
@@ -331,8 +329,11 @@ function menuController($scope, $location, $rootScope) {
   };
 }
 
-
-
+//Controller for zabbix overview (overview.html)
+//$rootScope for global vars;
+//$scope for manipulation
+//$http for requests
+//$q is API to work with promises
 function overviewController($rootScope, $scope, $http, $q) {
 
   //should not be accessible for guests anyway
@@ -352,6 +353,9 @@ function overviewController($rootScope, $scope, $http, $q) {
           output: ['groupid', 'name'],
           sortfield: 'name',
           real_hosts: true
+        },
+        filter: {
+          name: 'project'
         }
       }); //will work with request through $q
     var triggersRequest = $http.post(api_url, {
@@ -380,7 +384,6 @@ function overviewController($rootScope, $scope, $http, $q) {
 
       //TODO: add auto update feature to overview
 
-
     //$q is internal kriskowal's Q library implementation
     //it provides API to work with promises
     $q.all([groupsRequest, triggersRequest]).then(function (data) {
@@ -391,13 +394,13 @@ function overviewController($rootScope, $scope, $http, $q) {
 
       function initializeData(groupsData) { //adding needed fields to groupsData object
         var deferred = $q.defer();
-        for (var i=0; i<groupsData.length; i++) {
+        for (var i = groupsData.length - 1; i >= 0; i--) {
           groupsData[i].lastchange = 0;
           groupsData[i].lastchange_words = "";
           groupsData[i].errors = 0;
           groupsData[i].errors_level = 0;
           triggerDetails[groupsData[i].groupid] = [];
-        }
+        };
         deferred.resolve(); //promise used to ensure that data first will be initialized
         return deferred.promise;
       }
@@ -434,7 +437,11 @@ function overviewController($rootScope, $scope, $http, $q) {
   }
 }
 
-
+//Controller for all servers overview (servers.html)
+//$rootScope for global vars;
+//$scope for manipulation
+//$http for requests
+//$routeParams to get URL parameters
 function serversController($rootScope, $scope, $http, $routeParams) {
 
   if ($rootScope.loggedIn) {
@@ -458,10 +465,12 @@ function serversController($rootScope, $scope, $http, $routeParams) {
   $('#filterInput').focus();
 }
 
+//Controller for server details (serverDetails.html)
+//TODO
 function serversDetailsController($rootScope, $scope, $http, $routeParams) {
   //TODO NON PRIORITY
 
-//   if ($rootScope.loggedIn) {
+  //   if ($rootScope.loggedIn) {
   //     //redo UI, add all graphs on one page, make views for all servers unified
 
   // //**************standard testing area*************//
@@ -871,6 +880,12 @@ function serversDetailsController($rootScope, $scope, $http, $routeParams) {
   //   }
 }
 
+//Controller for all servers in a project overview (project.html)
+//$rootScope for global vars;
+//$scope for manipulation
+//$http for requests
+//$routeparams for getting URL parameters
+//$location for redirecting
 function projectController($rootScope, $scope, $http, $routeParams, $location) {
 
   //redirects back to main page if user comes to this url without projectId
@@ -902,19 +917,17 @@ function projectController($rootScope, $scope, $http, $routeParams, $location) {
   $('#filterInput').focus();
 }
 
-
+//Controller used for dashboard (dashboard.html)
+//$http for requests;
+//$rootScope for global vars;
+//$scope for manipulation
+//$location for checking if user left dashboard
+//localStorageService for saving selected groups
+//$q for working with promises
 function dashboardController($scope, $http, $rootScope, $location, localStorageService, $q) {
-  //Controller used for dashboard
-  //$http for requests;
-  //$rootScope for global vars;
-  //$scope for manipulation
-  //$location for checking if user left dashboard
-  //localStorageService for saving selected groups
-  //$q for working with promises
-
 
   //variables
-  $rootScope.fullscreen = 'padding-left:2px; padding-right:0;'; //making dashboard wider
+  $rootScope.fullscreen = 'padding-left:2px; padding-right:2px;'; //making dashboard wider
   $scope.selectedGroups = {};
   var firstTime = true,
     groupSelectorShown = true;
@@ -924,7 +937,7 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
 
     //stop this function execution after leaving dashboard
     if ($location.path() != '/dashboard') {
-      console.log('stopping bar()');
+      // console.log('stopping bar()');
       $rootScope.fullscreen = '';
       return;
     }
@@ -956,8 +969,8 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
         }
       });
 
-    setTimeout(bar, hostgroupUpdateInterval); //10 minutes
-    //it is not intended for hostgroups to be added/removed frequently hence the interval
+    setTimeout(bar, hostgroupUpdateInterval); //hostgroupUpdateInterval defined at the top
+    //it is not intended for hostgroups to be added/removed frequently hence the big interval
   })();
 
   //getting current active triggers
@@ -965,7 +978,7 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
 
     //stop this function execution after leaving dashboard
     if ($location.path() != '/dashboard') {
-      console.log('stopping foo()'); //debugging
+      // console.log('stopping foo()'); //debugging
       $rootScope.fullscreen = '';
       return;
     }
@@ -1017,11 +1030,11 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
 
         //when triggers divs are successfully rendered attaching hover event
         $scope.$on('triggersRenderingFinished', function() {
-          //on hover on notifications highlight the appropriate .server div
+          //on hover on notifications highlight zoom the appropriate .server div
           $('div[id^="notification-"]').hover(
             function () {
               $('#'+$(this).attr('id').substring(13)).
-              addClass('zoomUp'); //-webkit/-o/-moz -transform: scale(2) = 200% zoom
+              addClass('zoomUp'); //200% zoom, check style.css for details
             },
             function () {
               $('#'+$(this).attr('id').substring(13)).
@@ -1037,25 +1050,15 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
 
   //remove old tooltips
   function removePrevTooltips(triggersData, whereFrom) {
-    console.log(whereFrom + ' destorying tooltips and classes ' + new Date().getTime());  //debugging
-    $('.server').tooltip('destroy');
-    $('.server').removeClass('error1 error2 error3 error4 error5');
+    $('.server').tooltip('destroy').removeClass('error1 error2 error3 error4 error5');
     return true;
   }
 
   //add new tooltips
   function tooltipsHover(triggersData, whereFrom) {
-    console.log(whereFrom + ' adding tooltips and classes ' + new Date().getTime());  //debugging
-    console.log(triggersData);
     for (var i = triggersData.length - 1; i >= 0; i--) {
-
-      if ($('#'+triggersData[i].hosts[0].hostid).hasClass('error')) {
-        console.log($('#'+triggersData[i].hosts[0].hostid).attr('class'));
-      } else {
-        $('#'+triggersData[i].hosts[0].hostid).tooltip({title: triggersData[i].description});
-        $('#'+triggersData[i].hosts[0].hostid).addClass('error'+triggersData[i].priority);
-      }
-
+        $('#'+triggersData[i].hosts[0].hostid).tooltip({title: triggersData[i].description})
+          .addClass('error'+triggersData[i].priority);
     }
   }
 
@@ -1082,10 +1085,16 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
       $scope.groupSelectorShown = 'Hide';
     }
   }
-
 }
-  
+
+//Controller for search of servers and groups in the system (search.html)
+//$rootScope for global vars;
+//$scope for manipulation
+//$http for requests
+//$routeParams for getting URL parameteres
+//$location for redirecting  
 function searchController($rootScope, $scope, $http, $routeParams, $location) {
+
   $scope.searchPhrase = $routeParams.searchString;
 
   //if users enters url without search string
@@ -1099,13 +1108,13 @@ function searchController($rootScope, $scope, $http, $routeParams, $location) {
   if ($rootScope.loggedIn) {
 
     //if users enters correct name of server, redirects to the page of server
-    var serverLength = $rootScope.serversOnline.length;
-    for (var i=0; i<serverLength; i++) {
+    for (var i = $rootScope.serversOnline.length - 1; i >= 0; i--) {
       if ($rootScope.serversOnline[i].name == $routeParams.searchString) {
         $location.path('/servers/' + $rootScope.serversOnline[i].hostid);
       }
-    }
+    };
 
+    //host and hostgroup search query are async
     //getting hosts
     $http.post(api_url, {
       jsonrpc: "2.0",
@@ -1143,5 +1152,4 @@ function searchController($rootScope, $scope, $http, $routeParams, $location) {
       });
 
   }
-
 }
