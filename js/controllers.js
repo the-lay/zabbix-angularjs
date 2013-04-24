@@ -340,6 +340,13 @@ function overviewController($rootScope, $scope, $http, $q) {
   //extra security just in case
   if ($rootScope.loggedIn) {
 
+    //pluralization of error notifications on overview
+    $scope.groupErrorsPluralize = {
+      0: ' ',
+      one: '{} error!',
+      other: '{} errors!'
+    };
+
     //severity of triggers
     $scope.triggerSeverity = ['Fine', 'Information', 'Warning', 'Average', 'High', 'Disaster'];
 
