@@ -4,11 +4,18 @@
 */
 
 /** 
-* Global variable that specificies the direct URL of Zabbix JSON-RPC API.
+* Global variable that specificies the direct URL to Zabbix JSON-RPC API.
 * @global 
 * @kind constant
 */
 var api_url = 'http://zabbixcm02.internal.corp/zabbix/api_jsonrpc.php';
+
+/** 
+* Global variable that specificies the direct URL to Zabbix.
+* @global 
+* @kind constant
+*/
+var zabbix_url = 'http://zabbixcm02.internal.corp/zabbix';
 
 /** 
 * Global variable that specificies the update interval of notifications in Dashboard.
@@ -34,7 +41,7 @@ hostgroupUpdateInterval = 600000; //10 minutes
 * // returns "23 02 1993, 12:26:30"
 * dateConverter(730491990);
 */
-function dateConverter(timestamp) {
+function dateConverter(timestamp, format) {
 
   //JS uses nanoseconds, hence the *100 multiplication
   var a = new Date(timestamp * 1000);
@@ -58,9 +65,14 @@ function dateConverter(timestamp) {
     sec = "0" + sec;
   }
 
-  //returns in format 'd M Y, H:i:s'
-  return a.getDate() + ' ' + months[a.getMonth()] + ' ' + a.getFullYear()
-    + ', ' + hrs + ':' + min + ':' + sec;
+  if (!format) {
+    //returns in format 'd M Y, H:i:s'
+    return a.getDate() + ' ' + months[a.getMonth()] + ' ' + a.getFullYear()
+      + ', ' + hrs + ':' + min + ':' + sec;
+    } else if (format === "time") {
+      return hrs + ':' + min + ':' + sec;
+    }
+
 }
 
 /**
@@ -565,419 +577,49 @@ function serversController($rootScope, $scope, $http, $routeParams) {
   $('#filterInput').focus();
 }
 
-//Controller for server details (serverDetails.html)
-//TODO
-function serversDetailsController($rootScope, $scope, $http, $routeParams) {
-  //TODO NON PRIORITY
+/**
+* Controller used for detail overview of specific server. Used with view serverDetails.html.
+* Parameters are dependency injected.
+* @function serversDetailsController
+* @param $rootScope Used for global vars.
+* @param $scope Used for data manipulation.
+* @param $http Used for handling XHR requests.
+* @param $routeParams Used for requesting URL parameters.
+* @param $location Used for handing redirecting.
+*/
+function serversDetailsController($rootScope, $scope, $http, $routeParams, $location) {
 
-  //   if ($rootScope.loggedIn) {
-  //     //redo UI, add all graphs on one page, make views for all servers unified
+    //redirects back to main page if user comes to this url with serverId
+    if (!$routeParams.serverId) {
+      $location.path('/');
+    }
 
-  // //**************standard testing area*************//
-  //     // $http.post(api_url, {
-  //     //   jsonrpc: '2.0',
-  //     //   id: $rootScope.auth_id,
-  //     //   auth: $rootScope.auth,
-  //     //   method: 'graph.get',
-  //     //   params: {
-  //     //     hostids: $routeParams.serverId,
-  //     //     output: ['graphid', 'name']
-  //     //   }
-  //     // }).success(function (data) {
-  //     //   for (var i=0; i<data.result.length; i++) {
-  //     //     if (data.result[i].name == 'CPU load') {
-  //     //       $scope.loadId = data.result[i].graphid;
-  //     //     }
-  //     //     else if (data.result[i].name == 'CPU utilization') {
-  //     //       $scope.utilId = data.result[i].graphid;
-  //     //     }
-  //     //     else if (data.result[i].name == 'Available memory') {
-  //     //       $scope.memId = data.result[i].graphid;
-  //     //     }
-  //     //   }
-  //     //   //console.log(data);
-  //     // });
-
-  // //**************standard testing area*************//
-
-  // //**************highcharts testing area*************//
-
-  // //testing data
-
-  //   var dataForCharts = [
-  //           {
-  //               name: 'Dummy data 1',
-  //               // Define the data points. All series have a dummy year
-  //               // of 1970/71 in order to be compared on the same x axis. Note
-  //               // that in JavaScript, months start at 0 for January, 1 for February etc.
-  //               data: [
-  //                   [Date.UTC(2013,  1, 10), 1.0],
-  //                   [Date.UTC(2013,  1, 18), 1.0],
-  //                   [Date.UTC(2013,  1, 24), 1.0],
-  //                   [Date.UTC(2013,  2,  4), 0.98],
-  //                   [Date.UTC(2013,  2, 11), 0.67],
-  //                   [Date.UTC(2013,  2, 15), 2.73],
-  //                   [Date.UTC(2013,  2, 25), 2.61]
-  //               ]
-  //           }, {
-  //               name: 'Dummy data 2',
-  //               data: [
-  //                   [Date.UTC(2013,  1,  1), 1.38],
-  //                   [Date.UTC(2013,  1,  8), 1.48],
-  //                   [Date.UTC(2013,  1, 21), 1.5 ],
-  //                   [Date.UTC(2013,  2, 12), 1.89],
-  //                   [Date.UTC(2013,  2, 25), 2.0 ]
-  //               ]
-  //           }, {
-  //               name: 'Dummy data 3',
-  //               data: [
-  //                   [Date.UTC(2013,  1,  1), 0.62],
-  //                   [Date.UTC(2013,  1,  7), 0.65],
-  //                   [Date.UTC(2013,  1, 23), 0.77],
-  //                   [Date.UTC(2013,  2,  8), 0.77],
-  //                   [Date.UTC(2013,  2, 14), 0.79],
-  //                   [Date.UTC(2013,  2, 24), 0.86]
-  //               ]
-  //           }]
-
-  // // functions used for zooming
-  //     var currentZoom = null;
-  //         var nowTime = new Date().getTime(); //now
-  //         var fromTime = nowTime - (3600000 * 30 * 24);
-
-  //         $scope.setZoom = function(zoom) {
-  //           if (zoom == null) {
-  //             //todo dates
-  //             masterChart.xAxis[0].setExtremes(fromTime, nowTime, true, true);
-  //             setZoom(fromTime, nowTime);
-  //             return;
-  //           } else {
-  //             currentZoom = zoom;
-  //             var from = nowTime - (zoom * 3600000);
-  //             masterChart.xAxis[0].setExtremes(from, nowTime, true, true);
-  //             setZoom(from, nowTime);
-  //           }
-  //         }
-  //         //todo setzoom na 30 dnej ne odinakovo vigljadit master timeline srazu posle zagruzki stranici
-  //         // i posle nazhatija
-  //         var setZoom = function(zoomStart, zoomEnd) {
-  //           masterChart.xAxis[0].removePlotBand('mask-before');
-  //           masterChart.xAxis[0].removePlotBand('mask-after');
-
-  //           masterChart.xAxis[0].addPlotBand({
-  //             id: 'mask-before',
-  //             from: fromTime, //TODO start point
-  //             to: zoomStart,
-  //             color: 'rgba(0,0,0,0.2)'
-  //           });
-
-  //           masterChart.xAxis[0].addPlotBand({
-  //             id: 'mask-after',
-  //             from: zoomEnd,
-  //             to: nowTime, //TODO end point of graphs
-  //             color: 'rgba(0,0,0,0.2)'
-  //           });
-
-  //           updateGraphs(zoomStart, zoomEnd);
-  //         };
-  //         var updateGraphs = function(min, max) {
-  //           cpuChart.xAxis[0].setExtremes(min, max);
-  //           loadChart.xAxis[0].setExtremes(min, max);
-  //           memoryGraph.xAxis[0].setExtremes(min, max);
-  //           //diskIOGraph.xAxis[0].setExtremes(min, max);
-  //           //networkIOGraph.xAxis[0].setExtremes(min, max);     
-  //         };
-
-  //     //master timeline
-  //         var masterChart = new Highcharts.Chart({
-  //           chart: {
-  //             renderTo: 'masterTimeline',
-  //             height: 90,
-  //             zoomType: 'x',
-  //             events: {
-  //               selection: function (event) {
-  //                 setZoom(event.xAxis[0].min, event.xAxis[0].max);
-  //                 return false;
-  //               }
-  //             }
-  //           },
-  //           title: {
-  //             text: null
-  //           },
-  //           xAxis: {
-  //             type: 'datetime',
-  //             minRange: 3600000, //1 hour
-  //             title: {
-  //               text: null
-  //             },
-  //             plotBands: [{
-  //               id: 'mask-before',
-  //               from: fromTime,
-  //               to: nowTime,
-  //               color: 'rgba(0,0,0,0.2)'
-  //             }]
-  //           },
-  //           yAxis: {
-  //             gridLineWidth: 0,
-  //             labels: {
-  //               enabled: false
-  //             },
-  //             min: 0.6,
-  //             title: {
-  //               text: null
-  //             },
-  //             showFirstLabel: false
-  //           },
-  //           tooltip: {
-  //             formatter: function() {
-  //               return false;
-  //             }
-  //           },
-  //           legend: {
-  //             enabled: false
-  //           },
-  //           credits: {
-  //             enabled: false
-  //           },
-  //           plotOptions: {
-  //             series: {
-  //               animation: false,
-  //               fillColor: {
-  //                 linearGradient: [0, 0, 0, 70],
-  //                 stops: [
-  //                   [0, '#4572A7'],
-  //                   [1, 'rgba(0,0,0,0)']
-  //                 ]
-  //               },
-  //               lineWidth: 1,
-  //               marker: {
-  //                 enabled: false
-  //               },
-  //               shadow: false,
-  //               states: {
-  //                 hover: {
-  //                   lineWidth: 1
-  //                 }
-  //               },
-  //               enableMouseTracking: false
-  //             }
-  //           },
-
-  //           series: [{
-  //             type: 'area',
-  //             //pointStart: fromTime,
-  //             data: [
-  //               [fromTime, 1],
-  //               [nowTime, 1]
-  //             ]
-  //           }],
-  //           exporting: {
-  //             enabled: false
-  //           }
-  //         });
-
-  //     //cpu load graph
-  //         var loadChart = new Highcharts.Chart({
-  //           chart: {
-  //             renderTo: 'loadGraph',
-  //             height: 250,
-  //             type: 'spline',
-  //             animation: false,
-  //             zoomType: 'x',
-  //             events: {
-  //               selection: function (event) {
-  //                 if (event.resetSelection) {
-  //                   $scope.setZoom(currentZoom);
-  //                 } else {
-  //                   setZoom(event.xAxis[0].min, event.xAxis[0].max);
-  //                 }
-  //               }
-  //             },
-  //             resetZoomButton: {
-  //               position: {
-  //                 x: 0,
-  //                 y: -30
-  //               },
-  //               theme: {
-  //                 fill: 'white',
-  //                 stroke: 'silver',
-  //                 r: 0,
-  //                 states: {
-  //                     hover: {
-  //                         fill: '#41739D',
-  //                         style: {
-  //                             color: 'white'
-  //                         }
-  //                     }
-  //                 }
-  //               }
-  //             }
-  //           },
-  //           title: {
-  //             text: 'CPU Load'
-  //           },
-  //           xAxis: {
-  //             minRange: 3600000*2,
-  //             type: 'datetime'
-  //           },
-  //           yAxis: {
-  //               title: { text: null },
-  //               min: 0
-  //           },
-  //           tooltip: {
-  //               formatter: function() {
-  //                 return '<b>'+ this.series.name +'</b><br/>'+
-  //                 Highcharts.dateFormat('%e. %b', this.x) +': '+ this.y +' m';
-  //               }
-  //           },
-  //           plotOptions: {
-  //             series: {
-  //               animation: false,
-  //               marker: {
-  //                 enabled: false
-  //               },
-  //               pointStart: fromTime
-  //             }
-  //           },
-  //           series: dataForCharts
-  //         });
-
-  //     //cpu util graph
-  //         var cpuChart = new Highcharts.Chart({
-  //           chart: {
-  //             renderTo: 'cpuGraph',
-  //             height: 250,
-  //             type: 'spline',
-  //             animation: false,
-  //             zoomType: 'x',
-  //             events: {
-  //               selection: function (event) {
-  //                 if (event.resetSelection) {
-  //                   $scope.setZoom(currentZoom);
-  //                   return;
-  //                 } else {
-  //                   setZoom(event.xAxis[0].min, event.xAxis[0].max);
-  //                 }
-  //               }
-  //             },
-  //             resetZoomButton: {
-  //               position: {
-  //                 x: 0,
-  //                 y: -30
-  //               },
-  //               theme: {
-  //                 fill: 'white',
-  //                 stroke: 'silver',
-  //                 r: 0,
-  //                 states: {
-  //                     hover: {
-  //                         fill: '#41739D',
-  //                         style: {
-  //                             color: 'white'
-  //                         }
-  //                     }
-  //                 }
-  //               }
-  //             }
-  //           },
-  //           title: {
-  //               text: 'CPU Utilization'
-  //           },
-  //           xAxis: {
-  //             minRange: 3600000*2,
-  //             type: 'datetime'
-  //           },
-  //           yAxis: {
-  //               title: { text: null },
-  //               min: 0
-  //           },
-  //           tooltip: {
-  //               formatter: function() {
-  //                 return '<b>'+ this.series.name +'</b><br/>'+
-  //                 Highcharts.dateFormat('%e. %b', this.x) +': '+ this.y +' m';
-  //               }
-  //           },
-  //           plotOptions: {
-  //             series: {
-  //               animation: false,
-  //               marker: {
-  //                 enabled: false
-  //               },
-  //               pointStart: fromTime
-  //             }
-  //           },
-  //           series: dataForCharts
-  //         });
-
-  //     //ram graph
-  //         var memoryGraph = new Highcharts.Chart({
-  //           chart: {
-  //                     renderTo: 'memoryGraph',
-  //                     height: 300,
-  //                     type: 'spline',
-  //                     animation: false,
-  //             zoomType: 'x',
-  //             events: {
-  //               selection: function (event) {
-
-  //                 if (event.resetSelection) {
-  //                   $scope.setZoom(currentZoom);
-  //                 } else {
-  //                   setZoom(event.xAxis[0].min, event.xAxis[0].max);
-  //                 }
-  //               }
-  //             },
-  //             resetZoomButton: {
-  //               position: {
-  //                 x: 0,
-  //                 y: -30
-  //               },
-  //               theme: {
-  //                 fill: 'white',
-  //                 stroke: 'silver',
-  //                 r: 0,
-  //                 states: {
-  //                     hover: {
-  //                         fill: '#41739D',
-  //                         style: {
-  //                             color: 'white'
-  //                         }
-  //                     }
-  //                 }
-  //               }
-  //             }
-  //                 },
-  //                 title: {
-  //                     text: 'Physical Memory'
-  //                 },
-  //                 xAxis: {
-  //                   minRange: 3600000*2,
-  //                     type: 'datetime'
-  //                 },
-  //                 yAxis: {
-  //                     title: { text: null },
-  //                     min: 0
-  //                 },
-  //                 tooltip: {
-  //                     formatter: function() {
-  //                       return false;
-  //                     }
-  //                 },
-  //                 plotOptions: {
-  //                   series: {
-  //                     animation: false,
-  //                     marker: {
-  //                       enabled: false
-  //                     },
-  //                     pointStart: fromTime
-  //                   }
-  //                 },
-  //                 series: dataForCharts
-  //         });
-
-  //     //**************highcharts testing area*************//
-    
-  //   }
+    if ($rootScope.loggedIn) {
+      //host info
+      $http.post(api_url, {
+        jsonrpc: '2.0',
+        id: $rootScope.auth_id,
+        auth: $rootScope.auth,
+        method: 'host.get',
+        params: {
+          selectInventory: true,
+          selectItems: ['name','lastvalue','units','itemid','lastclock'],
+          output: 'extend',
+          hostids: $routeParams.serverId
+        }
+      }).success(function (data) {
+        $scope.inventoryData = data.result[0].inventory;
+        $scope.serverName = data.result[0].name;
+        $scope.zabbix_url = zabbix_url;
+        $scope.hostId = $routeParams.serverId;
+        if ($scope.itemsData = data.result[0].items) {
+          for (var i = $scope.itemsData.length - 1; i >= 0; i--) {
+            $scope.itemsData[i].lastclock = dateConverter($scope.itemsData[i].lastclock, "time");
+          };
+        }
+        
+      });
+    }
 }
 
 /**

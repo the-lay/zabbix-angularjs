@@ -22,7 +22,7 @@
 
           <h4 class="groupNames"><strong>{{group.name}}</strong></h4><hr style="margin:0">
           <div id="{{host.hostid}}" ng-repeat="host in group.hosts | orderBy: 'name'" class="server" ng-show="host.status==0"> <!--status===0 means that this host is monitored-->
-            <a class="serverLink" href="http://zabbixcm02.internal.corp/zabbix/charts.php?hostid={{host.hostid}}&graphid=0">{{host.name}}</a>
+            <a class="serverLink" href="#/servers/{{host.hostid}}">{{host.name}}</a>
           </div>
         </div>
     </div>

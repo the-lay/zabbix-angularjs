@@ -27,7 +27,7 @@
               <tbody>
                 <tr ng-repeat="error in triggerDetails[group.groupid] | orderBy: '-priority'">
                   <td class="error{{error.priority}}">{{triggerSeverity[error.priority]}}</td>
-                  <td><a href="http://zabbixcm02.internal.corp/zabbix/charts.php?hostid={{error.hostid}}&graphid=0">{{error.hostname}}</a></td>
+                  <td><a href="#/servers/{{error.hostid}}">{{error.hostname}}</a></td>
                   <td>{{error.description}}</td>
                   <td>{{error.lastchange_words}}</td>
                 </tr>
