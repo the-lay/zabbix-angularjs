@@ -4,13 +4,23 @@
     <title ng-bind="page_title" ng-cloak></title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lte IE 8]>
+      <script>
+        document.createElement('ng-include');
+        document.createElement('ng-pluralize');
+        document.createElement('ng-view');
+        document.createElement('ng:include');
+        document.createElement('ng:pluralize');
+        document.createElement('ng:view');
+      </script>
+    <![endif]-->
     <base href="/zabbix/frontend/">
     <!--CSS-->
-    <!-- <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet"> -->
-<!--     <link href="css/bootstrap-responsive.min.css" rel="stylesheet"> -->
-    <!-- <link href="css/bootstrap-cosmo.min.css" rel="stylesheet"> --> <link href="//netdna.bootstrapcdn.com/bootswatch/2.3.1/cosmo/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- <link href="css/bootstrap-responsive.min.css" rel="stylesheet"> --> <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootswatch/2.3.1/cosmo/bootstrap.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
   </head>
   <body>

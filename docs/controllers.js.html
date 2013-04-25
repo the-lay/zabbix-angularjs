@@ -1,6 +1,33 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: controllers.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: controllers.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>/**
 * @file Main file of the application
-* @author Iļja Gubins <ilja.gubins@exigenservices.com>
+* @author Iļja Gubins &lt;ilja.gubins@exigenservices.com>
 */
 
 /** 
@@ -30,7 +57,7 @@ hostgroupUpdateInterval = 600000; //10 minutes
 * @function dateConverter
 * @param {timestamp} timestamp The timestamp in default Unix notation.
 * @returns {String} String The string with date in format of 'd M Y, H:i:s'
-* @example <caption>Example use of dateConverter() function</caption>
+* @example &lt;caption>Example use of dateConverter() function&lt;/caption>
 * // returns "23 02 1993, 12:26:30"
 * dateConverter(730491990);
 */
@@ -51,10 +78,10 @@ function dateConverter(timestamp) {
   if (hrs === 0) { 
     hrs = "0" + hrs;
   }
-  if (min < 10) {
+  if (min &lt; 10) {
     min = "0" + min;
   }
-  if (sec < 10) {
+  if (sec &lt; 10) {
     sec = "0" + sec;
   }
 
@@ -67,7 +94,7 @@ function dateConverter(timestamp) {
 * Function that returns current time in format of 'H:i:s'
 * @function timeConverter
 * @returns {String} String The string with time in format 'H:i:s'
-* @example <caption>Example use of timeCoverter() function</caption>
+* @example &lt;caption>Example use of timeCoverter() function&lt;/caption>
 * // returns "13:36:20"
 * timeCoverter();
 */
@@ -82,10 +109,10 @@ function timeConverter() {
   if (hours === 0) {
     hours = "0" + hours;
   }
-  if (minutes < 10) {
+  if (minutes &lt; 10) {
     minutes = "0" + minutes;
   }
-  if (seconds < 10) {
+  if (seconds &lt; 10) {
     seconds = "0" + seconds;
   }
 
@@ -247,6 +274,7 @@ app.run(function ($rootScope, $route, $http, $location, localStorageService) {
     }
   });
 });
+
 
 /**
 * HTTP interceptor, when there is AJAX request in progress, it shows "Loading".
@@ -467,7 +495,7 @@ function overviewController($rootScope, $scope, $http, $q) {
           output: ['triggerid', 'priority', 'lastchange', 'description']
         }
       }).success(function (data) {
-        for(var i=0; i<data.result.length; i++) {
+        for(var i=0; i&lt;data.result.length; i++) {
           data.result[i].lastchange_words = dateConverter(data.result[i].lastchange);
         }
       });
@@ -503,8 +531,8 @@ function overviewController($rootScope, $scope, $http, $q) {
 
       var promise = initializeData(groupsData);
       promise.then(function() {
-        for (var i=0; i<groupsData.length; i++) {
-          for (var j=0; j<triggerData.length; j++) {
+        for (var i=0; i&lt;groupsData.length; i++) {
+          for (var j=0; j&lt;triggerData.length; j++) {
 
             if (triggerData[j].groups[0].groupid === groupsData[i].groupid) {
             //if this trigger is related to this hostgroup
@@ -584,7 +612,7 @@ function serversDetailsController($rootScope, $scope, $http, $routeParams) {
   //     //     output: ['graphid', 'name']
   //     //   }
   //     // }).success(function (data) {
-  //     //   for (var i=0; i<data.result.length; i++) {
+  //     //   for (var i=0; i&lt;data.result.length; i++) {
   //     //     if (data.result[i].name == 'CPU load') {
   //     //       $scope.loadId = data.result[i].graphid;
   //     //     }
@@ -826,7 +854,7 @@ function serversDetailsController($rootScope, $scope, $http, $routeParams) {
   //           },
   //           tooltip: {
   //               formatter: function() {
-  //                 return '<b>'+ this.series.name +'</b><br/>'+
+  //                 return '&lt;b>'+ this.series.name +'&lt;/b>&lt;br/>'+
   //                 Highcharts.dateFormat('%e. %b', this.x) +': '+ this.y +' m';
   //               }
   //           },
@@ -893,7 +921,7 @@ function serversDetailsController($rootScope, $scope, $http, $routeParams) {
   //           },
   //           tooltip: {
   //               formatter: function() {
-  //                 return '<b>'+ this.series.name +'</b><br/>'+
+  //                 return '&lt;b>'+ this.series.name +'&lt;/b>&lt;br/>'+
   //                 Highcharts.dateFormat('%e. %b', this.x) +': '+ this.y +' m';
   //               }
   //           },
@@ -1268,4 +1296,26 @@ function searchController($rootScope, $scope, $http, $routeParams, $location) {
       });
 
   }
-}
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Global</h3><ul><li><a href="global.html#$routeProvider">$routeProvider</a></li><li><a href="global.html#api_url">api_url</a></li><li><a href="global.html#app">app</a></li><li><a href="global.html#dashboardController">dashboardController</a></li><li><a href="global.html#dateConverter">dateConverter</a></li><li><a href="global.html#hostgroupUpdateInterval">hostgroupUpdateInterval</a></li><li><a href="global.html#loginController">loginController</a></li><li><a href="global.html#logoutController">logoutController</a></li><li><a href="global.html#menuController">menuController</a></li><li><a href="global.html#myHttpInterceptor">myHttpInterceptor</a></li><li><a href="global.html#onFinishRender">onFinishRender</a></li><li><a href="global.html#overviewController">overviewController</a></li><li><a href="global.html#projectController">projectController</a></li><li><a href="global.html#searchController">searchController</a></li><li><a href="global.html#serversController">serversController</a></li><li><a href="global.html#timeConverter">timeConverter</a></li><li><a href="global.html#triggerUpdateInterval">triggerUpdateInterval</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Thu Apr 25 2013 14:40:29 GMT+0300 (EEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
