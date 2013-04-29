@@ -1,4 +1,8 @@
-/* Start angularLocalStorage */
+'use strict';
+/**
+* @file AngularJS pplication configuration file.
+* @author Gregory Pike <greg@gregpike.ca>
+*/
 
 var angularLocalStorage = angular.module('LocalStorageModule', []);
 

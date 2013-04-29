@@ -221,7 +221,7 @@ function overviewController($rootScope, $scope, $http, $q) {
           groupsData[i].errors = 0;
           groupsData[i].errors_level = 0;
           triggerDetails[groupsData[i].groupid] = [];
-        };
+        }
         deferred.resolve(); //promise used to ensure that data first will be initialized
         return deferred.promise;
       }
@@ -334,7 +334,7 @@ function serversDetailsController($rootScope, $scope, $http, $routeParams, $loca
         if ($scope.itemsData = data.result[0].items) {
           for (var i = $scope.itemsData.length - 1; i >= 0; i--) {
             $scope.itemsData[i].lastclock = dateConverter($scope.itemsData[i].lastclock, "time");
-          };
+          }
         }
         
       });
@@ -405,7 +405,7 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
   (function bar() {
 
     //stop this function execution after leaving dashboard
-    if ($location.path() != '/dashboard') {
+    if ($location.path() !== '/dashboard') {
       // console.log('stopping bar()');
       $rootScope.fullscreen = '';
       return;
@@ -446,7 +446,7 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
   (function foo() {
 
     //stop this function execution after leaving dashboard
-    if ($location.path() != '/dashboard') {
+    if ($location.path() !== '/dashboard') {
       // console.log('stopping foo()'); //debugging
       $rootScope.fullscreen = '';
       return;
@@ -544,7 +544,7 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
       $scope.selectedGroups[groupId] = true;
       localStorageService.add('selectedGroups', JSON.stringify($scope.selectedGroups));
     }
-  }
+  };
 
   //show/hide group selector
   $scope.toggleGroupSelector = function() {
@@ -556,7 +556,7 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
       groupSelectorShown = true;
       $scope.groupSelectorShown = 'Hide';
     }
-  }
+  };
 }
 
 
@@ -586,10 +586,10 @@ function searchController($rootScope, $scope, $http, $routeParams, $location) {
 
     //if users enters correct name of server, redirects to the page of server
     for (var i = $rootScope.serversOnline.length - 1; i >= 0; i--) {
-      if ($rootScope.serversOnline[i].name == $routeParams.searchString) {
+      if ($rootScope.serversOnline[i].name === $routeParams.searchString) {
         $location.path('/servers/' + $rootScope.serversOnline[i].hostid);
       }
-    };
+    }
 
     //host and hostgroup search query are async
     //getting hosts

@@ -1,6 +1,6 @@
 'use strict';
 /**
-* @file AngularJS pplication configuration file.
+* @file AngularJS application configuration file.
 * @author Iļja Gubins <ilja.gubins@exigenservices.com>
 */
 
@@ -68,8 +68,7 @@ function dateConverter(timestamp, format) {
 
   if (!format) {
     //returns in format 'd M Y, H:i:s'
-    return a.getDate() + ' ' + months[a.getMonth()] + ' ' + a.getFullYear()
-      + ', ' + hrs + ':' + min + ':' + sec;
+    return a.getDate() + ' ' + months[a.getMonth()] + ' ' + a.getFullYear() + ', ' + hrs + ':' + min + ':' + sec;
   } else if (format === "time") {
     return hrs + ':' + min + ':' + sec;
   }
@@ -254,7 +253,7 @@ app.run(function ($rootScope, $route, $http, $location, localStorageService) {
 
     //dashboard has different style, we need to assure that after leaving it
     //user will not have that style used anymore
-    if ($location.path() != '/dashboard') {
+    if ($location.path() !== '/dashboard') {
       $rootScope.fullscreen = '';
       return;
     }
