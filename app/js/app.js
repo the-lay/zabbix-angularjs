@@ -9,14 +9,14 @@
 * @global 
 * @kind constant
 */
-var api_url = 'http://zabbixcm02.internal.corp/zabbix/api_jsonrpc.php';
+var api_url = 'http://zabbixcm02.internal.corp/api_jsonrpc.php';
 
 /** 
 * Global variable that specificies the direct URL to Zabbix.
 * @global 
 * @kind constant
 */
-var zabbix_url = 'http://zabbixcm02.internal.corp/zabbix';
+var zabbix_url = 'http://zabbixcm02.internal.corp';
 
 /** 
 * Global variable that specificies the update interval of notifications in Dashboard.

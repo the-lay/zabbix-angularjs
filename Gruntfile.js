@@ -55,6 +55,19 @@ module.exports = function(grunt) {
       files: ['app/js/app.js', 'app/js/controllers.js', 'app/js/localStorageModule.js']
     },
 
+    watch: {
+      files: 'app/js/*.js',
+      tasks: ['uglify', 'concat']
+    },
+
+    karma: {
+      unit: {
+        configFile: 'test/karma.conf.js',
+        runnerPort: 9999,
+        singleRun: true,
+        browsers: ['PhantomJS']
+      }
+    }
 
   });
 
@@ -73,10 +86,14 @@ module.exports = function(grunt) {
   //Concatenate JS files
   grunt.loadNpmTasks('grunt-contrib-concat');
 
+  //Watch for changes
+  grunt.loadNpmTasks('grunt-contrib-watch');
 
+  //Unit E2E testing
+  grunt.loadNpmTasks('grunt-karma');
 
 
   // Default task(s).
-  grunt.registerTask('default', ['cssmin', 'uglify', 'concat']);
+  grunt.registerTask('default', ['cssmin', 'karma', 'uglify', 'concat']);
 
 };
