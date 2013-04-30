@@ -1,0 +1,35 @@
+<div class="container-fluid" style="{{fullscreen}}">
+  <div class="row-fluid" style="{{fullscreen}}">
+
+    <div class="span2">
+      <div id="groups">
+        <h3 style="margin:0">Groups <small><a ng-click="toggleGroupSelector()">Hide</a></small></h3><hr style="margin-top:0">
+        <ul id="groupSelector"class="nav nav-pills nav-stacked" ng-cloak>
+          <li ng-repeat="group in hostgroupsData" style="height:31px; margin-bottom:7px;">
+            <a ng-click="selectGroup(group.groupid)"><i class="icon-ok icon-white" ng-show="selectedGroups[group.groupid] || selectedGroups['all']"></i>{{group.name}}</a>
+          </li>
+        </ul>
+      </div>
+      <div id="notifications">
+        <h3 style="margin:0">Notifications</h3>
+        <div style="margin-bottom:10px;" id="notification-{{trigger.hosts[0].hostid}}" style="margin-top:0; padding-top:0" ng-repeat="trigger in triggersData | orderBy: '-priority'" class="error{{trigger.priority}}" ng-show="selectedGroups[trigger.groups[0].groupid]" on-finish-render="triggersRenderingFinished"><a>{{trigger.description}}</a></div>
+        <p><a ng-click="toggleGroupSelector()">{{groupSelectorShown || 'Hide'}} group selection</a></p>
+      </div>
+    </div>
+
+    <div id="serversDiv" class="span10">
+        <div class="row-fluid" ng-repeat="group in hostgroupsData" id="groupHosts{{group.groupid}}" ng-show="selectedGroups[group.groupid] || selectedGroups['all']" on-finish-render="serversRenderingFinished">
+
+          <h4 class="groupNames"><strong>{{group.name}}</strong></h4><hr style="margin:0">
+          <div id="{{host.hostid}}" ng-repeat="host in group.hosts | orderBy: 'name'" class="server" ng-show="host.status==0"> <!--status===0 means that this host is monitored-->
+            <a class="serverLink" href="#/servers/{{host.hostid}}">{{host.name}}</a>
+          </div>
+        </div>
+    </div>
+
+    <div ng-show="lastUpdated" style="margin-bottom:5px;" class="pull-right">
+      Last updated: <strong>{{lastUpdated}}</strong><br/>
+    </div>
+
+  </div>
+</div>

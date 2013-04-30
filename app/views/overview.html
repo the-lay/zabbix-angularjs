@@ -1,0 +1,51 @@
+<div class="container-fluid">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Group name</th>
+        <th>Servers status</th>
+        <th>Latest issue</th>
+      </tr>
+    </thead>
+    <tbody ng-repeat="group in serverGroups | orderBy:'-errors_level'">
+        <tr>
+          <td><a href="#/project/{{group.groupid}}">{{group.name}}</a></td>
+          <td colspan="{{((group.lastchange) && ('1') || ('2'))}}" class="{{'error' + group.errors_level}}"><a class="underlined" onClick="$('#errorsRow'+{{$index}}).toggle();"><ng-pluralize count="group.errors" when="groupErrorsPluralize"></ng-pluralize></a></td>
+          <td ng-show="group.lastchange">{{group.lastchange_words}}</td>
+        </tr>
+        <tr style="display:none; margin: 0; padding: 0;" id="errorsRow{{$index}}">
+          <td colspan="3">
+            <table class="table table-hover table-condensed">
+              <thead>
+                <tr>
+                  <th>Severity</th>
+                  <th>Server</th> 
+                  <th>Description</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="error in triggerDetails[group.groupid] | orderBy: '-priority'">
+                  <td class="error{{error.priority}}">{{triggerSeverity[error.priority]}}</td>
+                  <td><a href="#/servers/{{error.hostid}}">{{error.hostname}}</a></td>
+                  <td>{{error.description}}</td>
+                  <td>{{error.lastchange_words}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+  <table class="pull-right">
+    <tr>
+      <td class="hidden-phone">Legend:&nbsp</td>
+      <td class="error0 table-bordered">&nbspFine&nbsp</td>
+      <td class="error1 table-bordered">&nbspInformation&nbsp</td>
+      <td class="error2 table-bordered">&nbspWarning&nbsp</td>
+      <td class="error3 table-bordered">&nbspAverage&nbsp</td>
+      <td class="error4 table-bordered">&nbspHigh&nbsp</td>
+      <td class="error5 table-bordered">&nbspDisaster&nbsp</td>
+    </tr>
+  </table>
+</div>

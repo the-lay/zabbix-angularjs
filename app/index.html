@@ -1,0 +1,113 @@
+<!doctype html>
+<html ng-app="zabbix">
+  <head>
+    <title ng-bind="page_title" ng-cloak></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lte IE 8]>
+      <script>
+        document.createElement('ng-include');
+        document.createElement('ng-pluralize');
+        document.createElement('ng-view');
+        document.createElement('ng:include');
+        document.createElement('ng:pluralize');
+        document.createElement('ng:view');
+      </script>
+    <![endif]-->
+    <base href="/zabbix/frontend/">
+    <!--CSS-->
+    <link href="//netdna.bootstrapcdn.com/bootswatch/2.3.1/cosmo/bootstrap.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <!-- <link href="css/min/style.min.css" rel="stylesheet"> Unused, using CDN. -->
+  </head>
+  <body>
+    <nav ng-cloak>
+      <div id="head" class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+          <div class="container-fluid" ng-controller="menuController">
+            <a class="btn btn-navbar collapsed" id="collapsingBtn" data-toggle="collapse" data-target=".nav-collapse">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </a>
+            <a class="brand" href="http://zabbixcm02.internal.corp/zabbix">Zabbix</a>
+            
+            <div ng-show="loggedIn" class="nav-collapse collapse">
+              <ul class="nav">
+                <li class="active"><a href="#/overview">Overview</a></li>
+                <li><a href="#/servers">Servers</a></li>
+                <li><a href="#/dashboard">Dashboard</a></li>
+              </ul>
+
+              <div class="hidden-desktop navbar-search input-append" ng-show="loggedIn">
+                <form class="hidden-desktop" ng-submit="findServer()" style="margin-bottom:0;height:30px;">
+                  <input class="input-xxlarge" ng-model="searchQuery" type="text" placeholder="Find server (or group)">
+                  <button class="btn" type="button" ng-click="findServer()" style="margin-top:0;height:30px;">Search</button>
+                </form>
+              </div>
+
+              <div ng-show="loggedIn" class="visible-desktop navbar-search input-append pull-right" style="margin-right:10px;">
+                <form style="margin-bottom:0" ng-submit="findServer()">
+                  <input class="input-medium" id="serverSearch" ng-model="searchQuery" type="text" list="servers" placeholder="Find server (or group)">
+                  <button class="btn" type="button" ng-click="findServer()"><i class="icon-arrow-right"> </i></button>
+                  <datalist id="servers">
+                    <select style="display:none">
+                      <!--hack for old browsers 
+                      modern browsers will see html5 autocomplete options, old will not have autocomplete available-->
+                      <option ng-repeat="server in serversOnline">{{server.name}}</option>
+                    </select>
+                  </datalist>
+                </form>
+              </div>
+
+            </div>
+          </div> <!-- end of menuController -->
+        </div>
+      </div>
+    </nav>
+    <div class="row hidden-phone hidden-tablet" style="margin-top:60px"></div>
+    <div class="container-fluid" style="{{fullscreen}}">
+      <div id="loading" class="loading-indicator">Loading...</div>
+
+      <div ng-cloak ng-hide="loggedIn" class="login-container" ng-controller="loginController">
+        <p class="lead" style="text-align: center">Please login</p>
+        <form class="form-horizontal" name="loginForm" ng-submit="login()" action="">
+          <div class="control-group">
+            <label class="control-label" for="inputName">Username</label>
+            <div class="controls">
+              <input type="text" ng-model="inputName" id="inputName" placeholder="Username" required>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="inputPassword">Password</label>
+            <div class="controls">
+              <input type="password" ng-model="inputPassword" id="inputPassword" placeholder="Password" required>
+            </div>
+          </div>
+          <div class="control-group">
+            <div class="controls">
+              <button type="submit" class="btn">Sign in</button>
+              <span ng-cloak ng-show="error" class="help-block">{{error.data}}</span>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div ng-show="loggedIn" id="content" class="container-fluid" ng-view ng-cloak style="{{fullscreen}}"></div>
+
+      <hr>
+      <footer class="footer">
+        &copy; 2013<br/>
+        <a href="#/logout">Logout</a><br/><br/>
+      </footer>
+    </div>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.js"></script>
+    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+    <script src="js/min/js.min.js"></script>
+  </body>
+</html>
