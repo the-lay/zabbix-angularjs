@@ -7,13 +7,12 @@ describe('application', function() {
 
   });
 
-
   it('it should automatically redirect to /login', function() {
     expect(browser().location().url()).toBe('/login/');
   });
 
   it('test scenario', function() {
-    expect(browser().location().url()).toBe('/404'); //INTENTIONALLY FALSE
+    expect(browser().location().url()).not('/404');
   });
 
 });

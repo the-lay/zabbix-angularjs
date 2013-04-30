@@ -50,6 +50,9 @@ function loginController($scope, $http, $rootScope, $location, localStorageServi
 
         $rootScope.auth = data.result;
         $rootScope.loggedIn = true;
+        $scope.inputName = "";
+        $scope.inputPassword = "";
+        $('#inputName').focus();
 
         //getting list of monitored servers for autocompletion in search box
         $http.post(api_url, {

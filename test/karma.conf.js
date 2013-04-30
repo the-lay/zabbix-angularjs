@@ -5,8 +5,7 @@ urlRoot = 'e2e';
 files = [
   ANGULAR_SCENARIO,
   ANGULAR_SCENARIO_ADAPTER,
-  'test/scenarios/*.js',
-
+  'test/scenarios/*.js'
 ];
 proxies = {
   '/': 'http://zabbixcm02.internal.corp/frontend/'
