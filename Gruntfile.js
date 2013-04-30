@@ -94,6 +94,6 @@ module.exports = function(grunt) {
 
 
   // Default task(s).
-  grunt.registerTask('default', ['cssmin', 'karma', 'jsdoc', 'uglify', 'concat']); //not using watch, jshint
+  grunt.registerTask('default', ['karma', 'cssmin', 'jsdoc', 'uglify', 'concat']); //not using watch, jshint
 
 };

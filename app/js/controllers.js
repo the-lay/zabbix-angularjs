@@ -311,12 +311,13 @@ function serversController($rootScope, $scope, $http, $routeParams) {
 */
 function serversDetailsController($rootScope, $scope, $http, $routeParams, $location) {
 
-    //redirects back to main page if user comes to this url with serverId
-    if (!$routeParams.serverId) {
-      $location.path('/');
-    }
-
     if ($rootScope.loggedIn) {
+
+      //redirects back to main page if user comes to this url with serverId
+      if (!$routeParams.serverId) {
+        $location.path('/');
+      }
+    
       //host info
       $http.post(api_url, {
         jsonrpc: '2.0',
@@ -356,13 +357,13 @@ function serversDetailsController($rootScope, $scope, $http, $routeParams, $loca
 */
 function projectController($rootScope, $scope, $http, $routeParams, $location) {
 
-  //redirects back to main page if user comes to this url without projectId
-  if (!$routeParams.projectId) {
-    $location.path('/');
-  }
-
-  //shows all servers monitored in one hostgroup/project
   if ($rootScope.loggedIn) {
+    //redirects back to main page if user comes to this url without projectId
+    if (!$routeParams.projectId) {
+      $location.path('/');
+    }
+
+    //shows all servers monitored in one hostgroup/project
     $http.post(api_url, {
       jsonrpc: "2.0",
       id: $rootScope.auth_id,
