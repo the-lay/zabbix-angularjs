@@ -66,6 +66,12 @@ module.exports = function(grunt) {
         runnerPort: 9999,
         singleRun: true,
         browsers: ['PhantomJS']
+      },
+      unit2: {
+        configFile: 'test/karma.conf.js',
+        runnerPort: 9999,
+        singleRun: false,
+        browsers: ['Chrome']
       }
     }
 
@@ -94,6 +100,6 @@ module.exports = function(grunt) {
 
 
   // Default task(s).
-  grunt.registerTask('default', ['karma', 'cssmin', 'jsdoc', 'uglify', 'concat']); //not using watch, jshint
+  grunt.registerTask('default', ['karma:unit', 'cssmin', 'jsdoc', 'uglify', 'concat']); //not using watch, jshint
 
 };

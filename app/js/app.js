@@ -241,8 +241,18 @@ app.run(function ($rootScope, $route, $http, $location, localStorageService) {
     //no guests allowed
     if (!$rootScope.loggedIn) {
       //TODO return to REFERER $rootScope.returnUrl = $location.path();
-      $location.path('/login/'); //TODO: implement returning back after logging in
+      console.log('not logged in, routing to /login');
+      $location.path('/login'); //TODO: implement returning back after logging in
     }
+
+  //     $rootScope.$on('$routeChangeStart', function() {
+  //   console.log('$routeChangeStart');
+  //   if (!$rootScope.loggedIn) {
+  //     //TODO return to REFERER $rootScope.returnUrl = $location.path();
+  //     $location.path('/login'); //TODO: implement returning back after logging in
+  //     $event.cancel();
+  //   }
+  // });
 
     //dynamic page title
     if ($route.current && $route.current.$route && $route.current.$route.title_prefix) {

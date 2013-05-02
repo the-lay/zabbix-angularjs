@@ -105,7 +105,6 @@ function logoutController(localStorageService, $rootScope, $http, $location) {
 
       //clearing cookies/localstorage
       localStorageService.clearAll();
-      localStorageService.cookie.clearAll();
 
       //redirects to login page
       $location.path('/login');
