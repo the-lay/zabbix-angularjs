@@ -9,14 +9,14 @@
 * @global 
 * @kind constant
 */
-var api_url = 'http://zabbixcm02.internal.corp/zabbix/api_jsonrpc.php';
+var api_url = 'http://zabbixcm02.internal.corp/api_jsonrpc.php';
 
 /** 
 * Global variable that specificies the direct URL to Zabbix.
 * @global 
 * @kind constant
 */
-var zabbix_url = 'http://zabbixcm02.internal.corp/zabbix';
+var zabbix_url = 'http://zabbixcm02.internal.corp';
 
 /** 
 * Global variable that specificies the update interval of notifications in Dashboard.
@@ -118,11 +118,6 @@ var app = angular.module('zabbix', ['LocalStorageModule', 'SharedServices'])
     $routeProvider.
       //Home aka. Overview
       when('/', {
-        controller: overviewController,
-        templateUrl: 'views/overview.html',
-        title_prefix: 'Home'
-      }).
-      when('/overview', {
         controller: overviewController,
         templateUrl: 'views/overview.html',
         title_prefix: 'Home'
@@ -241,8 +236,18 @@ app.run(function ($rootScope, $route, $http, $location, localStorageService) {
     //no guests allowed
     if (!$rootScope.loggedIn) {
       //TODO return to REFERER $rootScope.returnUrl = $location.path();
-      $location.path('/login/'); //TODO: implement returning back after logging in
+      //console.log('not logged in, routing to /login');
+      $location.path('/login'); //TODO: implement returning back after logging in
     }
+
+  //     $rootScope.$on('$routeChangeStart', function() {
+  //   console.log('$routeChangeStart');
+  //   if (!$rootScope.loggedIn) {
+  //     //TODO return to REFERER $rootScope.returnUrl = $location.path();
+  //     $location.path('/login'); //TODO: implement returning back after logging in
+  //     $event.cancel();
+  //   }
+  // });
 
     //dynamic page title
     if ($route.current && $route.current.$route && $route.current.$route.title_prefix) {

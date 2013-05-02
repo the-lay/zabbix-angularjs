@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: localStorageModule.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: localStorageModule.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>'use strict';
+/**
+* @file AngularJS pplication configuration file.
+* @author Gregory Pike &lt;greg@gregpike.ca>
+*/
+
+var angularLocalStorage = angular.module('LocalStorageModule', []);
+
+// You should set a prefix to avoid overwriting any local storage variables from the rest of your app
+// e.g. angularLocalStorage.constant('prefix', 'youAppName');
+angularLocalStorage.constant('prefix', 'ls');
+// Cookie options (usually in case of fallback)
+// expiry = Number of days before cookies expire // 0 = Does not expire
+// path = The web path the cookie represents
+angularLocalStorage.constant('cookie', { expiry:30, path: '/'});
+
+angularLocalStorage.service('localStorageService', [
+  '$rootScope', 
+  'prefix', 
+  'cookie',
+  function($rootScope, prefix, cookie) {
+
+  // If there is a prefix set in the config lets use that with an appended period for readability
+  //var prefix = angularLocalStorage.constant;
+  if (prefix.substr(-1)!=='.') {
+    prefix = !!prefix ? prefix + '.' : '';
+  }
+
+  // Checks the browser to see if local storage is supported
+  var browserSupportsLocalStorage = function () {
+    try {
+        return ('localStorage' in window && window['localStorage'] !== null);           
+    } catch (e) {
+        $rootScope.$broadcast('LocalStorageModule.notification.error',e.Description);
+        return false;
+    }
+  };
+
+  // Directly adds a value to local storage
+  // If local storage is not available in the browser use cookies
+  // Example use: localStorageService.add('library','angular');
+  var addToLocalStorage = function (key, value) {
+
+    // If this browser does not support local storage use cookies
+    if (!browserSupportsLocalStorage()) {
+      $rootScope.$broadcast('LocalStorageModule.notification.warning','LOCAL_STORAGE_NOT_SUPPORTED');
+      return false;
+    }
+
+    // 0 and "" is allowed as a value but let's limit other falsey values like "undefined"
+    if (!value && value!==0 && value!=="") return false;
+
+    try {
+      localStorage.setItem(prefix+key, value);
+    } catch (e) {
+      $rootScope.$broadcast('LocalStorageModule.notification.error',e.Description);
+      return false;
+    }
+    return true;
+  };
+
+  // Directly get a value from local storage
+  // Example use: localStorageService.get('library'); // returns 'angular'
+  var getFromLocalStorage = function (key) {
+    if (!browserSupportsLocalStorage()) {
+      $rootScope.$broadcast('LocalStorageModule.notification.warning','LOCAL_STORAGE_NOT_SUPPORTED');
+      return false;
+    }
+
+    var item = localStorage.getItem(prefix+key);
+    if (!item) return null;
+    return item;
+  };
+
+  // Remove an item from local storage
+  // Example use: localStorageService.remove('library'); // removes the key/value pair of library='angular'
+  var removeFromLocalStorage = function (key) {
+    if (!browserSupportsLocalStorage()) {
+      $rootScope.$broadcast('LocalStorageModule.notification.warning','LOCAL_STORAGE_NOT_SUPPORTED');
+      return false;
+    }
+
+    try {
+      localStorage.removeItem(prefix+key);
+    } catch (e) {
+      $rootScope.$broadcast('LocalStorageModule.notification.error',e.Description);
+      return false;
+    }
+    return true;
+  };
+
+  // Remove all data for this app from local storage
+  // Example use: localStorageService.clearAll();
+  // Should be used mostly for development purposes
+  var clearAllFromLocalStorage = function () {
+
+    if (!browserSupportsLocalStorage()) {
+      $rootScope.$broadcast('LocalStorageModule.notification.warning','LOCAL_STORAGE_NOT_SUPPORTED');
+      return false;
+    }
+
+    var prefixLength = prefix.length;
+
+    for (var key in localStorage) {
+      // Only remove items that are for this app
+      if (key.substr(0,prefixLength) === prefix) {
+        try {
+          removeFromLocalStorage(key.substr(prefixLength));
+        } catch (e) {
+          $rootScope.$broadcast('LocalStorageModule.notification.error',e.Description);
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
+  // Checks the browser to see if cookies are supported
+  var browserSupportsCookies = function() {
+    try {
+      return navigator.cookieEnabled ||
+        ("cookie" in document && (document.cookie.length > 0 ||
+        (document.cookie = "test").indexOf.call(document.cookie, "test") > -1));
+    } catch (e) {
+      $rootScope.$broadcast('LocalStorageModule.notification.error',e.Description);
+      return false;
+    }
+  }
+
+  // Directly adds a value to cookies
+  // Typically used as a fallback is local storage is not available in the browser
+  // Example use: localStorageService.cookie.add('library','angular');
+  var addToCookies = function (key, value) {
+
+    if (typeof value == "undefined") return false;
+
+    if (!browserSupportsCookies()) {
+      $rootScope.$broadcast('LocalStorageModule.notification.error','COOKIES_NOT_SUPPORTED');
+      return false;
+    }
+
+    try {
+      var expiry = '', expiryDate = new Date();
+      if (value === null) {
+        cookie.expiry = -1;
+        value = '';
+      }
+      if (cookie.expiry !== 0) {
+        expiryDate.setTime(expiryDate.getTime() + (cookie.expiry*24*60*60*1000));
+        expiry = "; expires="+expiryDate.toGMTString();
+      }
+      document.cookie = prefix + key + "=" + encodeURIComponent(value) + expiry + "; path="+cookie.path;
+    } catch (e) {
+      $rootScope.$broadcast('LocalStorageModule.notification.error',e.Description);
+      return false;
+    }
+    return true;
+  };
+
+  // Directly get a value from a cookie
+  // Example use: localStorageService.cookie.get('library'); // returns 'angular'
+  var getFromCookies = function (key) {
+    if (!browserSupportsCookies()) {
+      $rootScope.$broadcast('LocalStorageModule.notification.error','COOKIES_NOT_SUPPORTED');
+      return false;
+    }
+
+    var cookies = document.cookie.split(';');
+    for(var i=0;i &lt; cookies.length;i++) {
+      var thisCookie = cookies[i];
+      while (thisCookie.charAt(0)==' ') {
+        thisCookie = thisCookie.substring(1,thisCookie.length);
+      }
+      if (thisCookie.indexOf(prefix+key+'=') == 0) {
+        return decodeURIComponent(thisCookie.substring(prefix.length+key.length+1,thisCookie.length));
+      }
+    }
+    return null;
+  };
+
+  var removeFromCookies = function (key) {
+    addToCookies(key,null);
+  }
+
+  var clearAllFromCookies = function () {
+    var thisCookie = null, thisKey = null;
+    var prefixLength = prefix.length;
+    var cookies = document.cookie.split(';');
+    for(var i=0;i &lt; cookies.length;i++) {
+      thisCookie = cookies[i];
+      while (thisCookie.charAt(0)==' ') {
+        thisCookie = thisCookie.substring(1,thisCookie.length);
+      }
+      key = thisCookie.substring(prefixLength,thisCookie.indexOf('='));
+      removeFromCookies(key);
+    }
+  }
+
+
+  return {
+    isSupported: browserSupportsLocalStorage,
+    add: addToLocalStorage,
+    get: getFromLocalStorage,
+    remove: removeFromLocalStorage,
+    clearAll: clearAllFromLocalStorage,
+    cookie: {
+      add: addToCookies,
+      get: getFromCookies,
+      remove: removeFromCookies,
+      clearAll: clearAllFromCookies
+    }
+  };
+
+}]);
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Global</h3><ul><li><a href="global.html#$routeProvider">$routeProvider</a></li><li><a href="global.html#api_url">api_url</a></li><li><a href="global.html#app">app</a></li><li><a href="global.html#dashboardController">dashboardController</a></li><li><a href="global.html#dateConverter">dateConverter</a></li><li><a href="global.html#hostgroupUpdateInterval">hostgroupUpdateInterval</a></li><li><a href="global.html#loginController">loginController</a></li><li><a href="global.html#logoutController">logoutController</a></li><li><a href="global.html#menuController">menuController</a></li><li><a href="global.html#myHttpInterceptor">myHttpInterceptor</a></li><li><a href="global.html#onFinishRender">onFinishRender</a></li><li><a href="global.html#overviewController">overviewController</a></li><li><a href="global.html#projectController">projectController</a></li><li><a href="global.html#searchController">searchController</a></li><li><a href="global.html#serversController">serversController</a></li><li><a href="global.html#serversDetailsController">serversDetailsController</a></li><li><a href="global.html#timeConverter">timeConverter</a></li><li><a href="global.html#triggerUpdateInterval">triggerUpdateInterval</a></li><li><a href="global.html#zabbix_url">zabbix_url</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Thu May 02 2013 15:30:06 GMT+0300 (EEST)
+</footer>
+
+<script> prettyPrint(); </script>
+</body>
+</html>

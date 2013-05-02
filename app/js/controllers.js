@@ -50,6 +50,9 @@ function loginController($scope, $http, $rootScope, $location, localStorageServi
 
         $rootScope.auth = data.result;
         $rootScope.loggedIn = true;
+        $scope.inputName = "";
+        $scope.inputPassword = "";
+        $('#inputName').focus();
 
         //getting list of monitored servers for autocompletion in search box
         $http.post(api_url, {
@@ -85,9 +88,7 @@ function logoutController(localStorageService, $rootScope, $http, $location) {
 
   //should not be accessible for guests anyway
   //extra security just in case
-  if (!$rootScope.loggedIn) {
-    $location.path('/login');
-  } else {
+  if ($rootScope.loggedIn) {
     $http.post(api_url, {
       jsonrpc: "2.0",
       id: $rootScope.auth_id,
@@ -102,7 +103,6 @@ function logoutController(localStorageService, $rootScope, $http, $location) {
 
       //clearing cookies/localstorage
       localStorageService.clearAll();
-      localStorageService.cookie.clearAll();
 
       //redirects to login page
       $location.path('/login');
@@ -308,12 +308,13 @@ function serversController($rootScope, $scope, $http, $routeParams) {
 */
 function serversDetailsController($rootScope, $scope, $http, $routeParams, $location) {
 
-    //redirects back to main page if user comes to this url with serverId
-    if (!$routeParams.serverId) {
-      $location.path('/');
-    }
-
     if ($rootScope.loggedIn) {
+
+      //redirects back to main page if user comes to this url with serverId
+      if (!$routeParams.serverId) {
+        $location.path('/');
+      }
+    
       //host info
       $http.post(api_url, {
         jsonrpc: '2.0',
@@ -353,13 +354,13 @@ function serversDetailsController($rootScope, $scope, $http, $routeParams, $loca
 */
 function projectController($rootScope, $scope, $http, $routeParams, $location) {
 
-  //redirects back to main page if user comes to this url without projectId
-  if (!$routeParams.projectId) {
-    $location.path('/');
-  }
-
-  //shows all servers monitored in one hostgroup/project
   if ($rootScope.loggedIn) {
+    //redirects back to main page if user comes to this url without projectId
+    if (!$routeParams.projectId) {
+      $location.path('/');
+    }
+
+    //shows all servers monitored in one hostgroup/project
     $http.post(api_url, {
       jsonrpc: "2.0",
       id: $rootScope.auth_id,

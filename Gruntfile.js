@@ -11,9 +11,9 @@ module.exports = function(grunt) {
       },
       build: {
         files: {
-          'app/js/app.min.js':  ['app/js/app.js'],
-          'app/js/controllers.min.js': ['app/js/controllers.js'],
-          'app/js/localStorageModule.min.js': ['app/js/localStorageModule.js']
+          'app/js/min/app.js':  ['app/js/app.js'],
+          'app/js/min/controllers.js': ['app/js/controllers.js'],
+          'app/js/min/localStorageModule.js': ['app/js/localStorageModule.js']
         }
       }
     },
@@ -27,7 +27,7 @@ module.exports = function(grunt) {
 
     concat: { //concatenate JS files
       dist: {
-        src: ['app/js/app.min.js', 'app/js/controllers.min.js', 'app/js/localStorageModule.min.js'],
+        src: ['app/js/min/app.js', 'app/js/min/controllers.js', 'app/js/min/localStorageModule.js'],
         dest: 'app/js/min/js.min.js'
       }
     },
@@ -44,7 +44,7 @@ module.exports = function(grunt) {
       }
     },
 
-    jshint:{
+    jshint:{ //lint JS files
       options:{
         strict: true,
         jquery: true,
@@ -55,6 +55,19 @@ module.exports = function(grunt) {
       files: ['app/js/app.js', 'app/js/controllers.js', 'app/js/localStorageModule.js']
     },
 
+    watch: { //watch for changes
+      files: 'app/js/*.js',
+      tasks: ['uglify', 'concat']
+    },
+
+    karma: { //run E2E tests
+      e2e: {
+        configFile: 'test/karma.conf.js',
+        runnerPort: 9999,
+        singleRun: true,
+        browsers: ['Chrome']
+      }
+    }
 
   });
 
@@ -73,10 +86,13 @@ module.exports = function(grunt) {
   //Concatenate JS files
   grunt.loadNpmTasks('grunt-contrib-concat');
 
+  //Watch for changes
+  grunt.loadNpmTasks('grunt-contrib-watch');
 
-
+  //Unit E2E testing
+  grunt.loadNpmTasks('grunt-karma');
 
   // Default task(s).
-  grunt.registerTask('default', ['cssmin', 'uglify', 'concat']);
+  grunt.registerTask('default', ['karma:e2e', 'cssmin', 'jsdoc', 'uglify', 'concat']); //not using watch, jshint
 
 };

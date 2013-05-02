@@ -77,6 +77,9 @@ function loginController($scope, $http, $rootScope, $location, localStorageServi
 
         $rootScope.auth = data.result;
         $rootScope.loggedIn = true;
+        $scope.inputName = "";
+        $scope.inputPassword = "";
+        $('#inputName').focus();
 
         //getting list of monitored servers for autocompletion in search box
         $http.post(api_url, {
@@ -112,9 +115,7 @@ function logoutController(localStorageService, $rootScope, $http, $location) {
 
   //should not be accessible for guests anyway
   //extra security just in case
-  if (!$rootScope.loggedIn) {
-    $location.path('/login');
-  } else {
+  if ($rootScope.loggedIn) {
     $http.post(api_url, {
       jsonrpc: "2.0",
       id: $rootScope.auth_id,
@@ -129,7 +130,6 @@ function logoutController(localStorageService, $rootScope, $http, $location) {
 
       //clearing cookies/localstorage
       localStorageService.clearAll();
-      localStorageService.cookie.clearAll();
 
       //redirects to login page
       $location.path('/login');
@@ -248,7 +248,7 @@ function overviewController($rootScope, $scope, $http, $q) {
           groupsData[i].errors = 0;
           groupsData[i].errors_level = 0;
           triggerDetails[groupsData[i].groupid] = [];
-        };
+        }
         deferred.resolve(); //promise used to ensure that data first will be initialized
         return deferred.promise;
       }
@@ -335,12 +335,13 @@ function serversController($rootScope, $scope, $http, $routeParams) {
 */
 function serversDetailsController($rootScope, $scope, $http, $routeParams, $location) {
 
-    //redirects back to main page if user comes to this url with serverId
-    if (!$routeParams.serverId) {
-      $location.path('/');
-    }
-
     if ($rootScope.loggedIn) {
+
+      //redirects back to main page if user comes to this url with serverId
+      if (!$routeParams.serverId) {
+        $location.path('/');
+      }
+    
       //host info
       $http.post(api_url, {
         jsonrpc: '2.0',
@@ -361,7 +362,7 @@ function serversDetailsController($rootScope, $scope, $http, $routeParams, $loca
         if ($scope.itemsData = data.result[0].items) {
           for (var i = $scope.itemsData.length - 1; i >= 0; i--) {
             $scope.itemsData[i].lastclock = dateConverter($scope.itemsData[i].lastclock, "time");
-          };
+          }
         }
         
       });
@@ -380,13 +381,13 @@ function serversDetailsController($rootScope, $scope, $http, $routeParams, $loca
 */
 function projectController($rootScope, $scope, $http, $routeParams, $location) {
 
-  //redirects back to main page if user comes to this url without projectId
-  if (!$routeParams.projectId) {
-    $location.path('/');
-  }
-
-  //shows all servers monitored in one hostgroup/project
   if ($rootScope.loggedIn) {
+    //redirects back to main page if user comes to this url without projectId
+    if (!$routeParams.projectId) {
+      $location.path('/');
+    }
+
+    //shows all servers monitored in one hostgroup/project
     $http.post(api_url, {
       jsonrpc: "2.0",
       id: $rootScope.auth_id,
@@ -432,7 +433,7 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
   (function bar() {
 
     //stop this function execution after leaving dashboard
-    if ($location.path() != '/dashboard') {
+    if ($location.path() !== '/dashboard') {
       // console.log('stopping bar()');
       $rootScope.fullscreen = '';
       return;
@@ -473,7 +474,7 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
   (function foo() {
 
     //stop this function execution after leaving dashboard
-    if ($location.path() != '/dashboard') {
+    if ($location.path() !== '/dashboard') {
       // console.log('stopping foo()'); //debugging
       $rootScope.fullscreen = '';
       return;
@@ -571,7 +572,7 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
       $scope.selectedGroups[groupId] = true;
       localStorageService.add('selectedGroups', JSON.stringify($scope.selectedGroups));
     }
-  }
+  };
 
   //show/hide group selector
   $scope.toggleGroupSelector = function() {
@@ -583,7 +584,7 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
       groupSelectorShown = true;
       $scope.groupSelectorShown = 'Hide';
     }
-  }
+  };
 }
 
 
@@ -613,10 +614,10 @@ function searchController($rootScope, $scope, $http, $routeParams, $location) {
 
     //if users enters correct name of server, redirects to the page of server
     for (var i = $rootScope.serversOnline.length - 1; i >= 0; i--) {
-      if ($rootScope.serversOnline[i].name == $routeParams.searchString) {
+      if ($rootScope.serversOnline[i].name === $routeParams.searchString) {
         $location.path('/servers/' + $rootScope.serversOnline[i].hostid);
       }
-    };
+    }
 
     //host and hostgroup search query are async
     //getting hosts
@@ -672,7 +673,7 @@ function searchController($rootScope, $scope, $http, $routeParams, $location) {
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Fri Apr 26 2013 15:40:18 GMT+0300 (EEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Thu May 02 2013 15:30:06 GMT+0300 (EEST)
 </footer>
 
 <script> prettyPrint(); </script>
