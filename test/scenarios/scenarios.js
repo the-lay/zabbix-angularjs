@@ -5,14 +5,14 @@ describe('Zabbix Frontend', function() {
 
   describe('trying to access controllers without authentication', function() {
 
-    it('it should redirect you to login page and not show main page', function() {
+    it('it should redirect you to login page, because you are unlogged', function() {
       browser().navigateTo('/');
       expect(browser().location().url()).toBe('/login');
     });
 
     //check for access to other controllers without authorization
-    it('it should automatically redirect to /login/ from /overview/ without auth', function() {
-      browser().navigateTo('/#/overview/');
+    it('it should automatically redirect to /login/ from / without auth', function() {
+      browser().navigateTo('/');
       expect(browser().location().url()).toBe('/login');
     });
 
@@ -38,7 +38,7 @@ describe('Zabbix Frontend', function() {
 
   });
 
-  describe('logging in', function() {
+  describe('logging in using fake and/or partial credentials', function() {
 
     beforeEach(function() {
       browser().navigateTo('/');
@@ -59,6 +59,27 @@ describe('Zabbix Frontend', function() {
       input('inputPassword').enter('totallyFakeAndNotRealPassword');
       element('button.btn').click();
       expect(element('span.help-block', 'Error Span Helper').text()).toEqual('Login name or password is incorrect.');
+    });
+
+  });
+
+  describe('logging in the system with correct credentials', function() {
+
+    beforeEach(function() {
+      browser().navigateTo('/');
+    });
+
+    it('it should login correctly and automatically redirect you to overview', function() {
+      input('inputName').enter('frontend');
+      input('inputPassword').enter('frontend');
+      element('button.btn').click();
+      expect(browser().location().url()).toBe('/');
+    });
+
+    describe('overview controller', function() {
+
+      // it('')
+
     });
 
   });

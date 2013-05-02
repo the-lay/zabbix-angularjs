@@ -61,16 +61,10 @@ module.exports = function(grunt) {
     },
 
     karma: { //run E2E tests
-      unit: {
+      e2e: {
         configFile: 'test/karma.conf.js',
         runnerPort: 9999,
         singleRun: true,
-        browsers: ['PhantomJS']
-      },
-      unit2: {
-        configFile: 'test/karma.conf.js',
-        runnerPort: 9999,
-        singleRun: false,
         browsers: ['Chrome']
       }
     }
@@ -98,8 +92,7 @@ module.exports = function(grunt) {
   //Unit E2E testing
   grunt.loadNpmTasks('grunt-karma');
 
-
   // Default task(s).
-  grunt.registerTask('default', ['karma:unit', 'cssmin', 'jsdoc', 'uglify', 'concat']); //not using watch, jshint
+  grunt.registerTask('default', ['karma:e2e', 'cssmin', 'jsdoc', 'uglify', 'concat']); //not using watch, jshint
 
 };

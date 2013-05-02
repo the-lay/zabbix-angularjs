@@ -88,9 +88,7 @@ function logoutController(localStorageService, $rootScope, $http, $location) {
 
   //should not be accessible for guests anyway
   //extra security just in case
-  if (!$rootScope.loggedIn) {
-    $location.path('/login');
-  } else {
+  if ($rootScope.loggedIn) {
     $http.post(api_url, {
       jsonrpc: "2.0",
       id: $rootScope.auth_id,

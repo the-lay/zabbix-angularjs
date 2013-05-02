@@ -122,11 +122,6 @@ var app = angular.module('zabbix', ['LocalStorageModule', 'SharedServices'])
         templateUrl: 'views/overview.html',
         title_prefix: 'Home'
       }).
-      when('/overview', {
-        controller: overviewController,
-        templateUrl: 'views/overview.html',
-        title_prefix: 'Home'
-      }).
 
       //List of all servers
       when('/servers', {
@@ -241,7 +236,7 @@ app.run(function ($rootScope, $route, $http, $location, localStorageService) {
     //no guests allowed
     if (!$rootScope.loggedIn) {
       //TODO return to REFERER $rootScope.returnUrl = $location.path();
-      console.log('not logged in, routing to /login');
+      //console.log('not logged in, routing to /login');
       $location.path('/login'); //TODO: implement returning back after logging in
     }
 
