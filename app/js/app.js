@@ -120,7 +120,6 @@ var app = angular.module('zabbix', ['LocalStorageModule', 'SharedServices', 'tem
       when('/', {
         controller: overviewController,
         templateUrl: '../app/views/overview.html',
-        // templateUrl: 'http://zabbixcm02.internal.corp/frontend/views/overview.html',
         title_prefix: 'Home'
       }).
 
@@ -128,7 +127,6 @@ var app = angular.module('zabbix', ['LocalStorageModule', 'SharedServices', 'tem
       when('/servers', {
         controller: serversController,
         templateUrl: '../app/views/servers.html',
-        // templateUrl: 'http://zabbixcm02.internal.corp/frontend/views/servers.html',
         title_prefix: 'Servers'
       }).
 
@@ -136,7 +134,6 @@ var app = angular.module('zabbix', ['LocalStorageModule', 'SharedServices', 'tem
       when('/servers/:serverId', {
         controller: serversDetailsController,
         templateUrl: '../app/views/serverDetails.html',
-        // templateUrl: 'http://zabbixcm02.internal.corp/frontend/views/serverDetails.html',
         title_prefix: 'Server'
       }).
 
@@ -144,7 +141,6 @@ var app = angular.module('zabbix', ['LocalStorageModule', 'SharedServices', 'tem
       when('/project/:projectId', {
         controller: projectController,
         templateUrl: '../app/views/project.html',
-        // templateUrl: 'http://zabbixcm02.internal.corp/frontend/views/project.html',
         title_prefix: 'Project'
       }).
 
@@ -152,7 +148,6 @@ var app = angular.module('zabbix', ['LocalStorageModule', 'SharedServices', 'tem
       when('/dashboard', {
         controller: dashboardController,
         templateUrl: '../app/views/dashboard.html',
-        // templateUrl: 'http://zabbixcm02.internal.corp/frontend/views/dashboard.html',
         title_prefix: 'Dashboard'
       }).
 
@@ -160,7 +155,6 @@ var app = angular.module('zabbix', ['LocalStorageModule', 'SharedServices', 'tem
       when('/search/:searchString', {
         controller: searchController,
         templateUrl: '../app/views/search.html',
-        // templateUrl: 'http://zabbixcm02.internal.corp/frontend/views/search.html',
         title_prefix: 'Search'
       }).
 
@@ -172,7 +166,6 @@ var app = angular.module('zabbix', ['LocalStorageModule', 'SharedServices', 'tem
         controller: logoutController,
         title_prefix: 'Logout',
         templateUrl: '../app/views/logout.html'
-        // templateUrl: 'http://zabbixcm02.internal.corp/frontend/views/logout.html',
       }).
 
       //Everything else is 404
@@ -242,19 +235,8 @@ app.run(function ($rootScope, $route, $http, $location, localStorageService) {
 
     //no guests allowed
     if (!$rootScope.loggedIn) {
-      //TODO return to REFERER $rootScope.returnUrl = $location.path();
-      //console.log('not logged in, routing to /login');
-      $location.path('/login'); //TODO: implement returning back after logging in
+      $location.path('/login');
     }
-
-  //     $rootScope.$on('$routeChangeStart', function() {
-  //   console.log('$routeChangeStart');
-  //   if (!$rootScope.loggedIn) {
-  //     //TODO return to REFERER $rootScope.returnUrl = $location.path();
-  //     $location.path('/login'); //TODO: implement returning back after logging in
-  //     $event.cancel();
-  //   }
-  // });
 
     //dynamic page title
     if ($route.current && $route.current.$route && $route.current.$route.title_prefix) {
