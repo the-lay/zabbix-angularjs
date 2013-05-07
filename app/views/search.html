@@ -5,7 +5,7 @@
   <h4>hosts found</h4>
   <ul>
     <li ng-repeat="host in hostsData">
-      <a href="#/servers/{{host.hostid}}">{{host.name}}</a>
+      <a href="#/servers/{{host.hostid}}" class="foundHosts">{{host.name}}</a>
     </li>
   </ul>
 </div>
@@ -14,7 +14,7 @@
   <h4>hostgroups found</h4>
   <ul>
     <li ng-repeat="group in groupsData">
-      <a href="#/project/{{group.hostid}}">{{group.name}}</a>
+      <a href="#/project/{{group.hostid}}" class="foundHostgroups">{{group.name}}</a>
     </li>
   </ul>
 </div>

@@ -108,7 +108,7 @@ function timeConverter() {
 /**
 * AngularJS application settings object.
 */
-var app = angular.module('zabbix', ['LocalStorageModule', 'SharedServices'])
+var app = angular.module('zabbix', ['LocalStorageModule', 'SharedServices', 'templates-main'])
   .config(function ($routeProvider, $locationProvider) {
 
     /**
@@ -119,42 +119,48 @@ var app = angular.module('zabbix', ['LocalStorageModule', 'SharedServices'])
       //Home aka. Overview
       when('/', {
         controller: overviewController,
-        templateUrl: 'views/overview.html',
+        templateUrl: '../app/views/overview.html',
+        // templateUrl: 'http://zabbixcm02.internal.corp/frontend/views/overview.html',
         title_prefix: 'Home'
       }).
 
       //List of all servers
       when('/servers', {
         controller: serversController,
-        templateUrl: 'views/servers.html',
+        templateUrl: '../app/views/servers.html',
+        // templateUrl: 'http://zabbixcm02.internal.corp/frontend/views/servers.html',
         title_prefix: 'Servers'
       }).
 
       //Data about one server
       when('/servers/:serverId', {
         controller: serversDetailsController,
-        templateUrl: 'views/serverDetails.html',
+        templateUrl: '../app/views/serverDetails.html',
+        // templateUrl: 'http://zabbixcm02.internal.corp/frontend/views/serverDetails.html',
         title_prefix: 'Server'
       }).
 
       //Data about one project
       when('/project/:projectId', {
         controller: projectController,
-        templateUrl: 'views/project.html',
+        templateUrl: '../app/views/project.html',
+        // templateUrl: 'http://zabbixcm02.internal.corp/frontend/views/project.html',
         title_prefix: 'Project'
       }).
 
       //Dashboard
       when('/dashboard', {
         controller: dashboardController,
-        templateUrl: 'views/dashboard.html',
+        templateUrl: '../app/views/dashboard.html',
+        // templateUrl: 'http://zabbixcm02.internal.corp/frontend/views/dashboard.html',
         title_prefix: 'Dashboard'
       }).
 
       //Search
       when('/search/:searchString', {
         controller: searchController,
-        templateUrl: 'views/search.html',
+        templateUrl: '../app/views/search.html',
+        // templateUrl: 'http://zabbixcm02.internal.corp/frontend/views/search.html',
         title_prefix: 'Search'
       }).
 
@@ -165,7 +171,8 @@ var app = angular.module('zabbix', ['LocalStorageModule', 'SharedServices'])
       when('/logout', {
         controller: logoutController,
         title_prefix: 'Logout',
-        templateUrl: 'views/logout.html'
+        templateUrl: '../app/views/logout.html'
+        // templateUrl: 'http://zabbixcm02.internal.corp/frontend/views/logout.html',
       }).
 
       //Everything else is 404

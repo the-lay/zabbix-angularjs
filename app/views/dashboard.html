@@ -13,7 +13,7 @@
       <div id="notifications">
         <h3 style="margin:0">Notifications</h3>
         <div style="margin-bottom:10px;" id="notification-{{trigger.hosts[0].hostid}}" style="margin-top:0; padding-top:0" ng-repeat="trigger in triggersData | orderBy: '-priority'" class="error{{trigger.priority}}" ng-show="selectedGroups[trigger.groups[0].groupid]" on-finish-render="triggersRenderingFinished"><a>{{trigger.description}}</a></div>
-        <p><a ng-click="toggleGroupSelector()">{{groupSelectorShown || 'Hide'}} group selection</a></p>
+        <p><a ng-click="toggleGroupSelector()" id="toggleGroups">{{groupSelectorShown || 'Hide'}} group selection</a></p>
       </div>
     </div>
 

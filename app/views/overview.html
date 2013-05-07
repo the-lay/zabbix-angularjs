@@ -25,7 +25,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr ng-repeat="error in triggerDetails[group.groupid] | orderBy: '-priority'">
+                <tr ng-repeat="error in triggerDetails[group.groupid] | orderBy: '-priority'" class="errorsOverview">
                   <td class="error{{error.priority}}">{{triggerSeverity[error.priority]}}</td>
                   <td><a href="#/servers/{{error.hostid}}">{{error.hostname}}</a></td>
                   <td>{{error.description}}</td>
