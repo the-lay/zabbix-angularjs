@@ -17,6 +17,11 @@ describe('Zabbix Frontend', function() {
         expect(browser().location().url()).toBe('/login');
       });
 
+      it('it should automatically redirect to /login/ from /logout/ without auth', function() {
+        browser().navigateTo('/#/logout');
+        expect(browser().location().url()).toBe('/login');
+      });
+
       it('it should automatically redirect to /login/ from /servers/ without auth', function() {
         browser().navigateTo('/#/servers/');
         expect(browser().location().url()).toBe('/login');
@@ -103,7 +108,7 @@ describe('Zabbix Frontend', function() {
         browser().navigateTo('/');
       });
 
-      it('it should be able to see more than null server groups', function() {
+      it('it should be able to provide more than null server groups', function() {
         expect(element('tr').count()).toBeGreaterThan(0);
       });
 
