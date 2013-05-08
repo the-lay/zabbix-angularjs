@@ -10,7 +10,7 @@
     <tbody ng-repeat="group in serverGroups | orderBy:'-errors_level'">
         <tr>
           <td><a href="#/project/{{group.groupid}}">{{group.name}}</a></td>
-          <td colspan="{{((group.lastchange) && ('1') || ('2'))}}" class="{{'error' + group.errors_level}}"><a class="underlined" onClick="$('#errorsRow'+{{$index}}).toggle();"><ng-pluralize count="group.errors" when="groupErrorsPluralize"></ng-pluralize></a></td>
+          <td colspan="{{((group.lastchange) && ('1') || ('2'))}}" class="{{'error' + group.errors_level}}"><a class="underlined" href="" onClick="$('#errorsRow'+{{$index}}).toggle();"><ng-pluralize count="group.errors" when="groupErrorsPluralize"></ng-pluralize></a></td>
           <td ng-show="group.lastchange">{{group.lastchange_words}}</td>
         </tr>
         <tr style="display:none; margin: 0; padding: 0;" id="errorsRow{{$index}}">
@@ -25,7 +25,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr ng-repeat="error in triggerDetails[group.groupid] | orderBy: '-priority'">
+                <tr ng-repeat="error in triggerDetails[group.groupid] | orderBy: '-priority'" class="errorsOverview">
                   <td class="error{{error.priority}}">{{triggerSeverity[error.priority]}}</td>
                   <td><a href="#/servers/{{error.hostid}}">{{error.hostname}}</a></td>
                   <td>{{error.description}}</td>

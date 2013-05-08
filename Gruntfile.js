@@ -7,19 +7,21 @@ module.exports = function(grunt) {
     uglify: { //minification
       options: {
         banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n',
-        report: 'gzip'
+        report: 'gzip',
+        mangle: false //mangling breaks AngularJS as it's mangling $scope and other vars
       },
       build: {
         files: {
           'app/js/min/app.js':  ['app/js/app.js'],
           'app/js/min/controllers.js': ['app/js/controllers.js'],
-          'app/js/min/localStorageModule.js': ['app/js/localStorageModule.js']
+          'app/js/min/localStorageModule.js': ['app/js/localStorageModule.js'],
+          'app/js/min/templates.js': ['app/js/templates.js']
         }
       }
     },
 
     jsdoc: { //documentation for JS files
-      src: ['app/js/*.js'],
+      src: ['app/js/*.js', 'test/scenarios/*.js'],
       options: {
         destination: 'docs'
       }
@@ -27,7 +29,7 @@ module.exports = function(grunt) {
 
     concat: { //concatenate JS files
       dist: {
-        src: ['app/js/min/app.js', 'app/js/min/controllers.js', 'app/js/min/localStorageModule.js'],
+        src: ['app/js/min/app.js', 'app/js/min/controllers.js', 'app/js/min/localStorageModule.js', 'app/js/min/templates.js'],
         dest: 'app/js/min/js.min.js'
       }
     },
@@ -44,22 +46,6 @@ module.exports = function(grunt) {
       }
     },
 
-    jshint:{ //lint JS files
-      options:{
-        strict: true,
-        jquery: true,
-        globals:{
-          angular:true
-        },
-      },
-      files: ['app/js/app.js', 'app/js/controllers.js', 'app/js/localStorageModule.js']
-    },
-
-    watch: { //watch for changes
-      files: 'app/js/*.js',
-      tasks: ['uglify', 'concat']
-    },
-
     karma: { //run E2E tests
       e2e: {
         configFile: 'test/karma.conf.js',
@@ -67,15 +53,19 @@ module.exports = function(grunt) {
         singleRun: true,
         browsers: ['Chrome']
       }
-    }
+    },
+
+    html2js: {
+      main: {
+        src: ['app/views/*.html'],
+        dest: 'app/js/templates.js'
+      },
+    },
 
   });
 
   //CSS Min
   grunt.loadNpmTasks('grunt-contrib-cssmin');
-
-  //JSHint validation
-  grunt.loadNpmTasks('grunt-contrib-jshint');
 
   //JSDoc
   grunt.loadNpmTasks('grunt-jsdoc');
@@ -86,13 +76,13 @@ module.exports = function(grunt) {
   //Concatenate JS files
   grunt.loadNpmTasks('grunt-contrib-concat');
 
-  //Watch for changes
-  grunt.loadNpmTasks('grunt-contrib-watch');
-
   //Unit E2E testing
   grunt.loadNpmTasks('grunt-karma');
 
+  //Put all HTML files in one JS file
+  grunt.loadNpmTasks('grunt-html2js');
+
   // Default task(s).
-  grunt.registerTask('default', ['karma:e2e', 'cssmin', 'jsdoc', 'uglify', 'concat']); //not using watch, jshint
+  grunt.registerTask('default', ['html2js', 'uglify', 'concat', 'karma:e2e', 'cssmin', 'jsdoc']);
 
 };

@@ -7,10 +7,10 @@ files = [
   ANGULAR_SCENARIO_ADAPTER,
   'http://code.angularjs.org/1.0.6/angular-mocks.js',
   'test/scenarios/*.js'
-  
 ];
 proxies = {
   '/': 'http://zabbixcm02.internal.corp/frontend/'
+  //'frontend/views/': 'http://zabbixcm02.internal.corp/frontend/views/'
 };
 exclude = [];
 reporters = ['progress'];

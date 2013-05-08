@@ -323,7 +323,7 @@ function serversDetailsController($rootScope, $scope, $http, $routeParams, $loca
         method: 'host.get',
         params: {
           selectInventory: true,
-          selectItems: ['name','lastvalue','units','itemid','lastclock'],
+          selectItems: ['name','lastvalue','units','itemid','lastclock','value_type','itemid'],
           output: 'extend',
           hostids: $routeParams.serverId
         }
@@ -586,9 +586,11 @@ function searchController($rootScope, $scope, $http, $routeParams, $location) {
   if ($rootScope.loggedIn) {
 
     //if users enters correct name of server, redirects to the page of server
-    for (var i = $rootScope.serversOnline.length - 1; i >= 0; i--) {
-      if ($rootScope.serversOnline[i].name === $routeParams.searchString) {
-        $location.path('/servers/' + $rootScope.serversOnline[i].hostid);
+    if ($rootScope.serversOnline && $rootScope.serversOnline.length) {
+      for (var i = $rootScope.serversOnline.length - 1; i >= 0; i--) {
+        if ($rootScope.serversOnline[i].name === $routeParams.searchString) {
+          $location.path('/servers/' + $rootScope.serversOnline[i].hostid);
+        }
       }
     }
 
