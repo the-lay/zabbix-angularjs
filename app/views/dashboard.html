@@ -3,17 +3,17 @@
 
     <div class="span2">
       <div id="groups">
-        <h3 style="margin:0">Groups <small><a ng-click="toggleGroupSelector()">Hide</a></small></h3><hr style="margin-top:0">
+        <h3 style="margin:0">Groups <small><a href="" ng-click="toggleGroupSelector()">Hide</a></small></h3><hr style="margin-top:0">
         <ul id="groupSelector"class="nav nav-pills nav-stacked" ng-cloak>
           <li ng-repeat="group in hostgroupsData" style="height:31px; margin-bottom:7px;">
-            <a ng-click="selectGroup(group.groupid)"><i class="icon-ok icon-white" ng-show="selectedGroups[group.groupid] || selectedGroups['all']"></i>{{group.name}}</a>
+            <a ng-click="selectGroup(group.groupid)" href=""><i class="icon-ok icon-white" ng-show="selectedGroups[group.groupid] || selectedGroups['all']"></i>{{group.name}}</a>
           </li>
         </ul>
       </div>
       <div id="notifications">
         <h3 style="margin:0">Notifications</h3>
-        <div style="margin-bottom:10px;" id="notification-{{trigger.hosts[0].hostid}}" style="margin-top:0; padding-top:0" ng-repeat="trigger in triggersData | orderBy: '-priority'" class="error{{trigger.priority}}" ng-show="selectedGroups[trigger.groups[0].groupid]" on-finish-render="triggersRenderingFinished"><a>{{trigger.description}}</a></div>
-        <p><a ng-click="toggleGroupSelector()" id="toggleGroups">{{groupSelectorShown || 'Hide'}} group selection</a></p>
+        <div style="margin-bottom:10px;" id="notification-{{trigger.hosts[0].hostid}}" style="margin-top:0; padding-top:0" ng-repeat="trigger in triggersData | orderBy: '-priority'" class="error{{trigger.priority}}" ng-show="selectedGroups[trigger.groups[0].groupid]" on-finish-render="triggersRenderingFinished">{{trigger.description}}</div>
+        <p><a ng-click="toggleGroupSelector()" href="" id="toggleGroups">{{groupSelectorShown || 'Hide'}} group selection</a></p>
       </div>
     </div>
 

@@ -7,17 +7,17 @@ angular.module("../app/views/dashboard.html", []).run(["$templateCache", functio
     "\n" +
     "    <div class=\"span2\">\n" +
     "      <div id=\"groups\">\n" +
-    "        <h3 style=\"margin:0\">Groups <small><a ng-click=\"toggleGroupSelector()\">Hide</a></small></h3><hr style=\"margin-top:0\">\n" +
+    "        <h3 style=\"margin:0\">Groups <small><a href=\"\" ng-click=\"toggleGroupSelector()\">Hide</a></small></h3><hr style=\"margin-top:0\">\n" +
     "        <ul id=\"groupSelector\"class=\"nav nav-pills nav-stacked\" ng-cloak>\n" +
     "          <li ng-repeat=\"group in hostgroupsData\" style=\"height:31px; margin-bottom:7px;\">\n" +
-    "            <a ng-click=\"selectGroup(group.groupid)\"><i class=\"icon-ok icon-white\" ng-show=\"selectedGroups[group.groupid] || selectedGroups['all']\"></i>{{group.name}}</a>\n" +
+    "            <a ng-click=\"selectGroup(group.groupid)\" href=\"\"><i class=\"icon-ok icon-white\" ng-show=\"selectedGroups[group.groupid] || selectedGroups['all']\"></i>{{group.name}}</a>\n" +
     "          </li>\n" +
     "        </ul>\n" +
     "      </div>\n" +
     "      <div id=\"notifications\">\n" +
     "        <h3 style=\"margin:0\">Notifications</h3>\n" +
-    "        <div style=\"margin-bottom:10px;\" id=\"notification-{{trigger.hosts[0].hostid}}\" style=\"margin-top:0; padding-top:0\" ng-repeat=\"trigger in triggersData | orderBy: '-priority'\" class=\"error{{trigger.priority}}\" ng-show=\"selectedGroups[trigger.groups[0].groupid]\" on-finish-render=\"triggersRenderingFinished\"><a>{{trigger.description}}</a></div>\n" +
-    "        <p><a ng-click=\"toggleGroupSelector()\" id=\"toggleGroups\">{{groupSelectorShown || 'Hide'}} group selection</a></p>\n" +
+    "        <div style=\"margin-bottom:10px;\" id=\"notification-{{trigger.hosts[0].hostid}}\" style=\"margin-top:0; padding-top:0\" ng-repeat=\"trigger in triggersData | orderBy: '-priority'\" class=\"error{{trigger.priority}}\" ng-show=\"selectedGroups[trigger.groups[0].groupid]\" on-finish-render=\"triggersRenderingFinished\">{{trigger.description}}</div>\n" +
+    "        <p><a ng-click=\"toggleGroupSelector()\" href=\"\" id=\"toggleGroups\">{{groupSelectorShown || 'Hide'}} group selection</a></p>\n" +
     "      </div>\n" +
     "    </div>\n" +
     "\n" +
@@ -84,7 +84,7 @@ angular.module("../app/views/overview.html", []).run(["$templateCache", function
     "    <tbody ng-repeat=\"group in serverGroups | orderBy:'-errors_level'\">\n" +
     "        <tr>\n" +
     "          <td><a href=\"#/project/{{group.groupid}}\">{{group.name}}</a></td>\n" +
-    "          <td colspan=\"{{((group.lastchange) && ('1') || ('2'))}}\" class=\"{{'error' + group.errors_level}}\"><a class=\"underlined\" onClick=\"$('#errorsRow'+{{$index}}).toggle();\"><ng-pluralize count=\"group.errors\" when=\"groupErrorsPluralize\"></ng-pluralize></a></td>\n" +
+    "          <td colspan=\"{{((group.lastchange) && ('1') || ('2'))}}\" class=\"{{'error' + group.errors_level}}\"><a class=\"underlined\" href=\"\" onClick=\"$('#errorsRow'+{{$index}}).toggle();\"><ng-pluralize count=\"group.errors\" when=\"groupErrorsPluralize\"></ng-pluralize></a></td>\n" +
     "          <td ng-show=\"group.lastchange\">{{group.lastchange_words}}</td>\n" +
     "        </tr>\n" +
     "        <tr style=\"display:none; margin: 0; padding: 0;\" id=\"errorsRow{{$index}}\">\n" +
