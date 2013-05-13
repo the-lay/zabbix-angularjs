@@ -325,7 +325,9 @@ function serversDetailsController($rootScope, $scope, $http, $routeParams, $loca
           selectInventory: true,
           selectItems: ['name','lastvalue','units','itemid','lastclock','value_type','itemid'],
           output: 'extend',
-          hostids: $routeParams.serverId
+          hostids: $routeParams.serverId,
+          expandDescription: 1,
+          expandData:1
         }
       }).success(function (data) {
         $scope.inventoryData = data.result[0].inventory;
@@ -337,7 +339,7 @@ function serversDetailsController($rootScope, $scope, $http, $routeParams, $loca
             $scope.itemsData[i].lastclock = dateConverter($scope.itemsData[i].lastclock, "time");
           }
         }
-        
+        $('#filterInput').focus();
       });
     }
 }

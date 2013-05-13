@@ -1,8 +1,12 @@
 <div class="container-fluid">
   <div class="row-fluid" ng-cloak>
     <div class="span5" id="currentStats">
+      <h4>Current statistics of {{serverName}}</h4>
+      <div class="input-prepend" class="span10">
+        <span class="add-on">Filter:</span>
+        <input ng-model="filterString" id="filterInput" class="input-block-level" type="text">
+      </div>
       <table class="table table-condensed">
-        <caption>Current statistics of {{serverName}}</caption>
         <thead>
           <tr>
             <th>Key</th>
@@ -11,7 +15,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="item in itemsData" class="currentStats">
+          <tr ng-repeat="item in itemsData | filter:filterString" class="currentStats">
             <td>
               <a href="{{zabbix_url}}/history.php?action=showgraph&itemid={{item.itemid}}" ng-show="item.value_type==0 || item.value_type==3">{{item.name}}</a>
               <a href="{{zabbix_url}}/history.php?action=showvalues&itemid={{item.itemid}}" ng-hide="item.value_type==0 || item.value_type==3">{{item.name}}</a>
@@ -22,9 +26,10 @@
         </tbody>
       </table>
     </div>
+
     <div class="span5" id="inventoryInfo">
+      <h4>Inventory info of {{serverName}}</h4>
       <table class="table table-condensed">
-        <caption>Inventory info of {{serverName}}</caption>
         <thead>
           <tr>
             <th>Key</th>

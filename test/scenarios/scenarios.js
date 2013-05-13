@@ -176,12 +176,12 @@ describe('Zabbix Frontend', function() {
         });
 
         it('it should show current server statistics', function() {
-          expect(element('caption').text()).toMatch('Current statistics');
+          expect(element('h4').text()).toMatch('Current statistics');
           expect(element('tr.currentStats').count()).toBeGreaterThan(0);
         });
 
         it('it should show current server host inventory', function() {
-          expect(element('caption').text()).toMatch('Inventory info');
+          expect(element('h4').text()).toMatch('Inventory info');
           expect(element('tr.inventoryInfo').count()).toBeGreaterThan(0);
         });
 
@@ -210,10 +210,10 @@ describe('Zabbix Frontend', function() {
       it('it should hide and then show groups selector', function() {
         expect(element('#groups:visible').count()).toBe(1);
         element('#toggleGroups').click();
-        sleep(1);
+        sleep(2);
         expect(element('#groups:visible').count()).toBe(0);
         element('#toggleGroups').click();
-        sleep(1);
+        sleep(2);
         expect(element('#groups:visible').count()).toBe(1);
       });
 
