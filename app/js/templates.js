@@ -187,8 +187,12 @@ angular.module("../app/views/serverDetails.html", []).run(["$templateCache", fun
     "<div class=\"container-fluid\">\n" +
     "  <div class=\"row-fluid\" ng-cloak>\n" +
     "    <div class=\"span5\" id=\"currentStats\">\n" +
+    "      <h4>Current statistics of {{serverName}}</h4>\n" +
+    "      <div class=\"input-prepend\" class=\"span10\">\n" +
+    "        <span class=\"add-on\">Filter:</span>\n" +
+    "        <input ng-model=\"filterString\" id=\"filterInput\" class=\"input-block-level\" type=\"text\">\n" +
+    "      </div>\n" +
     "      <table class=\"table table-condensed\">\n" +
-    "        <caption>Current statistics of {{serverName}}</caption>\n" +
     "        <thead>\n" +
     "          <tr>\n" +
     "            <th>Key</th>\n" +
@@ -197,7 +201,7 @@ angular.module("../app/views/serverDetails.html", []).run(["$templateCache", fun
     "          </tr>\n" +
     "        </thead>\n" +
     "        <tbody>\n" +
-    "          <tr ng-repeat=\"item in itemsData\" class=\"currentStats\">\n" +
+    "          <tr ng-repeat=\"item in itemsData | filter:filterString\" class=\"currentStats\">\n" +
     "            <td>\n" +
     "              <a href=\"{{zabbix_url}}/history.php?action=showgraph&itemid={{item.itemid}}\" ng-show=\"item.value_type==0 || item.value_type==3\">{{item.name}}</a>\n" +
     "              <a href=\"{{zabbix_url}}/history.php?action=showvalues&itemid={{item.itemid}}\" ng-hide=\"item.value_type==0 || item.value_type==3\">{{item.name}}</a>\n" +
@@ -208,9 +212,10 @@ angular.module("../app/views/serverDetails.html", []).run(["$templateCache", fun
     "        </tbody>\n" +
     "      </table>\n" +
     "    </div>\n" +
+    "\n" +
     "    <div class=\"span5\" id=\"inventoryInfo\">\n" +
+    "      <h4>Inventory info of {{serverName}}</h4>\n" +
     "      <table class=\"table table-condensed\">\n" +
-    "        <caption>Inventory info of {{serverName}}</caption>\n" +
     "        <thead>\n" +
     "          <tr>\n" +
     "            <th>Key</th>\n" +

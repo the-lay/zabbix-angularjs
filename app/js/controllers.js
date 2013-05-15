@@ -33,7 +33,7 @@ function loginController($scope, $http, $rootScope, $location, localStorageServi
       auth: $rootScope.auth,
       "params": {
         "user": $scope.inputName,
-        "password": $scope.inputPassword //TODO - encryption. Will require server side modification too.
+        "password": $scope.inputPassword
       },
       "id": $rootScope.auth_id
     }).success(function(data) {
@@ -61,6 +61,7 @@ function loginController($scope, $http, $rootScope, $location, localStorageServi
           auth: $rootScope.auth,
           method: 'host.get',
           params: {
+            monitored_hosts: true,
             output: ['name'],
             sortfield: 'name'
           }
@@ -174,9 +175,6 @@ function overviewController($rootScope, $scope, $http, $q) {
           output: ['groupid', 'name'],
           sortfield: 'name',
           real_hosts: true
-        },
-        filter: {
-          name: 'project'
         }
       }); //will work with request through $q
     var triggersRequest = $http.post(api_url, {
@@ -203,8 +201,6 @@ function overviewController($rootScope, $scope, $http, $q) {
         }
       });
 
-      //TODO: add auto update feature to overview
-
     //$q is internal kriskowal's Q library implementation
     //it provides API to work with promises
     $q.all([groupsRequest, triggersRequest]).then(function (data) {
@@ -225,12 +221,6 @@ function overviewController($rootScope, $scope, $http, $q) {
         deferred.resolve(); //promise used to ensure that data first will be initialized
         return deferred.promise;
       }
-
-
-      //TODO PRIORITY
-      //in current version, every unique trigger is expected to be in one hostgroup, not many
-      //happens shit like ace-dbsrv01 has problems and it's shown in ACE Project group, but not
-      //in ACE-DB.
 
       var promise = initializeData(groupsData);
       promise.then(function() {
@@ -285,7 +275,7 @@ function serversController($rootScope, $scope, $http, $routeParams) {
       params: {
         //selectTriggers: ['only_true'],
         monitored_hosts: true,
-        output: ['name', 'available', 'hostid', 'host'] //todo
+        output: ['name', 'available', 'hostid', 'host']
       }
     }).success(function(data) {
       $scope.hostsData = data.result;
@@ -325,7 +315,9 @@ function serversDetailsController($rootScope, $scope, $http, $routeParams, $loca
           selectInventory: true,
           selectItems: ['name','lastvalue','units','itemid','lastclock','value_type','itemid'],
           output: 'extend',
-          hostids: $routeParams.serverId
+          hostids: $routeParams.serverId,
+          expandDescription: 1,
+          expandData:1
         }
       }).success(function (data) {
         $scope.inventoryData = data.result[0].inventory;
@@ -337,7 +329,7 @@ function serversDetailsController($rootScope, $scope, $http, $routeParams, $loca
             $scope.itemsData[i].lastclock = dateConverter($scope.itemsData[i].lastclock, "time");
           }
         }
-        
+        $('#filterInput').focus();
       });
     }
 }
@@ -431,7 +423,6 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
           for (var i = data.result.length - 1; i >= 0; i--) {
             $scope.selectedGroups[data.result[i].groupid] = true; //selecting everything
             localStorageService.add('selectedGroups', JSON.stringify($scope.selectedGroups));
-            //saving everything TODO: promise? kazhdij raz ne nuzhno .add, nuzhno tolko odin raz v konce
           }
         } else {
           //otherwise parse stringified object from localstorage
@@ -477,9 +468,6 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
 
         //showing last updated time for usability
         $scope.lastUpdated = timeConverter(new Date().getTime());
-
-        //TODO bug fix
-        //sometimes colors and tooltips are not being assigned
 
         //if it's first time then we should wait for servers grid finished rendenring
         //unfortunately listener then works when we refresh hostgroup list
