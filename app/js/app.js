@@ -212,7 +212,6 @@ app.run(function ($rootScope, $route, $http, $location, localStorageService) {
 
     //getting list of monitored servers for autocompletion in search box
     //is done on login stage, but since we are skipping that part it has to be done here
-    //TODO - somehow prevent this code duplication
     $http.post(api_url, {
       jsonrpc: "2.0",
       id: $rootScope.auth_id,

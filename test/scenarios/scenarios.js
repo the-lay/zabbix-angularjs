@@ -185,6 +185,11 @@ describe('Zabbix Frontend', function() {
           expect(element('tr.inventoryInfo').count()).toBeGreaterThan(0);
         });
 
+        it('it should successfully filter the item list', function() {
+          input('filterString').enter('Agent Ping');
+          expect(element('tr.currentStats:visible').count()).toBe(1);
+        });
+
       });
 
     });
