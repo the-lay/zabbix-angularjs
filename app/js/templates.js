@@ -25,7 +25,7 @@ angular.module("../app/views/dashboard.html", []).run(["$templateCache", functio
     "        <div class=\"row-fluid\" ng-repeat=\"group in hostgroupsData\" id=\"groupHosts{{group.groupid}}\" ng-show=\"selectedGroups[group.groupid] || selectedGroups['all']\" on-finish-render=\"serversRenderingFinished\">\n" +
     "\n" +
     "          <h4 class=\"groupNames\"><strong>{{group.name}}</strong></h4><hr style=\"margin:0\">\n" +
-    "          <div id=\"{{host.hostid}}\" ng-repeat=\"host in group.hosts | orderBy: 'name'\" class=\"server\" ng-show=\"host.status==0\"> <!--status===0 means that this host is monitored-->\n" +
+    "          <div id=\"{{host.hostid}}\" ng-repeat=\"host in group.hosts | orderBy: 'name'\" class=\"server\" ng-show=\"host.status==0\">\n" +
     "            <a class=\"serverLink\" href=\"#/servers/{{host.hostid}}\">{{host.name}}</a>\n" +
     "          </div>\n" +
     "        </div>\n" +
@@ -240,91 +240,7 @@ angular.module("../app/views/serverDetails.html", []).run(["$templateCache", fun
     "      </ul>\n" +
     "    </div>\n" +
     "  </div>\n" +
-    "</div>\n" +
-    "\n" +
-    "\n" +
-    "<!-- <script src=\"js/highcharts.js\"></script>\n" +
-    "\n" +
-    "<div class=\"container-fluid\">\n" +
-    "  <div class=\"row-fluid\">\n" +
-    "    <div class=\"span11\" id=\"masterTimeline\"></div>\n" +
-    "    <div class=\"span1 hidden-phone\">\n" +
-    "      <small>\n" +
-    "        <a ng-click=\"setZoom(48)\">48 hrs</a><br/>\n" +
-    "        <a ng-click=\"setZoom(168)\">7 days</a><br/>\n" +
-    "        <a ng-click=\"setZoom(672)\">30 days</a><br/>\n" +
-    "      </small>\n" +
-    "    </div>\n" +
-    "    <div class=\"span1 visible-phone\">\n" +
-    "      <small>\n" +
-    "        <a ng-click=\"setZoom(48)\">48 hrs</a> \n" +
-    "        <a ng-click=\"setZoom(168)\">7 days</a> \n" +
-    "        <a ng-click=\"setZoom(672)\">30 days</a> \n" +
-    "      </small>\n" +
-    "    </div>    \n" +
-    "  </div>\n" +
-    "  <hr>\n" +
-    "  <div class=\"row-fluid\">\n" +
-    "    <div class=\"span6\" id=\"cpuGraph\">\n" +
-    "    </div>\n" +
-    "    <div class=\"span6\" id=\"loadGraph\">\n" +
-    "    </div>\n" +
-    "  </div>\n" +
-    "  <div class=\"row-fluid\">\n" +
-    "    <div class=\"span8\" id=\"memoryGraph\">\n" +
-    "\n" +
-    "      <div class=\"row-fluid\">\n" +
-    "        <div class=\"span6\" id=\"diskIOGraph\"></div>\n" +
-    "        <div class=\"span6\" id=\"networkIOGraph\"></div>\n" +
-    "      </div>\n" +
-    "    </div>\n" +
-    "    <div class=\"span4\" id=\"generalInfo\">\n" +
-    "      <table class=\"table table-condensed\">\n" +
-    "        <caption>Current statistics of SERVER_NAME</caption>\n" +
-    "        <thead>\n" +
-    "          <tr>\n" +
-    "            <th>key</th>\n" +
-    "            <th>value</th>\n" +
-    "          </tr>\n" +
-    "        </thead>\n" +
-    "        <tbody>\n" +
-    "          <tr>\n" +
-    "            <td>1</td>\n" +
-    "            <td>2</td>\n" +
-    "          </tr>\n" +
-    "          <tr>\n" +
-    "            <td>3</td>\n" +
-    "            <td>4</td>\n" +
-    "          </tr>\n" +
-    "          <tr>\n" +
-    "            <td>3</td>\n" +
-    "            <td>4</td>\n" +
-    "          </tr>\n" +
-    "          <tr>\n" +
-    "            <td>3</td>\n" +
-    "            <td>4</td>\n" +
-    "          </tr> \n" +
-    "          <tr>\n" +
-    "            <td>3</td>\n" +
-    "            <td>4</td>\n" +
-    "          </tr>\n" +
-    "          <tr>\n" +
-    "            <td>3</td>\n" +
-    "            <td>4</td>\n" +
-    "          </tr> \n" +
-    "          <tr>\n" +
-    "            <td>3</td>\n" +
-    "            <td>4</td>\n" +
-    "          </tr> \n" +
-    "          <tr>\n" +
-    "            <td>3</td>\n" +
-    "            <td>4</td>\n" +
-    "          </tr> \n" +
-    "        </tbody>\n" +
-    "      </table>\n" +
-    "    </div>\n" +
-    "  </div>\n" +
-    "</div> -->");
+    "</div>");
 }]);
 
 angular.module("../app/views/servers.html", []).run(["$templateCache", function($templateCache) {

@@ -224,31 +224,40 @@ function overviewController($rootScope, $scope, $http, $q) {
 
       var promise = initializeData(groupsData);
       promise.then(function() {
+
+
+        //here be dragons
+        //ticket #9
         for (var i=0; i<groupsData.length; i++) {
           for (var j=0; j<triggerData.length; j++) {
+            for (var k=0; k<triggerData[j].groups.length; k++) {
 
-            if (triggerData[j].groups[0].groupid === groupsData[i].groupid) {
-            //if this trigger is related to this hostgroup
-              groupsData[i].errors += 1; //increase errors count
-              triggerDetails[groupsData[i].groupid].push(triggerData[j]);
-              //triggerDetails is an object for storing related triggers
+              if (triggerData[j].groups[k].groupid === groupsData[i].groupid) {
+              //if this trigger is related to this hostgroup
+                groupsData[i].errors += 1; //increase errors count
+                triggerDetails[groupsData[i].groupid].push(triggerData[j]);
+                //triggerDetails is an object for storing related triggers
 
-              if (triggerData[j].lastchange > groupsData[i].lastchange) {
-                //time of the last issue
-                groupsData[i].lastchange = triggerData[j].lastchange;
-                groupsData[i].lastchange_words = dateConverter(triggerData[j].lastchange);
-                //we also convert timestamp to readable format
+                if (triggerData[j].lastchange > groupsData[i].lastchange) {
+                  //time of the last issue
+                  groupsData[i].lastchange = triggerData[j].lastchange;
+                  groupsData[i].lastchange_words = dateConverter(triggerData[j].lastchange);
+                  //we also convert timestamp to readable format
+                }
+                if (triggerData[j].priority > groupsData[i].errors_level) {
+                  //storing the level of the highest error in this hostgroup
+                  groupsData[i].errors_level = triggerData[j].priority;
+                }
               }
-              if (triggerData[j].priority > groupsData[i].errors_level) {
-                //storing the level of the highest error in this hostgroup
-                groupsData[i].errors_level = triggerData[j].priority;
-              }
+
             }
           }
         }
+
         //return back to $scope
         $scope.serverGroups = groupsData;
         $scope.triggerDetails = triggerDetails;
+
       });
     });
   }
