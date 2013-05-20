@@ -16,7 +16,7 @@ angular.module("../app/views/dashboard.html", []).run(["$templateCache", functio
     "      </div>\n" +
     "      <div id=\"notifications\">\n" +
     "        <h3 style=\"margin:0\">Notifications</h3>\n" +
-    "        <div style=\"margin-bottom:10px;\" id=\"notification-{{trigger.hosts[0].hostid}}\" style=\"margin-top:0; padding-top:0\" ng-repeat=\"trigger in triggersData | orderBy: '-priority'\" class=\"error{{trigger.priority}}\" ng-show=\"selectedGroups[trigger.groups[0].groupid]\" on-finish-render=\"triggersRenderingFinished\">{{trigger.description}}</div>\n" +
+    "        <div style=\"margin-bottom:10px;\" id=\"notification-{{trigger.hosts[0].hostid}}\" style=\"margin-top:0; padding-top:0\" ng-repeat=\"trigger in triggersData | orderBy: '-priority'\" class=\"error{{trigger.priority}}\" ng-show=\"selectedGroups[trigger.groups[0].groupid] || selectedGroups['all']\" on-finish-render=\"triggersRenderingFinished\">{{trigger.description}}</div>\n" +
     "        <p><a ng-click=\"toggleGroupSelector()\" href=\"\" id=\"toggleGroups\">{{groupSelectorShown || 'Hide'}} group selection</a></p>\n" +
     "      </div>\n" +
     "    </div>\n" +
@@ -25,7 +25,7 @@ angular.module("../app/views/dashboard.html", []).run(["$templateCache", functio
     "        <div class=\"row-fluid\" ng-repeat=\"group in hostgroupsData\" id=\"groupHosts{{group.groupid}}\" ng-show=\"selectedGroups[group.groupid] || selectedGroups['all']\" on-finish-render=\"serversRenderingFinished\">\n" +
     "\n" +
     "          <h4 class=\"groupNames\"><strong>{{group.name}}</strong></h4><hr style=\"margin:0\">\n" +
-    "          <div id=\"{{host.hostid}}\" ng-repeat=\"host in group.hosts | orderBy: 'name'\" class=\"server\" ng-show=\"host.status==0\">\n" +
+    "          <div class=\"server {{host.hostid}}\" ng-repeat=\"host in group.hosts | orderBy: 'name'\" ng-show=\"host.status==0\">\n" +
     "            <a class=\"serverLink\" href=\"#/servers/{{host.hostid}}\">{{host.name}}</a>\n" +
     "          </div>\n" +
     "        </div>\n" +
@@ -233,10 +233,10 @@ angular.module("../app/views/serverDetails.html", []).run(["$templateCache", fun
     "    <div class=\"span2 static\" id=\"links\">\n" +
     "      <h4>Links <small>on old frontend</small></h4>\n" +
     "      <ul class=\"nav nav-pills nav-stacked\">\n" +
-    "        <li><a href=\"{{zabbix_url}}/charts.php?hostid={{hostId}}&graphid=0\">Graphs</a></li>\n" +
-    "        <li><a href=\"{{zabbix_url}}/latest.php?open=1&hostid={{hostId}}\">Latest data</a></li>\n" +
-    "        <li><a href=\"{{zabbix_url}}/events.php?hostid={{hostId}}&source=0\">Events</a></li>\n" +
-    "        <li><a href=\"{{zabbix_url}}/tr_status.php?hostid={{hostId}}\">Triggers</a></li>\n" +
+    "        <li><a href=\"{{zabbix_url}}/charts.php?hostid={{hostId}}&graphid=0\" id=\"graphsLink\">Graphs</a></li>\n" +
+    "        <li><a href=\"{{zabbix_url}}/latest.php?open=1&hostid={{hostId}}\" id=\"latestDataLink\">Latest data</a></li>\n" +
+    "        <li><a href=\"{{zabbix_url}}/events.php?hostid={{hostId}}&source=0\" id=\"eventsLink\">Events</a></li>\n" +
+    "        <li><a href=\"{{zabbix_url}}/tr_status.php?hostid={{hostId}}\" id=\"triggersLink\">Triggers</a></li>\n" +
     "      </ul>\n" +
     "    </div>\n" +
     "  </div>\n" +

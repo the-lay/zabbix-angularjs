@@ -12,7 +12,7 @@
       </div>
       <div id="notifications">
         <h3 style="margin:0">Notifications</h3>
-        <div style="margin-bottom:10px;" id="notification-{{trigger.hosts[0].hostid}}" style="margin-top:0; padding-top:0" ng-repeat="trigger in triggersData | orderBy: '-priority'" class="error{{trigger.priority}}" ng-show="selectedGroups[trigger.groups[0].groupid]" on-finish-render="triggersRenderingFinished">{{trigger.description}}</div>
+        <div style="margin-bottom:10px;" id="notification-{{trigger.hosts[0].hostid}}" style="margin-top:0; padding-top:0" ng-repeat="trigger in triggersData | orderBy: '-priority'" class="error{{trigger.priority}}" ng-show="selectedGroups[trigger.groups[0].groupid] || selectedGroups['all']" on-finish-render="triggersRenderingFinished">{{trigger.description}}</div>
         <p><a ng-click="toggleGroupSelector()" href="" id="toggleGroups">{{groupSelectorShown || 'Hide'}} group selection</a></p>
       </div>
     </div>
@@ -21,7 +21,7 @@
         <div class="row-fluid" ng-repeat="group in hostgroupsData" id="groupHosts{{group.groupid}}" ng-show="selectedGroups[group.groupid] || selectedGroups['all']" on-finish-render="serversRenderingFinished">
 
           <h4 class="groupNames"><strong>{{group.name}}</strong></h4><hr style="margin:0">
-          <div id="{{host.hostid}}" ng-repeat="host in group.hosts | orderBy: 'name'" class="server" ng-show="host.status==0">
+          <div class="server {{host.hostid}}" ng-repeat="host in group.hosts | orderBy: 'name'" ng-show="host.status==0">
             <a class="serverLink" href="#/servers/{{host.hostid}}">{{host.name}}</a>
           </div>
         </div>

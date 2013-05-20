@@ -6,6 +6,14 @@ describe('Zabbix Frontend', function() {
 
     describe('Trying to access controllers without authentication', function() {
 
+      // it('it should navigate to old frontend on click of Zabbix brand top left', function() {
+      //   browser().navigateTo('/');
+      //   pause();
+      //   element('a.brand').click();
+      //   pause();
+      //   expect(browser().window().href()).toBe('/something/');
+      // });
+
       it('it should redirect you to login page, because you are unlogged', function() {
         browser().navigateTo('/');
         expect(browser().location().url()).toBe('/login');
@@ -113,14 +121,10 @@ describe('Zabbix Frontend', function() {
       });
 
       it('it should be able to show errors', function() {
-        //let's be honest, there is always at least one minor warning in the system
-        //so we can test for this
         expect(element('td').text()).toMatch('error');
       });
 
       it('it should be able to open error details overview', function() {
-        //let's be honest, there is always at least one minor warning in the system
-        //so we can test for this
         element('a.underlined').click();
         expect(element('tr.errorsOverview:visible').count()).toBeGreaterThan(0);
       });
@@ -190,6 +194,26 @@ describe('Zabbix Frontend', function() {
           expect(element('tr.currentStats:visible').count()).toBe(1);
         });
 
+        // it('it should successully open Graphs link', function() {
+        //   element('#graphsLink').click();
+        //   expect(browser().window().href()).toMatch('/something/charts.php?hostid=10084&graphid=0');
+        // });
+
+        // it('it should successully open Latest data link', function() {
+        //   element('#graphsLink').click();
+        //   expect(browser().window().href()).toMatch('/something/latest.php?open=1&hostid=10084');
+        // });
+
+        // it('it should successully open Events link', function() {
+        //   element('#graphsLink').click();
+        //   expect(browser().window().href()).toMatch('/something/events.php?hostid=10084&source=0');
+        // });
+
+        // it('it should successully open Triggers link', function() {
+        //   element('#graphsLink').click();
+        //   expect(browser().window().href()).toMatch('/something/tr_status.php?hostid=10084');
+        // });
+
       });
 
     });
@@ -215,10 +239,10 @@ describe('Zabbix Frontend', function() {
       it('it should hide and then show groups selector', function() {
         expect(element('#groups:visible').count()).toBe(1);
         element('#toggleGroups').click();
-        sleep(2);
+        sleep(2); //to ensure that animation is completed
         expect(element('#groups:visible').count()).toBe(0);
         element('#toggleGroups').click();
-        sleep(2);
+        sleep(2); //to ensure that animation is completed
         expect(element('#groups:visible').count()).toBe(1);
       });
 

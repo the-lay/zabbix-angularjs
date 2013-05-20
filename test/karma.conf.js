@@ -10,7 +10,6 @@ files = [
 ];
 proxies = {
   '/': 'http://zabbixcm02.internal.corp/frontend/'
-  //'frontend/views/': 'http://zabbixcm02.internal.corp/frontend/views/'
 };
 exclude = [];
 reporters = ['progress'];

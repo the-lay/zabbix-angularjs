@@ -501,11 +501,11 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
           //on hover on notifications highlight zoom the appropriate .server div
           $('div[id^="notification-"]').hover(
             function () {
-              $('#'+$(this).attr('id').substring(13)).
+              $('.'+$(this).attr('id').substring(13)).
               addClass('zoomUp'); //200% zoom, check style.css for details
             },
             function () {
-              $('#'+$(this).attr('id').substring(13)).
+              $('.'+$(this).attr('id').substring(13)).
               removeClass('zoomUp'); //removing zoom, back to 100%
             }
           );
@@ -525,7 +525,7 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
   //add new tooltips
   function tooltipsHover(triggersData, whereFrom) {
     for (var i = triggersData.length - 1; i >= 0; i--) {
-        $('#'+triggersData[i].hosts[0].hostid).tooltip({title: triggersData[i].description})
+        $('.'+triggersData[i].hosts[0].hostid).tooltip({title: triggersData[i].description})
           .addClass('error'+triggersData[i].priority);
     }
   }
