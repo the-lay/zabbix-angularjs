@@ -157,7 +157,7 @@ function overviewController($rootScope, $scope, $http, $q) {
 
     //pluralization of error notifications on overview
     $scope.groupErrorsPluralize = {
-      0: ' ',
+      0: ' ', //if zero errors we don't want to show anything
       one: '{} error!',
       other: '{} errors!'
     };
@@ -399,7 +399,6 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
 
     //stop this function execution after leaving dashboard
     if ($location.path() !== '/dashboard') {
-      // console.log('stopping bar()');
       $rootScope.fullscreen = '';
       return;
     }
@@ -439,7 +438,6 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
 
     //stop this function execution after leaving dashboard
     if ($location.path() !== '/dashboard') {
-      // console.log('stopping foo()'); //debugging
       $rootScope.fullscreen = '';
       return;
     }

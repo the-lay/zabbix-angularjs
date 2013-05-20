@@ -21,7 +21,7 @@
         <div class="row-fluid" ng-repeat="group in hostgroupsData" id="groupHosts{{group.groupid}}" ng-show="selectedGroups[group.groupid] || selectedGroups['all']" on-finish-render="serversRenderingFinished">
 
           <h4 class="groupNames"><strong>{{group.name}}</strong></h4><hr style="margin:0">
-          <div id="{{host.hostid}}" ng-repeat="host in group.hosts | orderBy: 'name'" class="server" ng-show="host.status==0"> <!--status===0 means that this host is monitored-->
+          <div id="{{host.hostid}}" ng-repeat="host in group.hosts | orderBy: 'name'" class="server" ng-show="host.status==0">
             <a class="serverLink" href="#/servers/{{host.hostid}}">{{host.name}}</a>
           </div>
         </div>
