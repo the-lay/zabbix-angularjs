@@ -24,7 +24,7 @@ angular.module("../app/views/dashboard.html", []).run(["$templateCache", functio
     "    <div id=\"serversDiv\" class=\"span10\">\n" +
     "        <div class=\"row-fluid\" ng-repeat=\"group in hostgroupsData\" id=\"groupHosts{{group.groupid}}\" ng-show=\"selectedGroups[group.groupid] || selectedGroups['all']\" on-finish-render=\"serversRenderingFinished\">\n" +
     "\n" +
-    "          <h4 class=\"groupNames\"><strong>{{group.name}}</strong></h4><hr style=\"margin:0\">\n" +
+    "          <h4 class=\"groupNames\"><a ng-show=\"group.map\" href=\"http://zabbixcm02.internal.corp/maps.php?sysmapid={{group.map}}\"><strong>{{group.name}}</strong></a><strong ng-hide=\"group.map\">{{group.name}}</strong></h4><hr style=\"margin:0\">\n" +
     "          <div class=\"server {{host.hostid}}\" ng-repeat=\"host in group.hosts | orderBy: 'name'\" ng-show=\"host.status==0\">\n" +
     "            <a class=\"serverLink\" href=\"#/servers/{{host.hostid}}\">{{host.name}}</a>\n" +
     "          </div>\n" +

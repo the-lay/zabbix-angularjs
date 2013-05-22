@@ -425,7 +425,30 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
         sortfield: 'name'
       }
       }).success(function (data) {
-        $scope.hostgroupsData = data.result;
+
+//TODO dobavitj v .doc
+        if ($scope.hostgroupsData = data.result) {
+          
+          $http.post(api_url, {
+            jsonrpc: '2.0',
+            id: $rootScope.auth_id,
+            auth: $rootScope.auth,
+            method: 'map.get',
+            params: {
+              output: ['sysmapid','name']
+            }
+          }).success(function (returned_data) {
+            for (var i = data.result.length - 1; i >= 0; i--) {
+              for (var j = returned_data.result.length - 1; j >= 0; j--) {
+                if (data.result[i].name == returned_data.result[j].name) {
+                  $scope.hostgroupsData[i].map = returned_data.result[j].sysmapid;
+                }
+              }
+            }
+          });
+        }
+//vot etu chastj
+
         if (localStorageService.get('selectedGroups') === null) {
           //user doesn't have memory of this place
           for (var i = data.result.length - 1; i >= 0; i--) {
