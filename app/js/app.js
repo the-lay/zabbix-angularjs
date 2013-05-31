@@ -68,7 +68,11 @@ function dateConverter(timestamp, format) {
 
   if (!format) {
     //returns in format 'd M Y, H:i:s'
-    return a.getDate() + ' ' + months[a.getMonth()] + ' ' + a.getFullYear() + ', ' + hrs + ':' + min + ':' + sec;
+    return a.getDate() + ' ' + 
+      months[a.getMonth()] + ' ' + 
+      a.getFullYear() + ', ' + 
+      hrs + ':' + min + ':' + sec;
+      
   } else if (format === "time") {
     return hrs + ':' + min + ':' + sec;
   }

@@ -24,7 +24,8 @@ function loginController($scope, $http, $rootScope, $location, localStorageServi
     //ID doesn't have to be unique, but it's mandatory for using API, so it was decided to use current time
     //as an identification for requests
     $rootScope.auth_id = Date.now();
-    localStorageService.add('auth_id', $rootScope.auth_id); //saving this ID for session restoration
+    localStorageService.add('auth_id', 
+      $rootScope.auth_id); //saving this ID for session restoration
 
     //login request
     $http.post(api_url, {
@@ -226,7 +227,6 @@ function overviewController($rootScope, $scope, $http, $q) {
       promise.then(function() {
 
 
-        //here be dragons
         //ticket #9
         for (var i=0; i<groupsData.length; i++) {
           for (var j=0; j<triggerData.length; j++) {
@@ -322,7 +322,8 @@ function serversDetailsController($rootScope, $scope, $http, $routeParams, $loca
         method: 'host.get',
         params: {
           selectInventory: true,
-          selectItems: ['name','lastvalue','units','itemid','lastclock','value_type','itemid'],
+          selectItems: ['name','lastvalue',
+            'units','itemid','lastclock','value_type','itemid'],
           output: 'extend',
           hostids: $routeParams.serverId,
           expandDescription: 1,
@@ -426,7 +427,6 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
       }
       }).success(function (data) {
 
-//TODO dobavitj v .doc
         if ($scope.hostgroupsData = data.result) {
           
           $http.post(api_url, {
@@ -447,13 +447,13 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
             }
           });
         }
-//vot etu chastj
 
         if (localStorageService.get('selectedGroups') === null) {
           //user doesn't have memory of this place
           for (var i = data.result.length - 1; i >= 0; i--) {
             $scope.selectedGroups[data.result[i].groupid] = true; //selecting everything
-            localStorageService.add('selectedGroups', JSON.stringify($scope.selectedGroups));
+            localStorageService.add('selectedGroups', 
+              JSON.stringify($scope.selectedGroups));
           }
         } else {
           //otherwise parse stringified object from localstorage
@@ -605,11 +605,15 @@ function searchController($rootScope, $scope, $http, $routeParams, $location) {
 
     //if users enters correct name of server, redirects to the page of server
     if ($rootScope.serversOnline && $rootScope.serversOnline.length) {
+
       for (var i = $rootScope.serversOnline.length - 1; i >= 0; i--) {
+
         if ($rootScope.serversOnline[i].name === $routeParams.searchString) {
           $location.path('/servers/' + $rootScope.serversOnline[i].hostid);
         }
+
       }
+      
     }
 
     //host and hostgroup search query are async
