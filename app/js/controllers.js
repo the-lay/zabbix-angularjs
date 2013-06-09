@@ -522,13 +522,13 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
         //when triggers divs are successfully rendered attaching hover event
         $scope.$on('triggersRenderingFinished', function() {
           //on hover on notifications highlight zoom the appropriate .server div
-          $('div[id^="notification-"]').hover(
+          $('div[data-notification-host-id!=""]').hover(
             function () {
-              $('.'+$(this).attr('id').substring(13)).
+              $('div[data-server-id='+$(this).data('notification-host-id')+']').
               addClass('zoomUp'); //200% zoom, check style.css for details
             },
             function () {
-              $('.'+$(this).attr('id').substring(13)).
+              $('div[data-server-id='+$(this).data('notification-host-id')+']').
               removeClass('zoomUp'); //removing zoom, back to 100%
             }
           );
@@ -546,8 +546,8 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
 
   function addNewTooltips(triggersData) {
     for (var i = triggersData.length - 1; i >= 0; i--) {
-        $('.'+triggersData[i].hosts[0].hostid).tooltip({title: triggersData[i].description})
-          .addClass('error'+triggersData[i].priority);
+      $('div[data-server-id='+triggersData[i].hosts[0].hostid+']').tooltip({title: triggersData[i].description})
+        .addClass('error'+triggersData[i].priority);
     }
   }
 
@@ -575,7 +575,6 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
     }
   };
 }
-
 
 /**
 * Controller used for search of servers and groups in the system. Used with view search.html.

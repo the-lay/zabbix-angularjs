@@ -16,16 +16,16 @@ angular.module("../app/views/dashboard.html", []).run(["$templateCache", functio
     "      </div>\n" +
     "      <div id=\"notifications\">\n" +
     "        <h3 style=\"margin:0\">Notifications</h3>\n" +
-    "        <div style=\"margin-bottom:10px;\" id=\"notification-{{trigger.hosts[0].hostid}}\" style=\"margin-top:0; padding-top:0\" ng-repeat=\"trigger in triggersData | orderBy: '-priority'\" class=\"error{{trigger.priority}}\" ng-show=\"selectedGroups[trigger.groups[0].groupid] || selectedGroups['all']\" on-finish-render=\"triggersRenderingFinished\">{{trigger.description}}</div>\n" +
+    "        <div style=\"margin-bottom:10px;\" data-notification-host-id=\"{{trigger.hosts[0].hostid}}\" style=\"margin-top:0; padding-top:0\" ng-repeat=\"trigger in triggersData | orderBy: '-priority'\" class=\"error{{trigger.priority}}\" ng-show=\"selectedGroups[trigger.groups[0].groupid] || selectedGroups['all']\" on-finish-render=\"triggersRenderingFinished\">{{trigger.description}}</div>\n" +
     "        <p><a ng-click=\"toggleGroupSelector()\" href=\"\" id=\"toggleGroups\">{{groupSelectorShown || 'Hide'}} group selection</a></p>\n" +
     "      </div>\n" +
     "    </div>\n" +
     "\n" +
     "    <div id=\"serversDiv\" class=\"span10\">\n" +
-    "        <div class=\"row-fluid\" ng-repeat=\"group in hostgroupsData\" id=\"groupHosts{{group.groupid}}\" ng-show=\"selectedGroups[group.groupid] || selectedGroups['all']\" on-finish-render=\"serversRenderingFinished\">\n" +
+    "        <div class=\"row-fluid\" ng-repeat=\"group in hostgroupsData\" ng-show=\"selectedGroups[group.groupid] || selectedGroups['all']\" on-finish-render=\"serversRenderingFinished\">\n" +
     "\n" +
     "          <h4 class=\"groupNames\"><a ng-show=\"group.map\" href=\"http://zabbixcm02.internal.corp/maps.php?sysmapid={{group.map}}\"><strong>{{group.name}}</strong></a><strong ng-hide=\"group.map\">{{group.name}}</strong></h4><hr style=\"margin:0\">\n" +
-    "          <div class=\"server {{host.hostid}}\" ng-repeat=\"host in group.hosts | orderBy: 'name'\" ng-show=\"host.status==0\">\n" +
+    "          <div class=\"server\" ng-repeat=\"host in group.hosts | orderBy: 'name'\" ng-show=\"host.status==0\" data-server-id=\"{{host.hostid}}\">\n" +
     "            <a class=\"serverLink\" href=\"#/servers/{{host.hostid}}\">{{host.name}}</a>\n" +
     "          </div>\n" +
     "        </div>\n" +
