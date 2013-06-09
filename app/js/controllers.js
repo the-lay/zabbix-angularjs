@@ -18,7 +18,7 @@ function loginController($scope, $http, $rootScope, $location, localStorageServi
 
   //focusing on inputName input box for easier navigation
   $('#inputName').focus();
-
+  
   //login function
   $scope.login = function() {
     //ID doesn't have to be unique, but it's mandatory for using API, so it was decided to use current time
@@ -28,7 +28,7 @@ function loginController($scope, $http, $rootScope, $location, localStorageServi
       $rootScope.auth_id); //saving this ID for session restoration
 
     //login request
-    $http.post(api_url, {
+    $http.post(GlobalVars.api_url(), {
       "jsonrpc": "2.0",
       "method": "user.login",
       auth: $rootScope.auth,
@@ -37,26 +37,26 @@ function loginController($scope, $http, $rootScope, $location, localStorageServi
         "password": $scope.inputPassword
       },
       "id": $rootScope.auth_id
-    }).success(function(data) {
-      if (data.error) {
+    }).success(function (userData) {
+      if (userData.error) {
 
         //unsuccessful login
-        $scope.error = data.error; //for showing responsed error
+        $scope.error = userData.error; //for showing responsed error
         $('#inputName').focus(); //restoring focus
 
       } else {
 
         //successful login
-        localStorageService.add('auth', data.result); //saving auth key for session restoration
+        localStorageService.add('auth', userData.result); //saving auth key for session restoration
 
-        $rootScope.auth = data.result;
+        $rootScope.auth = userData.result;
         $rootScope.loggedIn = true;
         $scope.inputName = "";
         $scope.inputPassword = "";
         $('#inputName').focus();
 
         //getting list of monitored servers for autocompletion in search box
-        $http.post(api_url, {
+        $http.post(GlobalVars.api_url(), {
           jsonrpc: "2.0",
           id: $rootScope.auth_id,
           auth: $rootScope.auth,
@@ -66,8 +66,8 @@ function loginController($scope, $http, $rootScope, $location, localStorageServi
             output: ['name'],
             sortfield: 'name'
           }
-        }).success(function(data) {
-          $rootScope.serversOnline = data.result;
+        }).success(function (hostsData) {
+          $rootScope.serversOnline = hostsData.result;
           //when done redirects you to main page
           $location.path('/');
         });
@@ -91,13 +91,13 @@ function logoutController(localStorageService, $rootScope, $http, $location) {
   //should not be accessible for guests anyway
   //extra security just in case
   if ($rootScope.loggedIn) {
-    $http.post(api_url, {
+    $http.post(GlobalVars.api_url(), {
       jsonrpc: "2.0",
       id: $rootScope.auth_id,
       auth: $rootScope.auth,
       method: 'user.logout',
       params: {}
-    }).success(function(data) {
+    }).success(function (data) {
       //closes current session
       $rootScope.loggedIn = false;
       $rootScope.auth = null;
@@ -166,8 +166,7 @@ function overviewController($rootScope, $scope, $http, $q) {
     //severity of triggers
     $scope.triggerSeverity = ['Fine', 'Information', 'Warning', 'Average', 'High', 'Disaster'];
 
-    //groups
-    var groupsRequest = $http.post(api_url, {
+    var groupsRequest = $http.post(GlobalVars.api_url(), {
         jsonrpc: "2.0",
         id: $rootScope.auth_id,
         auth: $rootScope.auth,
@@ -178,7 +177,7 @@ function overviewController($rootScope, $scope, $http, $q) {
           real_hosts: true
         }
       }); //will work with request through $q
-    var triggersRequest = $http.post(api_url, {
+    var triggersRequest = $http.post(GlobalVars.api_url(), {
         jsonrpc: "2.0",
         id: $rootScope.auth_id,
         auth: $rootScope.auth,
@@ -196,9 +195,9 @@ function overviewController($rootScope, $scope, $http, $q) {
           monitored: true,
           output: ['triggerid', 'priority', 'lastchange', 'description']
         }
-      }).success(function (data) {
-        for(var i=0; i<data.result.length; i++) {
-          data.result[i].lastchange_words = dateConverter(data.result[i].lastchange);
+      }).success(function (triggersData) {
+        for(var i=0; i<triggersData.result.length; i++) {
+          triggersData.result[i].lastchange_words = dateConverter(triggersData.result[i].lastchange);
         }
       });
 
@@ -276,7 +275,7 @@ function serversController($rootScope, $scope, $http, $routeParams) {
 
   if ($rootScope.loggedIn) {
     //getting all hosts available
-    $http.post(api_url, {
+    $http.post(GlobalVars.api_url(), {
       jsonrpc: "2.0",
       id: $rootScope.auth_id,
       auth: $rootScope.auth,
@@ -286,8 +285,8 @@ function serversController($rootScope, $scope, $http, $routeParams) {
         monitored_hosts: true,
         output: ['name', 'available', 'hostid', 'host']
       }
-    }).success(function(data) {
-      $scope.hostsData = data.result;
+    }).success(function (hostsData) {
+      $scope.hostsData = hostsData.result;
     });
   }
 
@@ -315,7 +314,7 @@ function serversDetailsController($rootScope, $scope, $http, $routeParams, $loca
       }
     
       //host info
-      $http.post(api_url, {
+      $http.post(GlobalVars.api_url(), {
         jsonrpc: '2.0',
         id: $rootScope.auth_id,
         auth: $rootScope.auth,
@@ -329,12 +328,12 @@ function serversDetailsController($rootScope, $scope, $http, $routeParams, $loca
           expandDescription: 1,
           expandData:1
         }
-      }).success(function (data) {
-        $scope.inventoryData = data.result[0].inventory;
-        $scope.serverName = data.result[0].name;
-        $scope.zabbix_url = zabbix_url;
+      }).success(function (hostData) {
+        $scope.inventoryData = hostData.result[0].inventory;
+        $scope.serverName = hostData.result[0].name;
+        $scope.zabbix_url = GlobalVars.zabbix_url();
         $scope.hostId = $routeParams.serverId;
-        if ($scope.itemsData = data.result[0].items) {
+        if ($scope.itemsData = hostData.result[0].items) {
           for (var i = $scope.itemsData.length - 1; i >= 0; i--) {
             $scope.itemsData[i].lastclock = dateConverter($scope.itemsData[i].lastclock, "time");
           }
@@ -363,7 +362,7 @@ function projectController($rootScope, $scope, $http, $routeParams, $location) {
     }
 
     //shows all servers monitored in one hostgroup/project
-    $http.post(api_url, {
+    $http.post(GlobalVars.api_url(), {
       jsonrpc: "2.0",
       id: $rootScope.auth_id,
       method: 'hostgroup.get',
@@ -376,8 +375,8 @@ function projectController($rootScope, $scope, $http, $routeParams, $location) {
         real_hosts: true,
         monitored_hosts: true
       }
-    }).success(function (data, $timeout, $location) {
-      $scope.hostgroupData = data.result[0];
+    }).success(function (projectData) {
+      $scope.hostgroupData = projectData.result[0];
     });
   }
 
@@ -405,7 +404,7 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
     groupSelectorShown = true;
 
   //getting active hostgroups and their hosts
-  (function bar() {
+  (function activeHostgroupData() {
 
     //stop this function execution after leaving dashboard
     if ($location.path() !== '/dashboard') {
@@ -413,7 +412,7 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
       return;
     }
 
-    var hostgroupsRequest = $http.post(api_url, {
+    var hostgroupsRequest = $http.post(GlobalVars.api_url(), {
       jsonrpc: '2.0',
       id: $rootScope.auth_id,
       auth: $rootScope.auth,
@@ -425,11 +424,11 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
         selectHosts: ['hostid', 'available', 'name', 'host', 'status'],
         sortfield: 'name'
       }
-      }).success(function (data) {
+      }).success(function (hostgroupData) {
 
-        if ($scope.hostgroupsData = data.result) {
+        if ($scope.hostgroupsData = hostgroupData.result) {
           
-          $http.post(api_url, {
+          $http.post(GlobalVars.api_url(), {
             jsonrpc: '2.0',
             id: $rootScope.auth_id,
             auth: $rootScope.auth,
@@ -437,11 +436,12 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
             params: {
               output: ['sysmapid','name']
             }
-          }).success(function (returned_data) {
-            for (var i = data.result.length - 1; i >= 0; i--) {
-              for (var j = returned_data.result.length - 1; j >= 0; j--) {
-                if (data.result[i].name == returned_data.result[j].name) {
-                  $scope.hostgroupsData[i].map = returned_data.result[j].sysmapid;
+          }).success(function (mapData) {
+            //adding map as a property to each hostgroup
+            for (var i = hostgroupData.result.length - 1; i >= 0; i--) {
+              for (var j = mapData.result.length - 1; j >= 0; j--) {
+                if (hostgroupData.result[i].name == mapData.result[j].name) {
+                  $scope.hostgroupsData[i].map = mapData.result[j].sysmapid;
                 }
               }
             }
@@ -450,8 +450,8 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
 
         if (localStorageService.get('selectedGroups') === null) {
           //user doesn't have memory of this place
-          for (var i = data.result.length - 1; i >= 0; i--) {
-            $scope.selectedGroups[data.result[i].groupid] = true; //selecting everything
+          for (var i = hostgroupData.result.length - 1; i >= 0; i--) {
+            $scope.selectedGroups[hostgroupData.result[i].groupid] = true; //selecting everything
             localStorageService.add('selectedGroups', 
               JSON.stringify($scope.selectedGroups));
           }
@@ -461,12 +461,12 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
         }
       });
 
-    setTimeout(bar, hostgroupUpdateInterval); //hostgroupUpdateInterval defined at the top
+    setTimeout(activeHostgroupData, GlobalVars.hostgroupUpdateInterval()); //hostgroupUpdateInterval defined at the top
     //it is not intended for hostgroups to be added/removed frequently hence the big interval
   })();
 
   //getting current active triggers
-  (function foo() {
+  (function activeTriggersData() {
 
     //stop this function execution after leaving dashboard
     if ($location.path() !== '/dashboard') {
@@ -474,7 +474,7 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
       return;
     }
 
-    var triggersRequest = $http.post(api_url, {
+    var triggersRequest = $http.post(GlobalVars.api_url(), {
       jsonrpc: '2.0',
       id: $rootScope.auth_id,
       auth: $rootScope.auth,
@@ -493,8 +493,8 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
         only_true: true,
         output: ['description', 'lastchange', 'priority', 'triggerid']
       }
-      }).success(function (data) {
-        $scope.triggersData = data.result;
+      }).success(function (triggerData) {
+        $scope.triggersData = triggerData.result;
 
         //showing last updated time for usability
         $scope.lastUpdated = timeConverter(new Date().getTime());
@@ -507,15 +507,15 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
             if (!firstTime) {
               return;
             } else {
-              if (removePrevTooltips(data.result, 'firstTime')) {
-                tooltipsHover(data.result, 'firstTime');
+              if (removePrevTooltips(triggerData.result)) {
+                addNewTooltips(triggerData.result);
               }
-              firstTime = false; //boolean flag
+              firstTime = false;
             }
           });
         } else {
-            if (removePrevTooltips(data.result, 'NOT firstTime')) {
-              tooltipsHover(data.result, 'NOT firstTime');
+            if (removePrevTooltips(triggerData.result)) {
+              addNewTooltips(triggerData.result);
             }
         }
 
@@ -536,17 +536,15 @@ function dashboardController($scope, $http, $rootScope, $location, localStorageS
 
       });
 
-    setTimeout(foo, triggerUpdateInterval);
+    setTimeout(activeTriggersData, GlobalVars.triggerUpdateInterval());
   })();
 
-  //remove old tooltips
-  function removePrevTooltips(triggersData, whereFrom) {
+  function removePrevTooltips(triggersData) {
     $('.server').tooltip('destroy').removeClass('error1 error2 error3 error4 error5');
     return true;
   }
 
-  //add new tooltips
-  function tooltipsHover(triggersData, whereFrom) {
+  function addNewTooltips(triggersData) {
     for (var i = triggersData.length - 1; i >= 0; i--) {
         $('.'+triggersData[i].hosts[0].hostid).tooltip({title: triggersData[i].description})
           .addClass('error'+triggersData[i].priority);
@@ -618,7 +616,7 @@ function searchController($rootScope, $scope, $http, $routeParams, $location) {
 
     //host and hostgroup search query are async
     //getting hosts
-    $http.post(api_url, {
+    $http.post(GlobalVars.api_url(), {
       jsonrpc: "2.0",
       id: $rootScope.auth_id,
       method: 'host.get',
@@ -631,12 +629,12 @@ function searchController($rootScope, $scope, $http, $routeParams, $location) {
         },
         sortfield: 'name'
       }
-      }).success(function(data) {
-        $scope.hostsData = data.result;
+      }).success(function (hostsData) {
+        $scope.hostsData = hostsData.result;
       });
 
     //getting hostgroups
-    $http.post(api_url, {
+    $http.post(GlobalVars.api_url(), {
       jsonrpc: "2.0",
       id: $rootScope.auth_id,
       method: 'hostgroup.get',
@@ -649,8 +647,8 @@ function searchController($rootScope, $scope, $http, $routeParams, $location) {
           name: $routeParams.searchString
         }
       }
-      }).success(function(data) {
-        $scope.groupsData = data.result;
+      }).success(function (hostgroupData) {
+        $scope.groupsData = hostgroupData.result;
       });
 
   }

@@ -4,33 +4,54 @@
 * @author Iļja Gubins <ilja.gubins@exigenservices.com>
 */
 
-/** 
-* Global variable that specificies the direct URL to Zabbix JSON-RPC API.
-* @global 
-* @kind constant
+/**
+* Global variables. Using YUI module pattern. 
+* The basic idea is to wrap all your code in a function that returns an object which contains 
+* functions that needs to be accessed outside your module and assign the return 
+* value to a single global variable.
+* @global
 */
-var api_url = 'http://zabbixcm02.internal.corp/api_jsonrpc.php';
+var GlobalVars = (function() {
 
-/** 
-* Global variable that specificies the direct URL to Zabbix.
-* @global 
-* @kind constant
-*/
-var zabbix_url = 'http://zabbixcm02.internal.corp';
+  return {
+    /** 
+    * Global variable that specificies the direct URL to Zabbix JSON-RPC API.
+    * @global 
+    * @kind constant
+    */
+    api_url: function() {
+      return 'http://zabbixcm02.internal.corp/api_jsonrpc.php';
+    },
 
-/** 
-* Global variable that specificies the update interval of notifications in Dashboard.
-* @global 
-* @kind constant
-*/
-var triggerUpdateInterval = 30000; //30 seconds
+    /** 
+    * Global variable that specificies the direct URL to Zabbix.
+    * @global 
+    * @kind constant
+    */
+    zabbix_url: function() {
+      return 'http://zabbixcm02.internal.corp';
+    },
 
-/** 
-* Global variable that specificies the update interval of hostgroups in Dashboard.
-* @global 
-* @kind constant
-*/
-var hostgroupUpdateInterval = 600000; //10 minutes
+    /** 
+    * Global variable that specificies the update interval of notifications in Dashboard.
+    * @global 
+    * @kind constant
+    */
+    triggerUpdateInterval: function() {
+      return 30000; //30 seconds
+    },
+
+    /** 
+    * Global variable that specificies the update interval of hostgroups in Dashboard.
+    * @global 
+    * @kind constant
+    */
+    hostgroupUpdateInterval: function() {
+      return 600000; //10 minutes
+    }
+  }
+
+})();
 
 /**
 * Function that converts given UNIX timestamp to a string
@@ -216,7 +237,7 @@ app.run(function ($rootScope, $route, $http, $location, localStorageService) {
 
     //getting list of monitored servers for autocompletion in search box
     //is done on login stage, but since we are skipping that part it has to be done here
-    $http.post(api_url, {
+    $http.post(GlobalVars.api_url(), {
       jsonrpc: "2.0",
       id: $rootScope.auth_id,
       auth: $rootScope.auth,
@@ -226,8 +247,8 @@ app.run(function ($rootScope, $route, $http, $location, localStorageService) {
         output: ['name'],
         sortfield: 'name'
       }
-    }).success(function (data) {
-      $rootScope.serversOnline = data.result;
+    }).success(function (hostsData) {
+      $rootScope.serversOnline = hostsData.result;
     });
   }
   //preventing page title flickering by assigning title before

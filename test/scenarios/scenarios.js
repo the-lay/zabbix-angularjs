@@ -314,7 +314,3 @@ describe('Zabbix Frontend', function() {
   });
 
 });
-
-/**
-* UserParameter=ping[*],FOR /F "tokens=5 delims==<ms" %i IN ('ping -n 1 -4 $1 ^|find "Reply from"') DO @echo %i
-*/

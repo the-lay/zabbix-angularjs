@@ -31,33 +31,54 @@
 * @author Iļja Gubins &lt;ilja.gubins@exigenservices.com>
 */
 
-/** 
-* Global variable that specificies the direct URL to Zabbix JSON-RPC API.
-* @global 
-* @kind constant
+/**
+* Global variables. Using YUI module pattern. 
+* The basic idea is to wrap all your code in a function that returns an object which contains 
+* functions that needs to be accessed outside your module and assign the return 
+* value to a single global variable.
+* @global
 */
-var api_url = 'http://zabbixcm02.internal.corp/api_jsonrpc.php';
+var GlobalVars = (function() {
 
-/** 
-* Global variable that specificies the direct URL to Zabbix.
-* @global 
-* @kind constant
-*/
-var zabbix_url = 'http://zabbixcm02.internal.corp';
+  return {
+    /** 
+    * Global variable that specificies the direct URL to Zabbix JSON-RPC API.
+    * @global 
+    * @kind constant
+    */
+    api_url: function() {
+      return 'http://zabbixcm02.internal.corp/api_jsonrpc.php';
+    },
 
-/** 
-* Global variable that specificies the update interval of notifications in Dashboard.
-* @global 
-* @kind constant
-*/
-var triggerUpdateInterval = 30000; //30 seconds
+    /** 
+    * Global variable that specificies the direct URL to Zabbix.
+    * @global 
+    * @kind constant
+    */
+    zabbix_url: function() {
+      return 'http://zabbixcm02.internal.corp';
+    },
 
-/** 
-* Global variable that specificies the update interval of hostgroups in Dashboard.
-* @global 
-* @kind constant
-*/
-var hostgroupUpdateInterval = 600000; //10 minutes
+    /** 
+    * Global variable that specificies the update interval of notifications in Dashboard.
+    * @global 
+    * @kind constant
+    */
+    triggerUpdateInterval: function() {
+      return 30000; //30 seconds
+    },
+
+    /** 
+    * Global variable that specificies the update interval of hostgroups in Dashboard.
+    * @global 
+    * @kind constant
+    */
+    hostgroupUpdateInterval: function() {
+      return 600000; //10 minutes
+    }
+  }
+
+})();
 
 /**
 * Function that converts given UNIX timestamp to a string
@@ -243,7 +264,7 @@ app.run(function ($rootScope, $route, $http, $location, localStorageService) {
 
     //getting list of monitored servers for autocompletion in search box
     //is done on login stage, but since we are skipping that part it has to be done here
-    $http.post(api_url, {
+    $http.post(GlobalVars.api_url(), {
       jsonrpc: "2.0",
       id: $rootScope.auth_id,
       auth: $rootScope.auth,
@@ -253,8 +274,8 @@ app.run(function ($rootScope, $route, $http, $location, localStorageService) {
         output: ['name'],
         sortfield: 'name'
       }
-    }).success(function (data) {
-      $rootScope.serversOnline = data.result;
+    }).success(function (hostsData) {
+      $rootScope.serversOnline = hostsData.result;
     });
   }
   //preventing page title flickering by assigning title before
@@ -317,13 +338,13 @@ angular.module('SharedServices', []).config(function ($httpProvider) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Global</h3><ul><li><a href="global.html#$routeProvider">$routeProvider</a></li><li><a href="global.html#api_url">api_url</a></li><li><a href="global.html#app">app</a></li><li><a href="global.html#dashboardController">dashboardController</a></li><li><a href="global.html#dateConverter">dateConverter</a></li><li><a href="global.html#hostgroupUpdateInterval">hostgroupUpdateInterval</a></li><li><a href="global.html#loginController">loginController</a></li><li><a href="global.html#logoutController">logoutController</a></li><li><a href="global.html#menuController">menuController</a></li><li><a href="global.html#myHttpInterceptor">myHttpInterceptor</a></li><li><a href="global.html#onFinishRender">onFinishRender</a></li><li><a href="global.html#overviewController">overviewController</a></li><li><a href="global.html#projectController">projectController</a></li><li><a href="global.html#searchController">searchController</a></li><li><a href="global.html#serversController">serversController</a></li><li><a href="global.html#serversDetailsController">serversDetailsController</a></li><li><a href="global.html#timeConverter">timeConverter</a></li><li><a href="global.html#triggerUpdateInterval">triggerUpdateInterval</a></li><li><a href="global.html#zabbix_url">zabbix_url</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Global</h3><ul><li><a href="global.html#$routeProvider">$routeProvider</a></li><li><a href="global.html#api_url">api_url</a></li><li><a href="global.html#app">app</a></li><li><a href="global.html#dashboardController">dashboardController</a></li><li><a href="global.html#dateConverter">dateConverter</a></li><li><a href="global.html#GlobalVars">GlobalVars</a></li><li><a href="global.html#hostgroupUpdateInterval">hostgroupUpdateInterval</a></li><li><a href="global.html#loginController">loginController</a></li><li><a href="global.html#logoutController">logoutController</a></li><li><a href="global.html#menuController">menuController</a></li><li><a href="global.html#myHttpInterceptor">myHttpInterceptor</a></li><li><a href="global.html#onFinishRender">onFinishRender</a></li><li><a href="global.html#overviewController">overviewController</a></li><li><a href="global.html#projectController">projectController</a></li><li><a href="global.html#searchController">searchController</a></li><li><a href="global.html#serversController">serversController</a></li><li><a href="global.html#serversDetailsController">serversDetailsController</a></li><li><a href="global.html#timeConverter">timeConverter</a></li><li><a href="global.html#triggerUpdateInterval">triggerUpdateInterval</a></li><li><a href="global.html#zabbix_url">zabbix_url</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Fri May 31 2013 09:40:33 GMT+0300 (EEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Jun 09 2013 23:26:06 GMT+0300 (EEST)
 </footer>
 
 <script> prettyPrint(); </script>
