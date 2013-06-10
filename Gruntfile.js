@@ -12,8 +12,16 @@ module.exports = function(grunt) {
       },
       build: {
         files: {
-          'app/js/min/app.js':  ['app/js/app.js'],
-          'app/js/min/controllers.js': ['app/js/controllers.js'],
+          'app/js/min/app.js': ['app/js/app.js'],
+          'app/js/min/dashboardController.js': ['app/js/controllers/dashboardController.js'],
+          'app/js/min/loginController.js': ['app/js/controllers/loginController.js'],
+          'app/js/min/logoutController.js': ['app/js/controllers/logoutController.js'],
+          'app/js/min/menuController.js': ['app/js/controllers/menuController.js'],
+          'app/js/min/overviewController.js': ['app/js/controllers/overviewController.js'],
+          'app/js/min/projectController.js': ['app/js/controllers/projectController.js'],
+          'app/js/min/searchController.js': ['app/js/controllers/searchController.js'],
+          'app/js/min/serversController.js': ['app/js/controllers/serversController.js'],
+          'app/js/min/serversDetailsController.js': ['app/js/controllers/serversDetailsController.js'],
           'app/js/min/localStorageModule.js': ['app/js/localStorageModule.js'],
           'app/js/min/templates.js': ['app/js/templates.js']
         }
@@ -29,7 +37,7 @@ module.exports = function(grunt) {
 
     concat: { //concatenate JS files
       dist: {
-        src: ['app/js/min/app.js', 'app/js/min/controllers.js', 'app/js/min/localStorageModule.js', 'app/js/min/templates.js'],
+        src: ['app/js/min/*.js'],
         dest: 'app/js/min/js.min.js'
       }
     },
