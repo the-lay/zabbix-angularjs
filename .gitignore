@@ -1,3 +1,5 @@
 app/js/min/
 app/css/min/
 docs/
+node_modules/
+logs/
