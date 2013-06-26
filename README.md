@@ -1,5 +1,4 @@
-***Zabbix Dashboard***
-
+***Zabbix Dashboard*** 
 **Intro**
 The project was started with the goal to make a dashboard that will be used as a central place to check the current status of the company's projects.   
 
