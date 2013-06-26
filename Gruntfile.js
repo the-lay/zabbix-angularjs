@@ -58,7 +58,7 @@ module.exports = function(grunt) {
       e2e: {
         configFile: 'test/karma.conf.js',
         runnerPort: 9999,
-        singleRun: true,
+        singleRun: false,
         browsers: ['Chrome']
       }
     },
