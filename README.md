@@ -4,7 +4,7 @@ Zabbix Dashboard
 ------
 The project was started with the goal to make a dashboard that will be used as a central place to check the current status of the company's projects.   
 
-In time the project has grown to a full-blown frontend wrapper with not just dashboard, but stuff like server detailed view, groups overview and search function.     
+In time the project has grown to a full-blown frontend wrapper with not just dashboard, but stuff like server detailed view, groups overview and search function. Some more features like HTML5/JS graphing instead of built-in PHP are in plans.    
 
 **Technologies used**
 ------
