@@ -8,10 +8,14 @@ In time the project has grown to a full-blown frontend wrapper with not just das
 
 **Technologies used**
 ------
-It was decided to use *AngularJS* for implementation and *Twitter Bootstrap* (with free *Cosmo* theme) for a quick way to make design. Extra tools used - *Karma Test Runner*, *GruntJS*, lots of Grunt addons (see `Gruntfile.js`) and *JSDoc* (needs *Java* installed and `JAVA_HOME` var in path).  
+It was decided to use *AngularJS* for implementation and *Twitter Bootstrap*
+(with free *Cosmo* theme) for a quick way to make design. 
+Extra tools used - *NPM* package manager, *Karma Test Runner*, *GruntJS*, lots of Grunt addons (see `Gruntfile.js`) and *JSDoc*
+(needs *Java* installed and `JAVA_HOME` var in path).  
 
 **Installation**
 ------
+- Install all the packages listed in `package.json` with the help of NPM.
 - Modify variables in `app/js/app.js` file. 
 - Run build process by executing `grunt` in terminal/cmd in the root folder. 
 - Copy `app/` to production server.
