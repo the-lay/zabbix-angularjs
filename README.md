@@ -1,5 +1,9 @@
 Zabbix Dashboard
 ========================
+**Not in development anymore! Feel free to fork, though.**  
+Also, quality wise, code is less than acceptable, be careful!
+
+
 **Intro**
 ------
 The project was started with the goal to make a dashboard that will be used as a central place to check the current status of the company's projects.   
