@@ -1,7 +1,7 @@
 'use strict';
 /**
 * @file AngularJS application configuration file.
-* @author Iļja Gubins <ilja.gubins@exigenservices.com>
+* @author Iļja Gubins <ilja.gubin@gmail.com>
 */
 
 /**

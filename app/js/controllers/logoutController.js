@@ -1,6 +1,6 @@
 'use strict';
 /**
-* @author Iļja Gubins <ilja.gubins@exigenservices.com>
+* @author Iļja Gubins <ilja.gubin@gmail.com>
 */
 
 /**
